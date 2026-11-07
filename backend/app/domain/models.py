@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
-from typing import Any, Literal
-from pydantic import BaseModel, Field, field_validator
+from datetime import UTC, datetime
+from typing import Literal
 
+from pydantic import BaseModel, Field, field_validator
 
 ModalityType = Literal["touch", "text", "vsl_gloss", "voice"]
 OnsetUnit = Literal["minute", "hour", "day", "week", "month"]
@@ -100,7 +100,7 @@ class Flags(BaseModel):
 
 class Timestamps(BaseModel):
     created: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
     patient_confirmed: str | None = None
     nurse_verified: str | None = None
@@ -127,3 +127,4 @@ class TriageSummary(BaseModel):
     nurse_view: NurseView = Field(default_factory=NurseView)
     flags: Flags = Field(default_factory=Flags)
     timestamps: Timestamps = Field(default_factory=Timestamps)
+

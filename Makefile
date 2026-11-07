@@ -12,7 +12,7 @@ setup-backend:
 	@if command -v uv >/dev/null 2>&1; then \
 		echo "Using uv to set up virtualenv..."; \
 		uv venv $(VENV) --python python3; \
-		uv pip install -e "backend[dev]"; \
+		uv pip install --python $(VENV) -e "backend[dev]"; \
 	else \
 		echo "uv not found, using python3 -m venv..."; \
 		python3 -m venv $(VENV); \
@@ -30,11 +30,11 @@ check: check-backend check-frontend
 
 check-backend:
 	@echo "==> [Backend] Linting with ruff..."
-	cd backend && ../$(VENV)/bin/ruff check .
+	$(VENV)/bin/ruff check backend
 	@echo "==> [Backend] Type checking with mypy..."
-	cd backend && ../$(VENV)/bin/mypy app tests
+	$(VENV)/bin/mypy backend/app backend/tests
 	@echo "==> [Backend] Running unit tests with pytest..."
-	cd backend && ../$(VENV)/bin/pytest
+	$(VENV)/bin/pytest backend
 
 check-frontend:
 	@echo "==> [Frontend] Linting with eslint..."
@@ -66,4 +66,3 @@ demo:
 
 clean:
 	rm -rf backend/.venv frontend/node_modules frontend/dist
-

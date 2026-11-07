@@ -1,0 +1,79 @@
+[
+  {
+    "code": "PAIN",
+    "label_vi": "Đau",
+    "icon": "activity",
+    "synonyms_vi": ["đau", "nhức", "buốt", "rát", "tức"],
+    "vsl_gloss": ["ĐAU"]
+  },
+  {
+    "code": "FEVER",
+    "label_vi": "Sốt",
+    "icon": "thermometer",
+    "synonyms_vi": ["sốt", "nóng", "nhiệt", "hâm hấp"],
+    "vsl_gloss": ["SỐT"]
+  },
+  {
+    "code": "COUGH",
+    "label_vi": "Ho",
+    "icon": "wind",
+    "synonyms_vi": ["ho", "khẹc", "ngứa cổ"],
+    "vsl_gloss": ["HO"]
+  },
+  {
+    "code": "BREATH_DIFFICULTY",
+    "label_vi": "Khó thở",
+    "icon": "lungs",
+    "synonyms_vi": ["khó thở", "ngộp", "hụt hơi", "thở dốc", "ngạt thở"],
+    "vsl_gloss": ["KHÓ-THỞ"]
+  },
+  {
+    "code": "DIZZY",
+    "label_vi": "Chóng mặt",
+    "icon": "rotate-ccw",
+    "synonyms_vi": ["chóng mặt", "hoa mắt", "choáng", "chao đảo"],
+    "vsl_gloss": ["CHÓNG-MẶT"]
+  },
+  {
+    "code": "NAUSEA_VOMIT",
+    "label_vi": "Buồn nôn/Nôn",
+    "icon": "frown",
+    "synonyms_vi": ["buồn nôn", "mắc ói", "nôn", "ói", "mửa"],
+    "vsl_gloss": ["NÔN"]
+  },
+  {
+    "code": "INJURY",
+    "label_vi": "Chấn thương",
+    "icon": "shield-alert",
+    "synonyms_vi": ["chấn thương", "té ngã", "va đập", "gãy", "trật khớp"],
+    "vsl_gloss": ["CHẤN-THƯƠNG"]
+  },
+  {
+    "code": "BLEED",
+    "label_vi": "Chảy máu",
+    "icon": "droplet",
+    "synonyms_vi": ["chảy máu", "xuất huyết", "máu"],
+    "vsl_gloss": ["CHẢY-MÁU"]
+  },
+  {
+    "code": "RASH",
+    "label_vi": "Nổi mẩn",
+    "icon": "sparkles",
+    "synonyms_vi": ["nổi mẩn", "dị ứng da", "ngứa", "phát ban", "mề đay"],
+    "vsl_gloss": ["NỔI-MẨN"]
+  },
+  {
+    "code": "CHECKUP",
+    "label_vi": "Khám định kỳ",
+    "icon": "clipboard-check",
+    "synonyms_vi": ["khám định kỳ", "tái khám", "kiểm tra sức khỏe"],
+    "vsl_gloss": ["KHÁM"]
+  },
+  {
+    "code": "OTHER",
+    "label_vi": "Khác",
+    "icon": "help-circle",
+    "synonyms_vi": ["khác", "vấn đề khác"],
+    "vsl_gloss": ["KHÁC"]
+  }
+]
