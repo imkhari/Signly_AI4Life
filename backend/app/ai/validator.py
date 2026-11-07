@@ -27,8 +27,7 @@ def _matches_keyword(keyword: str, text_lower: str, text_unaccented: str) -> boo
     pattern_accented = rf"(?<!\w){re.escape(kw_lower)}(?!\w)"
     pattern_unaccented = rf"(?<!\w){re.escape(kw_unaccented)}(?!\w)"
     return bool(
-        re.search(pattern_accented, text_lower)
-        or re.search(pattern_unaccented, text_unaccented)
+        re.search(pattern_accented, text_lower) or re.search(pattern_unaccented, text_unaccented)
     )
 
 
@@ -186,9 +185,7 @@ def validate_summary_output(raw_output: str, frame: SemanticFrame) -> ValidatorR
     # V8: Ngôn ngữ chủ yếu tiếng Việt
     letters = [c for c in text_vi if c.isalpha()]
     if letters:
-        vietnamese_latin_count = sum(
-            1 for c in letters if "LATIN" in unicodedata.name(c, "")
-        )
+        vietnamese_latin_count = sum(1 for c in letters if "LATIN" in unicodedata.name(c, ""))
         ratio = vietnamese_latin_count / len(letters)
         if ratio < 0.9:
             violations.append(f"V8_LANGUAGE: Ngôn ngữ không chuẩn tiếng Việt (tỷ lệ {ratio:.2f})")

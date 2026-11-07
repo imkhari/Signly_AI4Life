@@ -24,9 +24,7 @@ class SummaryResult(BaseModel):
     text_vi: str
     nl_source: Literal["llm", "fallback_template"] = "llm"
     fallback_reason: Literal["timeout", "llm_error", "validator_blocked"] | None = None
-    validator: ValidatorResult = Field(
-        default_factory=lambda: ValidatorResult(passed=True)
-    )
+    validator: ValidatorResult = Field(default_factory=lambda: ValidatorResult(passed=True))
     tts_text: str = ""
 
 
@@ -35,8 +33,19 @@ async def orchestrate_summary(
     llm_client: LLMClient,
     *,
     timeout_s: float = 4.0,
+    force_fallback: bool = False,
 ) -> SummaryResult:
     """Điều phối toàn diện: Redaction -> Prompt -> LLM -> Validator -> Fallback."""
+    if force_fallback:
+        fallback_text = render_fallback_template(frame)
+        return SummaryResult(
+            text_vi=fallback_text,
+            nl_source="fallback_template",
+            fallback_reason="llm_error",
+            validator=ValidatorResult(passed=True),
+            tts_text=fallback_text,
+        )
+
     system_prompt = _load_system_prompt()
     redacted_frame = redact_frame(frame)
     user_payload = redacted_frame.model_dump_json(exclude_none=False)

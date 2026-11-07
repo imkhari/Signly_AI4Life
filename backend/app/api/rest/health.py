@@ -15,4 +15,3 @@ class HealthResponse(BaseModel):
 async def get_health() -> HealthResponse:
     llm_mode = "mock" if settings.LLM_PROVIDER == "mock" else "live"
     return HealthResponse(status="ok", llm_mode=llm_mode)
-

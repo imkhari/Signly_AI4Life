@@ -27,7 +27,5 @@ def redact_frame(frame: SemanticFrame) -> SemanticFrame:
     """Tạo bản sao ẩn danh của SemanticFrame trước khi chuyển đến LLM."""
     frame_copy = frame.model_copy(deep=True)
     if frame_copy.chief_complaint.free_text:
-        frame_copy.chief_complaint.free_text = redact_text(
-            frame_copy.chief_complaint.free_text
-        )
+        frame_copy.chief_complaint.free_text = redact_text(frame_copy.chief_complaint.free_text)
     return frame_copy

@@ -68,4 +68,3 @@ class SessionStateMachine:
     def on_session_reset(self) -> SessionStatus:
         self._state = "reset"
         return self._state
-

@@ -99,9 +99,7 @@ class Flags(BaseModel):
 
 
 class Timestamps(BaseModel):
-    created: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
-    )
+    created: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
     patient_confirmed: str | None = None
     nurse_verified: str | None = None
 
@@ -120,11 +118,8 @@ class TriageSummary(BaseModel):
     nl_text_vi: str
     nl_source: Literal["llm", "fallback_template"] = "llm"
     fallback_reason: Literal["timeout", "llm_error", "validator_blocked"] | None = None
-    validator: ValidatorResult = Field(
-        default_factory=lambda: ValidatorResult(passed=True)
-    )
+    validator: ValidatorResult = Field(default_factory=lambda: ValidatorResult(passed=True))
     alerts: list[Alert] = Field(default_factory=list)
     nurse_view: NurseView = Field(default_factory=NurseView)
     flags: Flags = Field(default_factory=Flags)
     timestamps: Timestamps = Field(default_factory=Timestamps)
-

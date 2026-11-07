@@ -11,4 +11,3 @@ def test_health_check() -> None:
     data = response.json()
     assert data["status"] == "ok"
     assert data["llm_mode"] in ["mock", "live"]
-

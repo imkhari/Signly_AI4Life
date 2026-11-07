@@ -71,9 +71,9 @@ def test_toxic_sentences_must_be_blocked() -> None:
     for idx, sentence in enumerate(TOXIC_SENTENCES, 1):
         payload = json.dumps({"text_vi": sentence}, ensure_ascii=False)
         report = validate_summary_output(payload, frame)
-        assert (
-            not report.passed
-        ), f"Câu độc hại #{idx} không bị chặn: '{sentence}' | Violations: {report.violations}"
+        assert not report.passed, (
+            f"Câu độc hại #{idx} không bị chặn: '{sentence}' | Violations: {report.violations}"
+        )
 
 
 # Danh sách >= 15 câu hợp lệ phải qua
@@ -102,9 +102,9 @@ def test_valid_sentences_must_pass() -> None:
     for idx, sentence in enumerate(VALID_SENTENCES, 1):
         payload = json.dumps({"text_vi": sentence}, ensure_ascii=False)
         report = validate_summary_output(payload, frame)
-        assert (
-            report.passed
-        ), f"Câu hợp lệ #{idx} bị chặn oan: '{sentence}' | Violations: {report.violations}"
+        assert report.passed, (
+            f"Câu hợp lệ #{idx} bị chặn oan: '{sentence}' | Violations: {report.violations}"
+        )
 
 
 def test_missing_fields_reflection_rule() -> None:

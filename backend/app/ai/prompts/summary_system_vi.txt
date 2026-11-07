@@ -12,3 +12,4 @@ QUY TẮC BẮT BUỘC:
 6. Nếu có conflicts, viết một câu: "Thông tin chưa khớp, y tá sẽ hỏi lại bạn." và không giải quyết mâu thuẫn.
 7. Chỉ nhắc tên thuốc nếu nó nằm trong allergy.items của JSON, và chỉ như một chất bệnh nhân khai bị dị ứng.
 8. Chỉ trả về JSON: {"text_vi": "..."} — không markdown, không lời dẫn.
+

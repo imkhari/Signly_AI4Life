@@ -162,9 +162,7 @@ def _check_conflicts(
     if text_to_scan:
         mentioned_drugs = find_drug_names_in_text(text_to_scan)
         if mentioned_drugs:
-            declared_drug_names = [
-                item.name.lower() for item in frame.allergy.items
-            ]
+            declared_drug_names = [item.name.lower() for item in frame.allergy.items]
             undeclared = [
                 d for d in mentioned_drugs if not any(d in item for item in declared_drug_names)
             ]

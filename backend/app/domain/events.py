@@ -55,9 +55,7 @@ class SummaryReadyPayload(BaseModel):
     nl_text_vi: str
     nl_source: Literal["llm", "fallback_template"] = "llm"
     fallback_reason: Literal["timeout", "llm_error", "validator_blocked"] | None = None
-    validator: ValidatorResult = Field(
-        default_factory=lambda: ValidatorResult(passed=True)
-    )
+    validator: ValidatorResult = Field(default_factory=lambda: ValidatorResult(passed=True))
     tts_text: str
 
 

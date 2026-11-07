@@ -57,4 +57,3 @@ def test_session_reset_payload() -> None:
     payload = SessionResetPayload(reason="completed", wipe=True)
     assert payload.reason == "completed"
     assert payload.wipe is True
-
