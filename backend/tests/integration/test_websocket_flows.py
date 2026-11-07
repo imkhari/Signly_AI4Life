@@ -28,16 +28,20 @@ def _setup_session() -> tuple[str, str, str, str]:
 
 def test_ws_full_happy_path_and_ram_wipe() -> None:
     session_id, pairing_code, token_nurse, token_patient = _setup_session()
+    client_nurse = TestClient(app)
+    client_patient = TestClient(app)
 
     # 1. Nurse connects
-    with client.websocket_connect(f"/ws/{session_id}?role=nurse&token={token_nurse}") as ws_nurse:
+    with client_nurse.websocket_connect(
+        f"/ws/{session_id}?role=nurse&token={token_nurse}"
+    ) as ws_nurse:
         # Nurse receives SESSION_JOINED (nurse)
         ev = ws_nurse.receive_json()
         assert ev["event"] == "SESSION_JOINED"
         assert ev["payload"]["role"] == "nurse"
 
         # 2. Patient connects
-        with client.websocket_connect(
+        with client_patient.websocket_connect(
             f"/ws/{session_id}?role=patient&token={token_patient}"
         ) as ws_patient:
             # Patient receives SESSION_JOINED (patient)
@@ -166,11 +170,15 @@ def test_ws_full_happy_path_and_ram_wipe() -> None:
 
 def test_ws_role_authorization_and_safety_checks() -> None:
     session_id, _, token_nurse, token_patient = _setup_session()
+    client_nurse = TestClient(app)
+    client_patient = TestClient(app)
 
-    with client.websocket_connect(f"/ws/{session_id}?role=nurse&token={token_nurse}") as ws_nurse:
+    with client_nurse.websocket_connect(
+        f"/ws/{session_id}?role=nurse&token={token_nurse}"
+    ) as ws_nurse:
         _ = ws_nurse.receive_json()  # SESSION_JOINED
 
-        with client.websocket_connect(
+        with client_patient.websocket_connect(
             f"/ws/{session_id}?role=patient&token={token_patient}"
         ) as ws_patient:
             _ = ws_patient.receive_json()  # SESSION_JOINED
@@ -254,8 +262,12 @@ def test_ws_interpreter_request_and_status() -> None:
 
 def test_ws_reconnect_replay_missed_events() -> None:
     session_id, _, token_nurse, token_patient = _setup_session()
+    client_nurse = TestClient(app)
+    client_patient = TestClient(app)
 
-    with client.websocket_connect(f"/ws/{session_id}?role=nurse&token={token_nurse}") as ws_nurse:
+    with client_nurse.websocket_connect(
+        f"/ws/{session_id}?role=nurse&token={token_nurse}"
+    ) as ws_nurse:
         _ = ws_nurse.receive_json()  # seq 1 (SESSION_JOINED)
 
         # Nurse sends NURSE_QUESTION
@@ -272,7 +284,7 @@ def test_ws_reconnect_replay_missed_events() -> None:
         _ = ws_nurse.receive_json()  # seq 2 (NURSE_QUESTION)
 
         # Now patient connects with last_seq=1 -> must replay seq 2
-        with client.websocket_connect(
+        with client_patient.websocket_connect(
             f"/ws/{session_id}?role=patient&token={token_patient}&last_seq=1"
         ) as ws_patient:
             replayed = ws_patient.receive_json()

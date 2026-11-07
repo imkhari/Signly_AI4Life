@@ -6,11 +6,59 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-ink: #10283c;
+  --color-paper: #ffffff;
+  --color-canvas: #eaf1f4;
+  --color-action: #0a6b8f;
+  --focus-ring: 3px solid #0a6b8f;
+}
+
 body {
   margin: 0;
   font-family: 'Be Vietnam Pro', sans-serif;
-  color: #10283c;
-  background-color: #eaf1f4;
+  color: var(--color-ink);
+  background-color: var(--color-canvas);
   -webkit-font-smoothing: antialiased;
 }
 
+/* Accessibility Focus Ring */
+*:focus-visible {
+  outline: 3px solid #0a6b8f !important;
+  outline-offset: 2px !important;
+}
+
+/* Chế độ chữ lớn (A+) */
+html.large-font {
+  font-size: 120%;
+}
+
+/* Chế độ tương phản cao (High Contrast ◐) */
+html.high-contrast {
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  --color-canvas: #ffffff;
+  --color-action: #000000;
+}
+
+html.high-contrast body {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+html.high-contrast button,
+html.high-contrast input,
+html.high-contrast .card-border {
+  border: 3px solid #000000 !important;
+  box-shadow: none !important;
+}
+
+/* Tôn trọng người dùng giảm chuyển động (prefers-reduced-motion) */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

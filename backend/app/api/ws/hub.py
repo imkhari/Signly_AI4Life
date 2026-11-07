@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 from typing import Any, Literal
@@ -16,20 +15,18 @@ router = APIRouter(tags=["websocket"])
 class ConnectionManager:
     def __init__(self) -> None:
         self._connections: dict[str, dict[str, WebSocket]] = {}
-        self._lock = asyncio.Lock()
 
     async def connect(self, session_id: str, role: str, websocket: WebSocket) -> None:
-        async with self._lock:
-            role_map = self._connections.setdefault(session_id, {})
-            old_ws = role_map.get(role)
-            if old_ws:
-                try:
-                    await old_ws.close(code=4001, reason="Duplicate connection for role")
-                except Exception:
-                    pass
+        role_map = self._connections.setdefault(session_id, {})
+        old_ws = role_map.get(role)
+        if old_ws:
+            try:
+                await old_ws.close(code=4001, reason="Duplicate connection for role")
+            except Exception:
+                pass
 
-            await websocket.accept()
-            role_map[role] = websocket
+        await websocket.accept()
+        role_map[role] = websocket
 
     def disconnect(self, session_id: str, role: str, websocket: WebSocket) -> None:
         if session_id in self._connections:
@@ -55,13 +52,12 @@ class ConnectionManager:
                 pass
 
     async def close_session(self, session_id: str, code: int = 1000) -> None:
-        async with self._lock:
-            role_map = self._connections.pop(session_id, {})
-            for _, ws in role_map.items():
-                try:
-                    await ws.close(code=code, reason="Session ended")
-                except Exception:
-                    pass
+        role_map = self._connections.pop(session_id, {})
+        for _, ws in role_map.items():
+            try:
+                await ws.close(code=code, reason="Session ended")
+            except Exception:
+                pass
 
 
 manager = ConnectionManager()
