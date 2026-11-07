@@ -41,6 +41,28 @@ make dev-frontend    # Frontend Vite: http://localhost:5173
 make demo
 ```
 
+## Các Màn Hình & Tính Năng Trọng Tâm
+
+| Route | Vai trò | Chức năng chính |
+|---|---|---|
+| `/` | Trang chủ / Trợ năng | Chọn vai trò, công tắc chữ lớn (A+), tương phản cao (◐), nút gọi nhân viên khẩn |
+| `/patient` | Kiosk Bệnh nhân | Wizard 4 bước (Touch / Chữ / Ký hiệu VSL), BodyMap SVG 15 vùng, PainSlider 0–10, khai dị ứng, tóm tắt AI + TTS đọc kèm phụ đề, cấp STT lớn |
+| `/nurse` | Bàn Điều dưỡng | Ghép mã 6 ký tự, Bảng đọc 2 vùng (chuyển xanh sau BN xác nhận), cảnh báo cờ đỏ khẩn nháy âm thanh, ack alert, gửi câu hỏi phụ, khóa duyệt STT, xuất phiếu bàn giao PDF không PII |
+| `/demo` | Bảng Giám khảo | Nạp kịch bản cấp cứu đau ngực, mâu thuẫn dị ứng, ép lỗi LLM Fallback, đo độ trễ LAN (<20ms), nút reset 1 chạm |
+
+## Chuyển đổi giữa Chế độ Demo (Mock) và Model Thật (Live Gemini)
+
+AI4Care sử dụng kiến trúc Adapter (`LLMClient` Protocol). Mặc định hệ thống chạy chế độ `LLM_PROVIDER=mock` hoàn toàn offline.
+
+Để kết nối Google Gemini thật:
+1. Mở file `backend/.env`
+2. Cập nhật:
+   ```env
+   LLM_PROVIDER=gemini
+   GEMINI_API_KEY=AIzaSy... (điền API key của bạn)
+   ```
+3. Khởi động lại backend. Mọi cơ chế bảo vệ: ẩn danh PII, Post-LLM Validator (V1..V8), và Fallback Template 4s vẫn tự động hoạt động bảo vệ 100%.
+
 ## Cấu trúc thư mục Monorepo
 ```
 AGENTS.md            # Điểm vào duy nhất cho mọi AI agent (CLAUDE.md, GEMINI.md… trỏ về đây)

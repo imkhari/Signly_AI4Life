@@ -87,6 +87,31 @@ export const HomeRoleSelect: React.FC = () => {
               </div>
             </Link>
           </div>
+
+          {/* Chế độ Trình diễn Demo Giám Khảo */}
+          <div className="mt-4">
+            <Link
+              to="/demo"
+              className="p-4 bg-brand-light/30 border border-brand/30 hover:border-brand rounded-2xl flex items-center justify-between transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center font-bold">
+                  🧪
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-ink group-hover:text-brand transition-colors">
+                    Bảng Điều Khiển Demo Giám Khảo (1 Chạm)
+                  </h4>
+                  <p className="text-xs text-mute">
+                    Kịch bản cấp cứu cờ đỏ, mâu thuẫn dị ứng, ép lỗi LLM Fallback, ký hiệu VSL & đo độ trễ LAN
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-brand px-3 py-1.5 rounded-lg bg-paper border border-brand/20 group-hover:bg-brand group-hover:text-white transition-all">
+                Mở /demo &rarr;
+              </span>
+            </Link>
+          </div>
         </section>
 
         {/* Phần 2: Bảng mẫu thành phần UI (Kitchen Sink) */}

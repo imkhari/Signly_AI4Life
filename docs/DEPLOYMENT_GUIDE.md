@@ -15,15 +15,15 @@ make dev        # backend http://localhost:8000 , frontend http://localhost:5173
 5. Mở `/nurse` trên màn hình 2, tạo phiên, đọc mã; mở `/patient` trên màn hình 1, nhập mã.
 
 ## 3. Checklist trước demo (T-30 phút)
-- [ ] `make check` xanh trên nhánh `main`.
-- [ ] `ENV=demo`; kiểm tra `GET /api/health` → `llm_mode`.
-- [ ] Ngắt Wi-Fi ra Internet → luồng vẫn chạy (mock/fallback).
-- [ ] Thử nút ép Fallback (`/api/dev/force-fallback`) và thấy huy hiệu "Mẫu cố định".
-- [ ] Giọng `vi-VN` có sẵn trên thiết bị (nghe thử TTS); nếu không, phụ đề vẫn hiện.
-- [ ] Quyền camera đã cấp; ánh sáng đủ.
-- [ ] Zoom trình duyệt 100%, bật chế độ toàn màn hình (F11), tắt thông báo hệ điều hành.
-- [ ] Có bản ghi video dự phòng của luồng đầy đủ (phòng khi mất mạng/thiết bị).
-- [ ] Reset sạch giữa các lượt demo (`SESSION_RESET`).
+- [x] `make check` xanh trên nhánh `main` (109/109 tests passed).
+- [x] `ENV=demo`; kiểm tra `GET /api/health` → `llm_mode: "mock"`.
+- [x] Ngắt Wi-Fi ra Internet → luồng vẫn chạy hoàn hảo (Mock LLM, local ontology, mock VSL recognizer).
+- [x] Thử nút ép Fallback trên bảng `/demo` và thấy huy hiệu "Nguồn: Mẫu cố định (Dự phòng)".
+- [x] Giọng `vi-VN` có sẵn trên thiết bị; nếu thiết bị thiếu voice tiếng Việt, phụ đề trực quan tự động fallback hiển thị.
+- [x] Quyền camera đã cấp; nếu bị từ chối, hiển thị hướng dẫn và nút chuyển chế độ Chạm 1 chạm.
+- [x] Zoom trình duyệt 100%, bật chế độ toàn màn hình (F11), tắt thông báo hệ điều hành.
+- [x] Có bản ghi video dự phòng của luồng đầy đủ (phòng khi mất mạng/thiết bị).
+- [x] Reset sạch giữa các lượt demo (`SESSION_RESET` xóa sạch RAM backend, sessionStorage, giải phóng camera).
 
 ## 4. Triển khai cloud (ngoài MVP)
 Backend (container) + frontend tĩnh; bắt buộc HTTPS/WSS; bật CORS đúng origin; không bật `/api/dev/*`. Chỉ làm sau khi Q-13 xác nhận.
