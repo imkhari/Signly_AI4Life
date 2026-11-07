@@ -1,0 +1,16 @@
+@import '@fontsource/be-vietnam-pro/400.css';
+@import '@fontsource/be-vietnam-pro/600.css';
+@import '@fontsource/be-vietnam-pro/700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  color: #10283c;
+  background-color: #eaf1f4;
+  -webkit-font-smoothing: antialiased;
+}
+
