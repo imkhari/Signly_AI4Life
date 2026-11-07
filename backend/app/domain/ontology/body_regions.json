@@ -1,0 +1,92 @@
+[
+  {
+    "code": "HEAD",
+    "label_vi": "Đầu",
+    "icon": "circle",
+    "synonyms_vi": ["đầu", "sọ", "thái dương", "trán"]
+  },
+  {
+    "code": "NECK",
+    "label_vi": "Cổ",
+    "icon": "circle",
+    "synonyms_vi": ["cổ", "họng", "gáy"]
+  },
+  {
+    "code": "CHEST",
+    "label_vi": "Ngực",
+    "icon": "heart",
+    "synonyms_vi": ["ngực", "tim", "vú", "lồng ngực"]
+  },
+  {
+    "code": "UPPER_BACK",
+    "label_vi": "Lưng trên",
+    "icon": "square",
+    "synonyms_vi": ["lưng trên", "bả vai", "vai gáy", "vai"]
+  },
+  {
+    "code": "ABDOMEN_UPPER",
+    "label_vi": "Bụng trên",
+    "icon": "square",
+    "synonyms_vi": ["bụng trên", "thượng vị", "dạ dày", "chấn thủy", "bao tử"]
+  },
+  {
+    "code": "ABDOMEN_LOWER",
+    "label_vi": "Bụng dưới",
+    "icon": "square",
+    "synonyms_vi": ["bụng dưới", "hạ vị", "vùng chậu", "ruột thừa"]
+  },
+  {
+    "code": "LOWER_BACK",
+    "label_vi": "Lưng dưới",
+    "icon": "square",
+    "synonyms_vi": ["lưng dưới", "thắt lưng", "eo"]
+  },
+  {
+    "code": "ARM_L",
+    "label_vi": "Tay trái",
+    "icon": "minus",
+    "synonyms_vi": ["tay trái", "cánh tay trái", "bắp tay trái"]
+  },
+  {
+    "code": "ARM_R",
+    "label_vi": "Tay phải",
+    "icon": "minus",
+    "synonyms_vi": ["tay phải", "cánh tay phải", "bắp tay phải"]
+  },
+  {
+    "code": "HAND_L",
+    "label_vi": "Bàn tay trái",
+    "icon": "hand",
+    "synonyms_vi": ["bàn tay trái", "ngón tay trái", "cổ tay trái"]
+  },
+  {
+    "code": "HAND_R",
+    "label_vi": "Bàn tay phải",
+    "icon": "hand",
+    "synonyms_vi": ["bàn tay phải", "ngón tay phải", "cổ tay phải"]
+  },
+  {
+    "code": "LEG_L",
+    "label_vi": "Chân trái",
+    "icon": "minus",
+    "synonyms_vi": ["chân trái", "đùi trái", "cẳng chân trái", "đầu gối trái"]
+  },
+  {
+    "code": "LEG_R",
+    "label_vi": "Chân phải",
+    "icon": "minus",
+    "synonyms_vi": ["chân phải", "đùi phải", "cẳng chân phải", "đầu gối phải"]
+  },
+  {
+    "code": "FOOT_L",
+    "label_vi": "Bàn chân trái",
+    "icon": "footprints",
+    "synonyms_vi": ["bàn chân trái", "ngón chân trái", "cổ chân trái", "gót chân trái"]
+  },
+  {
+    "code": "FOOT_R",
+    "label_vi": "Bàn chân phải",
+    "icon": "footprints",
+    "synonyms_vi": ["bàn chân phải", "ngón chân phải", "cổ chân phải", "gót chân phải"]
+  }
+]

@@ -1,0 +1,17 @@
+[
+  { "gloss": "ĐAU", "label_vi": "Đau", "category": "symptom", "maps_to": { "field": "chief_complaint", "code": "PAIN" } },
+  { "gloss": "SỐT", "label_vi": "Sốt", "category": "symptom", "maps_to": { "field": "chief_complaint", "code": "FEVER" } },
+  { "gloss": "HO", "label_vi": "Ho", "category": "symptom", "maps_to": { "field": "chief_complaint", "code": "COUGH" } },
+  { "gloss": "NGỰC", "label_vi": "Ngực", "category": "region", "maps_to": { "field": "pain.body_regions", "code": "CHEST" } },
+  { "gloss": "BỤNG", "label_vi": "Bụng", "category": "region", "maps_to": { "field": "pain.body_regions", "code": "ABDOMEN_UPPER" } },
+  { "gloss": "ĐẦU", "label_vi": "Đầu", "category": "region", "maps_to": { "field": "pain.body_regions", "code": "HEAD" } },
+  { "gloss": "KHÓ-THỞ", "label_vi": "Khó thở", "category": "symptom", "maps_to": { "field": "chief_complaint", "code": "BREATH_DIFFICULTY" } },
+  { "gloss": "DỊ-ỨNG", "label_vi": "Dị ứng", "category": "allergy", "maps_to": { "field": "allergy.has_allergy", "value": true } },
+  { "gloss": "KHÔNG", "label_vi": "Không", "category": "modifier", "maps_to": { "field": "modifier", "value": false } },
+  { "gloss": "CÓ", "label_vi": "Có", "category": "modifier", "maps_to": { "field": "modifier", "value": true } },
+  { "gloss": "HÔM-NAY", "label_vi": "Hôm nay", "category": "time", "maps_to": { "field": "pain.onset", "value": 0, "unit": "day" } },
+  { "gloss": "HAI", "label_vi": "Hai (2)", "category": "number", "maps_to": { "field": "number", "value": 2 } },
+  { "gloss": "GIỜ", "label_vi": "Giờ", "category": "time_unit", "maps_to": { "field": "time_unit", "unit": "hour" } },
+  { "gloss": "NGÀY", "label_vi": "Ngày", "category": "time_unit", "maps_to": { "field": "time_unit", "unit": "day" } },
+  { "gloss": "NẶNG", "label_vi": "Nặng / Nhiều", "category": "severity", "maps_to": { "field": "pain.severity", "value": 8 } }
+]
