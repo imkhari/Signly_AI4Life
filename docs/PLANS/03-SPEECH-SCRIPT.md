@@ -78,3 +78,4 @@
    $\rightarrow$ Người thao tác bấm vào nút đổi chế độ sang **"Ký hiệu VSL"** $\rightarrow$ Webcam hiện lên với khung nhận diện cử chỉ tay (Gloss toolbar 15 từ) và giải thích: *"Model chạy trực tiếp trên trình duyệt bằng Canvas/MediaPipe, bảo đảm không có bất kỳ frame hình ảnh nào bị tải lên mạng, bảo vệ quyền riêng tư tuyệt đối cho bệnh nhân."*
 2. **Nếu hội trường mất kết nối Wi-Fi:**
    $\rightarrow$ Tự tin nói: *"Hệ thống của chúng tôi được thiết kế Offline-first. Mock LLM, Ontology cục bộ và toàn bộ WebSockets chạy hoàn hảo trên mạng nội bộ LAN của bệnh viện mà không cần Internet."*
+

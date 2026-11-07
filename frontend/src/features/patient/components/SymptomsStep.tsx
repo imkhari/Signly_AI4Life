@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
+import { Clock } from 'lucide-react';
 import {
-  Activity,
-  Bandage,
-  Check,
-  CircleDot,
-  Clock,
-  Droplets,
-  Heart,
-  HelpCircle,
-  Sparkles,
-  Thermometer,
-  Wind,
-} from 'lucide-react';
+  IconBandage,
+  IconCheckupList,
+  IconDroplet,
+  IconHeartbeat,
+  IconHelpCircle,
+  IconLungs,
+  IconMoodConfuzed,
+  IconStethoscope,
+  IconTemperature,
+  IconVirus,
+} from '@tabler/icons-react';
 import { BodyMap } from './BodyMap';
 import { PainSlider } from './PainSlider';
 import { VSLCameraView } from './VSLCameraView';
@@ -46,16 +46,56 @@ interface ComplaintOption {
 }
 
 const CHIEF_COMPLAINTS: ComplaintOption[] = [
-  { code: 'PAIN', label: 'Đau / Nhức', icon: <Activity className="w-8 h-8" /> },
-  { code: 'FEVER', label: 'Sốt / Nóng', icon: <Thermometer className="w-8 h-8" /> },
-  { code: 'COUGH', label: 'Ho / Đau họng', icon: <Wind className="w-8 h-8" /> },
-  { code: 'BREATH_DIFFICULTY', label: 'Khó thở', icon: <Heart className="w-8 h-8" /> },
-  { code: 'DIZZY', label: 'Chóng mặt', icon: <CircleDot className="w-8 h-8" /> },
-  { code: 'INJURY', label: 'Chấn thương / Ngã', icon: <Bandage className="w-8 h-8" /> },
-  { code: 'BLEED', label: 'Chảy máu', icon: <Droplets className="w-8 h-8" /> },
-  { code: 'RASH', label: 'Nổi mẩn / Ngứa', icon: <Sparkles className="w-8 h-8" /> },
-  { code: 'CHECKUP', label: 'Khám định kỳ', icon: <Check className="w-8 h-8" /> },
-  { code: 'OTHER', label: 'Khác', icon: <HelpCircle className="w-8 h-8" /> },
+  {
+    code: 'PAIN',
+    label: 'Đau / Nhức',
+    icon: <IconHeartbeat className="w-8 h-8 text-rose-500" stroke={1.8} />,
+  },
+  {
+    code: 'FEVER',
+    label: 'Sốt / Nóng',
+    icon: <IconTemperature className="w-8 h-8 text-amber-500" stroke={1.8} />,
+  },
+  {
+    code: 'COUGH',
+    label: 'Ho / Đau họng',
+    icon: <IconStethoscope className="w-8 h-8 text-cyan-600" stroke={1.8} />,
+  },
+  {
+    code: 'BREATH_DIFFICULTY',
+    label: 'Khó thở',
+    icon: <IconLungs className="w-8 h-8 text-blue-500" stroke={1.8} />,
+  },
+  {
+    code: 'DIZZY',
+    label: 'Chóng mặt',
+    icon: <IconMoodConfuzed className="w-8 h-8 text-purple-500" stroke={1.8} />,
+  },
+  {
+    code: 'INJURY',
+    label: 'Chấn thương / Ngã',
+    icon: <IconBandage className="w-8 h-8 text-emerald-500" stroke={1.8} />,
+  },
+  {
+    code: 'BLEED',
+    label: 'Chảy máu',
+    icon: <IconDroplet className="w-8 h-8 text-red-600" stroke={1.8} />,
+  },
+  {
+    code: 'RASH',
+    label: 'Nổi mẩn / Ngứa',
+    icon: <IconVirus className="w-8 h-8 text-orange-500" stroke={1.8} />,
+  },
+  {
+    code: 'CHECKUP',
+    label: 'Khám định kỳ',
+    icon: <IconCheckupList className="w-8 h-8 text-teal-600" stroke={1.8} />,
+  },
+  {
+    code: 'OTHER',
+    label: 'Khác',
+    icon: <IconHelpCircle className="w-8 h-8 text-slate-500" stroke={1.8} />,
+  },
 ];
 
 const ONSET_UNITS: { unit: OnsetUnit; label: string }[] = [
@@ -146,34 +186,59 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
   };
 
   const isPainRelevant = data.chiefComplaintCode === 'PAIN' || data.hasPain === true;
-
+  const isVslMode = selectedMode === 'vsl_gloss';
   const canProceed = Boolean(data.chiefComplaintCode);
 
   return (
-    <div className="flex flex-col w-full max-w-4xl mx-auto space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-extrabold text-ink mb-2">
-          {vi.wizard.step2}
-        </h2>
-        <p className="text-mute text-base">
-          Chọn lý do khiến bạn cảm thấy khó chịu nhất hôm nay.
-        </p>
-      </div>
-
-      {/* VSL Camera helper if VSL mode is active */}
-      {selectedMode === 'vsl_gloss' && (
-        <VSLCameraView
-          onApplyGlosses={handleApplyVSLGlosses}
-          onSwitchToTouchMode={() => onSwitchMode?.('touch')}
-        />
+    <div className={`flex flex-col w-full mx-auto ${isVslMode ? 'max-w-full space-y-2' : 'max-w-4xl space-y-6'}`}>
+      {isVslMode ? (
+        <div className="flex items-center justify-between px-1">
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-ink">
+              {vi.wizard.step2}
+            </h2>
+            <p className="text-xs text-mute">
+              Dùng ngôn ngữ ký hiệu hoặc cử chỉ tự nhiên trước camera để khai báo triệu chứng.
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            onClick={onBack}
+            className="!min-h-[40px] !py-1.5 !px-4 text-xs font-bold rounded-xl"
+          >
+            {vi.common.back}
+          </Button>
+        </div>
+      ) : (
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold text-ink mb-2">
+            {vi.wizard.step2}
+          </h2>
+          <p className="text-mute text-base">
+            Chọn lý do khiến bạn cảm thấy khó chịu nhất hôm nay.
+          </p>
+        </div>
       )}
 
-      {/* Tabs chuyển đổi giữa các phần triệu chứng */}
-      <div
-        role="tablist"
-        aria-label="Các phần triệu chứng"
-        className="flex p-1 bg-canvas rounded-2xl border border-gray-200 gap-1 overflow-x-auto"
-      >
+      {/* Chế độ VSL Camera: Giao diện Studio 2 cột chuyên dụng */}
+      {isVslMode ? (
+        <div className="w-full">
+          <VSLCameraView
+            onApplyGlosses={(glosses) => {
+              handleApplyVSLGlosses(glosses);
+              onNext();
+            }}
+            onSwitchToTouchMode={() => onSwitchMode?.('touch')}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Tabs chuyển đổi giữa các phần triệu chứng (Dành riêng cho Chế độ Chạm) */}
+          <div
+            role="tablist"
+            aria-label="Các phần triệu chứng"
+            className="flex p-1 bg-canvas rounded-2xl border border-gray-200 gap-1 overflow-x-auto"
+          >
         <button
           type="button"
           role="tab"
@@ -425,6 +490,8 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
           </Button>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };

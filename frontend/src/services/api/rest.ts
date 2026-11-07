@@ -18,6 +18,40 @@ export interface HealthResult {
   llm_mode: string;
 }
 
+export interface HandLandmarkPoint {
+  x: number;
+  y: number;
+  z?: number;
+}
+
+export interface HandData {
+  handedness: 'Right' | 'Left';
+  landmarks: HandLandmarkPoint[];
+}
+
+export interface VSLTopK {
+  gloss: string;
+  confidence: number;
+}
+
+export interface VSLPredictionResponse {
+  success: boolean;
+  gloss: string;
+  token?: string | null;
+  secondary_token?: string | null;
+  tokens?: string[];
+  label_vi?: string | null;
+  confidence: number;
+  hand_count: number;
+  total_fingers: number;
+  is_transitioning: boolean;
+  motion_type: string;
+  suggested_next_step?: string | null;
+  top_k: VSLTopK[];
+  latency_ms: number;
+  model_source: string;
+}
+
 export class RestApiClient {
   private baseUrl: string;
 
@@ -78,6 +112,26 @@ export class RestApiClient {
       throw new Error('Failed to toggle force-fallback');
     }
     return (await res.json()) as { session_id: string; force_fallback: boolean };
+  }
+
+  async predictVSL(hands: HandData[], contextStep?: string): Promise<VSLPredictionResponse> {
+    const res = await fetch(`${this.baseUrl}/vsl/predict`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hands, context_step: contextStep }),
+    });
+    if (!res.ok) {
+      throw new Error(`VSL prediction failed: ${res.statusText}`);
+    }
+    return (await res.json()) as VSLPredictionResponse;
+  }
+
+  async getVSLVocab(): Promise<{ vocab: string[]; total: number }> {
+    const res = await fetch(`${this.baseUrl}/vsl/vocab`);
+    if (!res.ok) {
+      throw new Error('Failed to load VSL vocabulary');
+    }
+    return (await res.json()) as { vocab: string[]; total: number };
   }
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Camera, Hand, Keyboard } from 'lucide-react';
+import { IconHandClick, IconKeyboard, IconVideo } from '@tabler/icons-react';
 import { BigIconButton } from '../../../ui/BigIconButton';
 import { Button } from '../../../ui/Button';
 import { ModalityType } from '../../../types';
@@ -28,7 +28,7 @@ export const ChooseModeStep: React.FC<ChooseModeStepProps> = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full mb-10">
         <BigIconButton
-          icon={<Hand className="w-12 h-12" />}
+          icon={<IconHandClick className="w-12 h-12 text-action" stroke={1.8} />}
           label="Chạm chọn hình"
           sublabel="Dễ nhất, chỉ cần chọn icon và vị trí trên hình"
           selected={selectedMode === 'touch'}
@@ -36,7 +36,7 @@ export const ChooseModeStep: React.FC<ChooseModeStepProps> = ({
         />
 
         <BigIconButton
-          icon={<Keyboard className="w-12 h-12" />}
+          icon={<IconKeyboard className="w-12 h-12 text-action" stroke={1.8} />}
           label="Viết chữ"
           sublabel="Gõ bàn phím, hệ thống sẽ đọc to giúp bạn"
           selected={selectedMode === 'text'}
@@ -44,7 +44,7 @@ export const ChooseModeStep: React.FC<ChooseModeStepProps> = ({
         />
 
         <BigIconButton
-          icon={<Camera className="w-12 h-12" />}
+          icon={<IconVideo className="w-12 h-12 text-action" stroke={1.8} />}
           label="Ký hiệu VSL"
           sublabel="Nhận diện cử chỉ ngôn ngữ ký hiệu qua camera"
           selected={selectedMode === 'vsl_gloss'}

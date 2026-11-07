@@ -64,5 +64,12 @@ demo:
 	(cd frontend && npm run dev) & \
 	wait
 
+demo-https:
+	@echo "Starting AI4Care in DEMO mode with HTTPS for LAN devices..."
+	@trap 'kill 0' INT; \
+	(cd backend && ENV=demo LLM_PROVIDER=mock ../$(VENV)/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000) & \
+	(cd frontend && npm run dev:https) & \
+	wait
+
 clean:
 	rm -rf backend/.venv frontend/node_modules frontend/dist

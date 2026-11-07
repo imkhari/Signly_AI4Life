@@ -113,14 +113,20 @@ export const PatientPage: React.FC = () => {
       </header>
 
       {/* Nội dung chính */}
-      <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-8 flex flex-col justify-start">
+      <main
+        className={`flex-1 w-full mx-auto flex flex-col justify-start transition-all duration-200 ${
+          step === 2 && draft.selectedMode === 'vsl_gloss'
+            ? 'max-w-[1360px] px-3 py-2 md:px-6 md:py-3'
+            : 'max-w-5xl p-4 md:p-8'
+        }`}
+      >
         {!state.sessionId ? (
           <PairingScreen onPaired={() => goToStep(1)} />
         ) : (
-          <div className="w-full space-y-8">
+          <div className={`w-full ${step === 2 && draft.selectedMode === 'vsl_gloss' ? 'space-y-3' : 'space-y-8'}`}>
             {/* Thanh tiến độ wizard (chỉ hiện từ bước 1 đến 4) */}
             {step >= 1 && step <= 4 && (
-              <div className="bg-paper p-4 md:p-6 rounded-2xl border border-gray-200 shadow-sm">
+              <div className="bg-paper rounded-xl border border-gray-200 py-2 px-3 sm:px-4 shadow-2xs">
                 <StepProgress steps={stepsList} currentStepIndex={step - 1} />
               </div>
             )}

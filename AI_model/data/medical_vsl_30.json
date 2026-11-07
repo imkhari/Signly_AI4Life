@@ -1,0 +1,202 @@
+{
+  "triệu_chứng": [
+    {
+      "word": "đau bụng",
+      "found_in_vsl_dict": "đau bụng",
+      "class_id": "class_0518"
+    },
+    {
+      "word": "sốt",
+      "found_in_vsl_dict": "sốt",
+      "class_id": "class_3531"
+    },
+    {
+      "word": "buồn nôn",
+      "found_in_vsl_dict": "buồn nôn",
+      "class_id": "class_1168"
+    },
+    {
+      "word": "mệt mỏi",
+      "found_in_vsl_dict": "mệt mỏi",
+      "class_id": "class_0530"
+    },
+    {
+      "word": "chóng mặt",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "khó thở",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "ho",
+      "found_in_vsl_dict": "không cho (bắc)",
+      "class_id": "class_0046"
+    }
+  ],
+  "bộ_phận": [
+    {
+      "word": "bụng",
+      "found_in_vsl_dict": "bụng",
+      "class_id": "class_1151"
+    },
+    {
+      "word": "đầu",
+      "found_in_vsl_dict": "đứng đầu (hàng đầu)",
+      "class_id": "class_0037"
+    },
+    {
+      "word": "ngực",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "lưng",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "họng",
+      "found_in_vsl_dict": "họng",
+      "class_id": "class_2390"
+    },
+    {
+      "word": "tay",
+      "found_in_vsl_dict": "bao tay (dùng cho trẻ sơ sinh)",
+      "class_id": "class_0937"
+    },
+    {
+      "word": "chân",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "mắt",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "tai",
+      "found_in_vsl_dict": "tai",
+      "class_id": "class_3578"
+    }
+  ],
+  "thời_gian": [
+    {
+      "word": "hôm nay",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "hôm qua",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "sáng",
+      "found_in_vsl_dict": "sáng",
+      "class_id": "class_0807"
+    },
+    {
+      "word": "tối",
+      "found_in_vsl_dict": "buổi tối (bắc)",
+      "class_id": "class_1161"
+    },
+    {
+      "word": "tuần trước",
+      "found_in_vsl_dict": "tuần trước (bắc)",
+      "class_id": "class_0586"
+    }
+  ],
+  "mức_độ_số": [
+    {
+      "word": "1",
+      "found_in_vsl_dict": "lớn hơn 1 (toán học)",
+      "class_id": "class_0449"
+    },
+    {
+      "word": "2",
+      "found_in_vsl_dict": "ngày người khuyết tật thế giới 3/12 (bắc)",
+      "class_id": "class_0073"
+    },
+    {
+      "word": "3",
+      "found_in_vsl_dict": "ngày quốc tế phụ nữ 8/3 (bắc)",
+      "class_id": "class_0061"
+    },
+    {
+      "word": "4",
+      "found_in_vsl_dict": "ngày giải phóng miền nam 30/4 (bắc)",
+      "class_id": "class_0067"
+    },
+    {
+      "word": "5",
+      "found_in_vsl_dict": "về 5 (về nhà)",
+      "class_id": "class_0265"
+    },
+    {
+      "word": "6",
+      "found_in_vsl_dict": "ngày gia đình việt nam 28/6 (bắc)",
+      "class_id": "class_0100"
+    },
+    {
+      "word": "7",
+      "found_in_vsl_dict": "ngày thương bình liệt sĩ 27/7 (bắc)",
+      "class_id": "class_0082"
+    },
+    {
+      "word": "8",
+      "found_in_vsl_dict": "8",
+      "class_id": "class_0745"
+    },
+    {
+      "word": "9",
+      "found_in_vsl_dict": "ngày ngôn ngữ kí hiệu quốc tế 23/9 (bắc)",
+      "class_id": "class_0088"
+    },
+    {
+      "word": "10",
+      "found_in_vsl_dict": "ngày giải phóng thủ đô 10/10 (bắc)",
+      "class_id": "class_0064"
+    },
+    {
+      "word": "nhiều",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "ít",
+      "found_in_vsl_dict": "một ít (một chút)",
+      "class_id": "class_0300"
+    }
+  ],
+  "y_tế_chung": [
+    {
+      "word": "bác sĩ",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "khám bệnh",
+      "found_in_vsl_dict": "khám bệnh",
+      "class_id": "class_2470"
+    },
+    {
+      "word": "bệnh nhân",
+      "found_in_vsl_dict": "bệnh nhân",
+      "class_id": "class_1032"
+    },
+    {
+      "word": "thuốc",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    },
+    {
+      "word": "dị ứng",
+      "found_in_vsl_dict": null,
+      "class_id": null
+    }
+  ]
+}

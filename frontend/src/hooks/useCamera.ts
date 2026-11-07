@@ -52,6 +52,7 @@ export function useCamera() {
       streamRef.current = mediaStream;
       if (videoElementRef.current) {
         videoElementRef.current.srcObject = mediaStream;
+        videoElementRef.current.play().catch(() => {});
       }
       setStatus('active');
     } catch (err: unknown) {
@@ -75,6 +76,7 @@ export function useCamera() {
     videoElementRef.current = el;
     if (el && streamRef.current) {
       el.srcObject = streamRef.current;
+      el.play().catch(() => {});
     }
   }, []);
 
@@ -96,6 +98,7 @@ export function useCamera() {
     status,
     errorMessage,
     isActive: status === 'active',
+    stream: streamRef.current,
     start,
     stop,
     bindVideoRef,

@@ -63,6 +63,17 @@ AI4Care sử dụng kiến trúc Adapter (`LLMClient` Protocol). Mặc định h
    ```
 3. Khởi động lại backend. Mọi cơ chế bảo vệ: ẩn danh PII, Post-LLM Validator (V1..V8), và Fallback Template 4s vẫn tự động hoạt động bảo vệ 100%.
 
+## Động cơ Nhận diện Ký hiệu Ngôn ngữ (VSL Recognition Engine)
+
+AI4Care tích hợp module nhận dạng ngôn ngữ ký hiệu chuyên biệt cho y tế ban đầu:
+- **MVP Edge Engine (Mặc định)**: Sử dụng động cơ Hình học Không gian 3D & Chuỗi chuyển động 16-frame tối ưu cho Edge (<1ms độ trễ), nhận diện 35 từ vựng/cử chỉ y tế thiết yếu.
+- **Bộ lọc ổn định cử chỉ (Anti-false-positive)**: Yêu cầu bệnh nhân giữ cử chỉ ổn định tối thiểu $\ge 0.8$ giây và độ tin cậy $\ge 70\%$, hiển thị thanh tiến trình trực quan trước khi đưa vào danh sách chờ. Bệnh nhân luôn phải chủ động bấm "Nhận" (✓) để xác nhận vào hồ sơ.
+- **Kiến trúc PyTorch Server Tier**: Backend tích hợp sẵn module tải trọng số PyTorch Deep Learning (VTN Checkpoint 208MB). Nếu môi trường server không cài PyTorch nặng, hệ thống tự động fallback mượt mà sang động cơ hình học 3D mà không gây gián đoạn.
+- **Demo 2 thiết bị qua HTTPS mạng LAN**:
+  ```bash
+  make demo-https   # Frontend bật HTTPS tự ký, cho phép truy cập camera từ iPad/Tablet qua mạng LAN
+  ```
+
 ## Cấu trúc thư mục Monorepo
 ```
 AGENTS.md            # Điểm vào duy nhất cho mọi AI agent (CLAUDE.md, GEMINI.md… trỏ về đây)
