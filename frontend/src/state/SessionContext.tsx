@@ -215,3 +215,8 @@ export function useSession(): SessionContextType {
   }
   return context;
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useOptionalSession(): SessionContextType | null {
+  return useContext(SessionContext) || null;
+}

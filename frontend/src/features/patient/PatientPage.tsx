@@ -138,9 +138,11 @@ export const PatientPage: React.FC = () => {
             {step === 2 && (
               <SymptomsStep
                 data={draft.symptoms}
+                selectedMode={draft.selectedMode}
                 onChange={updateSymptoms}
                 onBack={prevStep}
                 onNext={nextStep}
+                onSwitchMode={updateMode}
               />
             )}
 

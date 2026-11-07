@@ -14,8 +14,10 @@ import {
 } from 'lucide-react';
 import { BodyMap } from './BodyMap';
 import { PainSlider } from './PainSlider';
+import { VSLCameraView } from './VSLCameraView';
 import { Button } from '../../../ui/Button';
-import { OnsetUnit } from '../../../types';
+import { ModalityType, OnsetUnit } from '../../../types';
+import { RecognizedGloss } from '../../../services/vsl/types';
 import { vi } from '../../../i18n/vi';
 
 export interface SymptomsData {
@@ -30,9 +32,11 @@ export interface SymptomsData {
 
 export interface SymptomsStepProps {
   data: SymptomsData;
+  selectedMode?: ModalityType;
   onChange: (updated: Partial<SymptomsData>) => void;
   onBack: () => void;
   onNext: () => void;
+  onSwitchMode?: (mode: ModalityType) => void;
 }
 
 interface ComplaintOption {
@@ -64,13 +68,62 @@ const ONSET_UNITS: { unit: OnsetUnit; label: string }[] = [
 
 export const SymptomsStep: React.FC<SymptomsStepProps> = ({
   data,
+  selectedMode = 'touch',
   onChange,
   onBack,
   onNext,
+  onSwitchMode,
 }) => {
   const [activeTab, setActiveTab] = useState<'complaint' | 'pain_body' | 'pain_scale' | 'onset'>(
     data.chiefComplaintCode ? 'pain_body' : 'complaint'
   );
+
+  const handleApplyVSLGlosses = (glosses: RecognizedGloss[]) => {
+    let complaintCode = data.chiefComplaintCode;
+    let complaintLabel = data.chiefComplaintLabel;
+    let hasPain = data.hasPain;
+    const bodyRegions = [...data.bodyRegions];
+    let severity = data.severity;
+    let onsetValue = data.onsetValue;
+    let onsetUnit = data.onsetUnit;
+
+    glosses.forEach((g) => {
+      if (g.category === 'symptom' && g.maps_to?.field === 'chief_complaint') {
+        complaintCode = g.maps_to.code || 'PAIN';
+        complaintLabel = g.label_vi;
+        if (complaintCode === 'PAIN') hasPain = true;
+      }
+      if (g.category === 'region' && g.maps_to?.code) {
+        if (!bodyRegions.includes(g.maps_to.code)) {
+          bodyRegions.push(g.maps_to.code);
+        }
+        hasPain = true;
+      }
+      if (g.category === 'severity' && typeof g.maps_to?.value === 'number') {
+        severity = g.maps_to.value;
+      }
+      if (g.category === 'number' && typeof g.maps_to?.value === 'number') {
+        onsetValue = g.maps_to.value;
+      }
+      if (g.category === 'time_unit' && g.maps_to?.unit) {
+        onsetUnit = g.maps_to.unit as OnsetUnit;
+      }
+      if (g.category === 'time' && g.maps_to) {
+        onsetValue = (g.maps_to.value as number) || 0;
+        onsetUnit = (g.maps_to.unit as OnsetUnit) || 'day';
+      }
+    });
+
+    onChange({
+      chiefComplaintCode: complaintCode,
+      chiefComplaintLabel: complaintLabel,
+      hasPain: hasPain ?? (complaintCode === 'PAIN'),
+      bodyRegions,
+      severity,
+      onsetValue,
+      onsetUnit,
+    });
+  };
 
   const handleSelectComplaint = (code: string, label: string) => {
     const isPain = code === 'PAIN';
@@ -106,6 +159,14 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
           Chọn lý do khiến bạn cảm thấy khó chịu nhất hôm nay.
         </p>
       </div>
+
+      {/* VSL Camera helper if VSL mode is active */}
+      {selectedMode === 'vsl_gloss' && (
+        <VSLCameraView
+          onApplyGlosses={handleApplyVSLGlosses}
+          onSwitchToTouchMode={() => onSwitchMode?.('touch')}
+        />
+      )}
 
       {/* Tabs chuyển đổi giữa các phần triệu chứng */}
       <div
