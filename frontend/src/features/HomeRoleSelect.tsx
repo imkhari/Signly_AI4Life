@@ -44,7 +44,24 @@ export const HomeRoleSelect: React.FC = () => {
         <A11yControls onCallHelp={() => setIsModalOpen(true)} />
       </header>
 
-      <div className="max-w-5xl mx-auto space-y-12">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Hướng dẫn quy trình ghép nối 2 màn hình */}
+        <div className="bg-brand-light/40 border-2 border-brand/30 rounded-2xl p-4 sm:p-5 flex items-start sm:items-center gap-4 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-brand text-white flex items-center justify-center font-bold text-xl shrink-0">
+            🔑
+          </div>
+          <div className="flex-1">
+            <h3 className="font-extrabold text-ink text-base mb-1">
+              Quy trình ghép nối 2 màn hình (Live Pairing)
+            </h3>
+            <p className="text-sm text-ink/80 leading-relaxed">
+              <span className="font-bold text-brand-dark">1. Mở màn hình Điều dưỡng (/nurse):</span> Hệ thống tự động sinh <strong>Mã ghép nối 6 ký tự</strong> ở thanh tiêu đề trên cùng.
+              <br />
+              <span className="font-bold text-action">2. Mở màn hình Bệnh nhân (/patient):</span> Nhập đúng 6 ký tự này (bằng bàn phím máy tính hoặc bấm màn hình) để kết nối trực tiếp.
+            </p>
+          </div>
+        </div>
+
         {/* Phần 1: Chọn vai trò màn hình */}
         <section aria-labelledby="role-select-title">
           <h2 id="role-select-title" className="text-2xl font-bold text-ink mb-4">

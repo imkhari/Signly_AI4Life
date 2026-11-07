@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Bell, BellOff, FileText, PhoneCall, RotateCcw } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bell,
+  BellOff,
+  Check,
+  Copy,
+  FileText,
+  PhoneCall,
+  RefreshCw,
+  RotateCcw,
+} from 'lucide-react';
 import { ConnectionBadge } from '../../../ui/ConnectionBadge';
 import { A11yControls } from '../../../ui/A11yControls';
 import { Button } from '../../../ui/Button';
@@ -19,6 +29,8 @@ interface NurseHeaderProps {
   onRequestInterpreter: () => void;
   onOpenExport: () => void;
   onOpenReset: () => void;
+  onCreateNewSession?: () => void;
+  isLoadingSession?: boolean;
 }
 
 export const NurseHeader: React.FC<NurseHeaderProps> = ({
@@ -33,7 +45,19 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
   onRequestInterpreter,
   onOpenExport,
   onOpenReset,
+  onCreateNewSession,
+  isLoadingSession,
 }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (pairingCode) {
+      navigator.clipboard.writeText(pairingCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const getStatusLabel = () => {
     switch (sessionStatus) {
       case 'created':
@@ -91,17 +115,44 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
           </div>
 
           {/* Pairing Code for patient kiosk */}
-          <div className="bg-brand-light/40 border border-brand/20 px-3 py-1.5 rounded-xl flex items-center gap-2">
+          <div className="bg-brand-light/50 border border-brand/30 px-3.5 py-1.5 rounded-xl flex items-center gap-3 shadow-xs">
             <div>
               <span className="text-[10px] uppercase font-bold text-brand-dark block tracking-wider">
                 {vi.nurse.pairingCodeLabel}
               </span>
               <span
-                className="text-lg font-mono font-extrabold text-brand-dark tracking-widest"
+                className="text-xl font-mono font-black text-brand-dark tracking-widest"
                 data-testid="nurse-pairing-code"
               >
-                {pairingCode || '------'}
+                {pairingCode || (isLoadingSession ? '...' : 'CHƯA CÓ')}
               </span>
+            </div>
+
+            <div className="flex items-center gap-1 pl-2 border-l border-brand/20">
+              {pairingCode ? (
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="p-1.5 rounded-lg bg-white/90 hover:bg-white text-brand-dark transition-colors border border-brand/20 cursor-pointer shadow-xs"
+                  title="Sao chép mã ghép nối"
+                  aria-label="Sao chép mã ghép nối"
+                >
+                  {copied ? <Check className="w-4 h-4 text-status-success" /> : <Copy className="w-4 h-4" />}
+                </button>
+              ) : null}
+
+              {onCreateNewSession && (
+                <button
+                  type="button"
+                  onClick={onCreateNewSession}
+                  disabled={isLoadingSession}
+                  className="p-1.5 rounded-lg bg-white/90 hover:bg-white text-brand-dark transition-colors border border-brand/20 cursor-pointer shadow-xs disabled:opacity-50"
+                  title="Tạo mã ghép nối mới"
+                  aria-label="Tạo mã ghép nối mới"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isLoadingSession ? 'animate-spin' : ''}`} />
+                </button>
+              )}
             </div>
           </div>
         </div>

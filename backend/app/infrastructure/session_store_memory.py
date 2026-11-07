@@ -98,13 +98,24 @@ class InMemorySessionStore:
 
     async def get_session_by_pairing_code(self, code: str) -> SessionData | None:
         code_upper = code.strip().upper()
+        # Chuẩn hóa nếu người dùng nhập 0 thay O hoặc 1 thay I
+        norm_code = code_upper.replace("0", "O").replace("1", "I")
+
         session_id = self._pairing_map.get(code_upper)
+        if not session_id:
+            # Thử tìm theo mã đã chuẩn hóa
+            for p_code, s_id in self._pairing_map.items():
+                if p_code.replace("0", "O").replace("1", "I") == norm_code:
+                    session_id = s_id
+                    code_upper = p_code
+                    break
+
         if not session_id:
             return None
         session = self._sessions.get(session_id)
         if session and session.is_pairing_expired():
-            del self._pairing_map[code_upper]
-            del self._sessions[session_id]
+            self._pairing_map.pop(code_upper, None)
+            self._sessions.pop(session_id, None)
             return None
         return session
 

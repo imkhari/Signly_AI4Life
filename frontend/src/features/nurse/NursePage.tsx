@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Check, CheckCircle, ShieldCheck } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AlertTriangle, Check, CheckCircle, ShieldCheck } from 'lucide-react';
 import { useSession } from '../../state/SessionContext';
 import { useSessionSocket } from '../../hooks/useSessionSocket';
 import { restApi } from '../../services/api/rest';
@@ -31,32 +31,41 @@ export const NursePage: React.FC = () => {
   const [isResetOpen, setIsResetOpen] = useState<boolean>(false);
   const [isInterpreterModalOpen, setIsInterpreterModalOpen] = useState<boolean>(false);
   const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
+  const [sessionError, setSessionError] = useState<string | null>(null);
 
-  // Khởi tạo phiên làm việc cho điều dưỡng nếu chưa có
+  // Khởi tạo phiên làm việc cho điều dưỡng
+  const handleCreateSession = useCallback(() => {
+    setIsLoadingSession(true);
+    setSessionError(null);
+    restApi
+      .createSession()
+      .then((res) => {
+        dispatch({
+          type: 'INIT_SESSION',
+          payload: {
+            sessionId: res.session_id,
+            role: 'nurse',
+            token: res.token_nurse,
+            pairingCode: res.pairing_code,
+          },
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to create session:', err);
+        setSessionError(
+          'Không thể kết nối máy chủ điều phối Backend (:8000). Vui lòng khởi động backend bằng lệnh: make demo hoặc make dev'
+        );
+      })
+      .finally(() => {
+        setIsLoadingSession(false);
+      });
+  }, [dispatch]);
+
   useEffect(() => {
     if (!state.sessionId || state.role !== 'nurse') {
-      setIsLoadingSession(true);
-      restApi
-        .createSession()
-        .then((res) => {
-          dispatch({
-            type: 'INIT_SESSION',
-            payload: {
-              sessionId: res.session_id,
-              role: 'nurse',
-              token: res.token_nurse,
-              pairingCode: res.pairing_code,
-            },
-          });
-        })
-        .catch((err) => {
-          console.error('Failed to create session:', err);
-        })
-        .finally(() => {
-          setIsLoadingSession(false);
-        });
+      handleCreateSession();
     }
-  }, [state.sessionId, state.role, dispatch]);
+  }, [state.sessionId, state.role, handleCreateSession]);
 
   // Intake code: ưu tiên từ summary/state, fallback AC-0042
   const intakeCode =
@@ -162,10 +171,37 @@ export const NursePage: React.FC = () => {
         onRequestInterpreter={handleRequestInterpreter}
         onOpenExport={() => setIsExportOpen(true)}
         onOpenReset={() => setIsResetOpen(true)}
+        onCreateNewSession={handleCreateSession}
+        isLoadingSession={isLoadingSession}
       />
 
       {/* Main Board */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
+        {/* Backend Connection Error Banner */}
+        {sessionError && (
+          <div
+            role="alert"
+            className="p-4 rounded-2xl bg-danger-bg border-2 border-danger/40 text-danger flex flex-wrap items-center justify-between gap-4 shadow-sm"
+          >
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 shrink-0" />
+              <div>
+                <p className="font-extrabold text-sm">{sessionError}</p>
+                <p className="text-xs text-ink/70 mt-0.5">
+                  Vui lòng kiểm tra Terminal và chạy: <code>make demo</code> hoặc <code>make dev</code>
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleCreateSession}
+              disabled={isLoadingSession}
+              className="px-4 py-2 bg-danger text-white rounded-xl font-bold text-sm hover:bg-danger/90 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {isLoadingSession ? 'Đang thử lại...' : 'Thử lại ngay'}
+            </button>
+          </div>
+        )}
         {/* Verification banner if already verified */}
         {isVerified && (
           <div
