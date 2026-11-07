@@ -12,17 +12,18 @@ from AI_model.inference import HAS_TORCH, VSLInferenceEngine  # noqa: E402  # ty
 def test_vsl_engine_fallback_or_pytorch_mode() -> None:
     """
     Smoke test kiểm tra tính toàn vẹn của VSL Engine:
-    - Nếu có PyTorch: Kiểm tra model khởi tạo và load checkpoint.
-    - Nếu không có PyTorch: Kiểm tra fallback sang Động cơ Hình học 3D (<1ms) không bị crash.
+    - Nếu có PyTorch và checkpoint: Kiểm tra model khởi tạo và load checkpoint.
+    - Nếu không có PyTorch hoặc chạy trên CI (không kèm file weights 199MB):
+      Kiểm tra fallback sang Động cơ Hình học 3D (<1ms) độc lập 100%, không bị crash.
     """
     engine = VSLInferenceEngine()
     assert engine is not None
     assert len(engine.vocab) > 0
 
-    # Kiểm tra đường dẫn checkpoint
+    # Kiểm tra đường dẫn checkpoint (nếu có file weights thì kiểm tra kích thước)
     ckpt_path = Path(engine.checkpoint_path)
-    assert ckpt_path.exists(), f"Không tìm thấy checkpoint tại {ckpt_path}"
-    assert ckpt_path.stat().st_size > 100 * 1024 * 1024, "Checkpoint phải có kích thước > 100MB"
+    if ckpt_path.exists():
+        assert ckpt_path.stat().st_size > 100 * 1024 * 1024, "Checkpoint phải có kích thước > 100MB"
 
     # Chạy thử một input landmarks mẫu
     mock_hands = [
@@ -38,10 +39,10 @@ def test_vsl_engine_fallback_or_pytorch_mode() -> None:
     assert res["confidence"] > 0.70
     assert "latency_ms" in res
 
-    if not HAS_TORCH:
-        # Trong môi trường không có PyTorch: fallback engine hoạt động độc lập
+    if not HAS_TORCH or not ckpt_path.exists():
+        # Trong môi trường không có PyTorch hoặc CI: fallback engine hoạt động độc lập
         assert engine.is_model_loaded is False
         assert res["latency_ms"] < 20.0
     else:
-        # Nếu có PyTorch: model_loaded có thể True nếu weights match
+        # Nếu có PyTorch và checkpoint: model_loaded có thể True nếu weights match
         assert hasattr(engine, "model")
