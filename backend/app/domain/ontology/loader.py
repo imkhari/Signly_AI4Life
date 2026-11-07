@@ -72,3 +72,4 @@ def find_drug_names_in_text(text: str) -> list[str]:
     text_lower = text.lower()
     drugs = load_drug_names()
     return [drug for drug in drugs if drug in text_lower]
+

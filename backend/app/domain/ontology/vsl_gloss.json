@@ -15,3 +15,4 @@
   { "gloss": "NGÀY", "label_vi": "Ngày", "category": "time_unit", "maps_to": { "field": "time_unit", "unit": "day" } },
   { "gloss": "NẶNG", "label_vi": "Nặng / Nhiều", "category": "severity", "maps_to": { "field": "pain.severity", "value": 8 } }
 ]
+

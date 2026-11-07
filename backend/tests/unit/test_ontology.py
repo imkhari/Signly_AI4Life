@@ -63,3 +63,4 @@ def test_match_from_text() -> None:
     drugs = find_drug_names_in_text("Tôi uống amoxicillin và paracetamol nhưng không đỡ")
     assert "amoxicillin" in drugs
     assert "paracetamol" in drugs
+
