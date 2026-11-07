@@ -149,6 +149,36 @@ export function useSessionSocket() {
     [state.role]
   );
 
+  const sendNurseQuestion = useCallback(
+    (
+      questionId: string,
+      templateCode: string,
+      textVi: string,
+      answerType: 'yes_no_unsure' | 'single_choice' | 'free_text' = 'yes_no_unsure',
+      icon?: string
+    ) => {
+      socketClient.send('NURSE_QUESTION', {
+        question_id: questionId,
+        template_code: templateCode,
+        text_vi: textVi,
+        answer_type: answerType,
+        icon: icon || null,
+      });
+    },
+    []
+  );
+
+  const exportRecord = useCallback(
+    (format: 'pdf' | 'print' | 'json' = 'print') => {
+      socketClient.send('RECORD_EXPORTED', {
+        format,
+        include: ['queue_number', 'intake_code', 'confirmed_symptoms', 'alerts'],
+        target: 'doctor',
+      });
+    },
+    []
+  );
+
   const resetSession = useCallback((reason: string = 'completed') => {
     socketClient.send('SESSION_RESET', {
       reason,
@@ -162,6 +192,8 @@ export function useSessionSocket() {
     requestSummary,
     confirmPatient,
     verifyNurse,
+    sendNurseQuestion,
+    exportRecord,
     requestInterpreter,
     resetSession,
   };

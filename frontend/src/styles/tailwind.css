@@ -62,3 +62,23 @@ html.high-contrast .card-border {
     scroll-behavior: auto !important;
   }
 }
+
+/* Print styles for ExportRecordModal */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-triage-record,
+  #printable-triage-record * {
+    visibility: visible;
+  }
+  #printable-triage-record {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 24px;
+    border: 1px solid #000000 !important;
+  }
+}
