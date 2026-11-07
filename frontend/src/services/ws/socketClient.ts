@@ -68,9 +68,15 @@ export class SocketClient {
     this.clearTimers();
 
     const { sessionId, role, token } = this.config;
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host;
-    let url = `${protocol}//${host}/ws/${sessionId}?role=${role}&token=${encodeURIComponent(token)}`;
+    const wsBase = (import.meta.env?.VITE_WS_BASE as string) || '';
+    let url: string;
+    if (wsBase) {
+      url = `${wsBase}/ws/${sessionId}?role=${role}&token=${encodeURIComponent(token)}`;
+    } else {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = window.location.host;
+      url = `${protocol}//${host}/ws/${sessionId}?role=${role}&token=${encodeURIComponent(token)}`;
+    }
     if (this.lastSeq > 0) {
       url += `&last_seq=${this.lastSeq}`;
     }

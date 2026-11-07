@@ -1,6 +1,6 @@
 import { OntologyResponse } from '../../types';
 
-const API_BASE = '/api';
+const API_BASE = (import.meta.env?.VITE_API_BASE as string) || '/api';
 
 export interface CreateSessionResult {
   session_id: string;

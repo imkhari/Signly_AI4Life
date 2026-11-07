@@ -66,3 +66,4 @@
 ## Slide 7: Lời cảm ơn & Q&A
 - **Thông điệp kết luận:** *"AI4Care — Công nghệ vì sự sống, đưa tiếng nói của người yếu thế đến trái tim y tế."*
 - **Sẵn sàng trả lời câu hỏi của Ban Giám khảo!**
+
