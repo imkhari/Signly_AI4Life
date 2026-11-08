@@ -164,9 +164,9 @@ def analyze_hand_geometry(landmarks: List[Dict[str, float]], handedness: str = "
         d_pip_mcp = calc_dist_3d(pip, mcp)
 
         is_ext = (
-            (d_tip_wrist > 1.15 * d_pip_wrist)
+            (d_tip_wrist > 1.10 * d_pip_wrist)
             and (d_tip_wrist > d_dip_wrist)
-            and (d_tip_mcp > 1.12 * d_pip_mcp)
+            and (d_tip_mcp > 1.06 * d_pip_mcp)
         )
         finger_extended[i + 1] = is_ext
 
@@ -179,9 +179,9 @@ def analyze_hand_geometry(landmarks: List[Dict[str, float]], handedness: str = "
     d_thumb_index_mcp = calc_dist_3d(thumb_tip, landmarks[5])
 
     thumb_extended = (
-        (d_thumb_pinky > 1.32 * d_thumb_mcp_pinky)
-        and (calc_dist_3d(thumb_tip, wrist) > calc_dist_3d(thumb_ip, wrist))
-        and (d_thumb_index_mcp > 0.65 * hand_scale)
+        (d_thumb_pinky > 1.18 * d_thumb_mcp_pinky)
+        and (calc_dist_3d(thumb_tip, wrist) > 0.92 * calc_dist_3d(thumb_ip, wrist))
+        and (d_thumb_index_mcp > 0.45 * hand_scale)
     )
     finger_extended[0] = thumb_extended
 
@@ -209,12 +209,16 @@ def analyze_hand_geometry(landmarks: List[Dict[str, float]], handedness: str = "
         and (thumb_tip["y"] > thumb_mcp["y"] + 0.04 * hand_scale)
     )
 
-    # Đánh giá xem các ngón tay có đang giơ dựng đứng lên trời (Upright / Facing camera) không
+    # Đánh giá xem các ngón tay có đang giơ hướng lên / hướng camera (Upright) không
     extended_tips_y = [landmarks[tips[i]]["y"] for i in range(4) if finger_extended[i + 1]]
     extended_mcps_y = [landmarks[mcps[i]]["y"] for i in range(4) if finger_extended[i + 1]]
     is_upright = (
-        len(extended_tips_y) > 0
-        and all(t_y < m_y - 0.035 for t_y, m_y in zip(extended_tips_y, extended_mcps_y))
+        (
+            len(extended_tips_y) > 0
+            and sum(1 for t_y, m_y in zip(extended_tips_y, extended_mcps_y) if t_y < m_y - 0.01)
+            >= max(1, int(len(extended_tips_y) * 0.6))
+        )
+        or (thumb_extended and four_fingers_up == 0 and thumb_tip["y"] < thumb_mcp["y"])
     )
 
     # Điểm tác động thực tế của bàn tay (Action Point)
@@ -284,7 +288,7 @@ class VSLInferenceEngine:
                 vocab_list = []
                 for cat, items in data.items():
                     for item in items:
-                        w = item.get("word", "").upper().replace(" ", "-")
+                        w = (item.get("gloss") or item.get("word", "")).upper().replace(" ", "-")
                         if w and w not in vocab_list:
                             vocab_list.append(w)
                 return vocab_list
@@ -648,19 +652,22 @@ class VSLInferenceEngine:
             if hand_count > 1:
                 level = min(10, max(0, total_fingers))
                 result_token = f"MỨC-{level}"
+                secondary_token = str(level)
                 result_label = f"Mức độ {level} / 10 ({total_fingers} ngón tay - 2 bàn tay)"
                 confidence = 0.96
             else:
                 count = h1["extended_count"]
                 if count == 0:
                     result_token = "MỨC-0"
+                    secondary_token = "0"
                     result_label = "Mức độ 0 / 10 (Nắm tay - Không đau)"
                     confidence = 0.96
                 else:
-                    level = count * 2
+                    level = min(10, max(1, count))
                     result_token = f"MỨC-{level}"
+                    secondary_token = str(level)
                     result_label = f"Mức độ {level} / 10 ({count} ngón tay)"
-                    confidence = 0.95
+                    confidence = 0.96
             next_step = "allergy"
 
         # ==========================================
@@ -684,15 +691,15 @@ class VSLInferenceEngine:
                 next_step = "complete"
 
         # ==========================================
-        # CHẾ ĐỘ TỰ DO ĐA PHƯƠNG THỨC (FREE-FLOW VSL + MOTION)
+        # CHẾ ĐỘ TỰ DO ĐA PHƯƠNG THỨC (FREE-FLOW VSL + SPATIAL ZONING)
         # ==========================================
         else:
-            # 1. Cử chỉ Biểu tượng & Thời gian rõ ràng (Thumbs Up/Down, OK, Chữ V, 2 tay che mắt/ôm đầu)
+            # 1. Cử chỉ Biểu tượng (Thumbs Up/Down, OK)
             if any_thumbs_up:
                 result_token = "DỊ-ỨNG"
                 result_label = "Có tiền sử dị ứng thuốc / Đồng ý (👍)"
                 confidence = 0.97
-            elif any_thumbs_down or (motion["is_waving"] and not on_body_axis):
+            elif any_thumbs_down or (motion["is_waving"] and not on_body_axis and total_fingers == 0):
                 result_token = "KHÔNG-DỊ-ỨNG"
                 result_label = "Không có dị ứng thuốc (👎 / Vẫy tay ✋)"
                 confidence = 0.96
@@ -700,150 +707,226 @@ class VSLInferenceEngine:
                 result_token = "HÔM-NAY"
                 result_label = "Khởi phát: Từ hôm nay (Dấu OK 👌)"
                 confidence = 0.96
-            elif any_v_sign:
-                result_token = "2-NGÀY"
-                result_label = "Khởi phát: Khoảng 2 ngày trước (Giơ 2 ngón chữ V ✌️)"
-                confidence = 0.95
-            elif hand_count > 1 and act_y < 0.38 and hands_dist < 0.20:
-                result_token = "TỐI-QUA"
-                result_label = "Khởi phát: Từ tối qua (Hai tay che mắt / cử chỉ ngủ 🌙)"
-                confidence = 0.95
-            elif hand_count > 1 and act_y < 0.46 and hands_dist > 0.22:
+
+            # 2. Hai tay cử chỉ đặc thù:
+            # 2.1 Cử chỉ Lạnh / Sốt rét (Hai tay ôm chéo ngực/bắp tay và rung rẩy)
+            elif hand_count > 1 and 0.48 <= act_y < 0.74 and hands_dist < 0.28 and (motion["is_rubbing_or_patting"] or any_fist):
+                result_token = "LẠNH"
+                result_label = "Ớn lạnh / Rét run (Hai tay ôm chéo người 🥶)"
+                confidence = 0.96
+
+            # 2.2 Hai tay ôm đầu / chóng mặt (2 tay áp thái dương)
+            elif hand_count > 1 and act_y < 0.46 and hands_dist > 0.22 and total_fingers < 6 and not any_upright:
                 result_token = "CHÓNG-MẶT"
                 secondary_token = "ĐẦU"
                 result_label = "Chóng mặt / Đau đầu (2 tay ôm thái dương)"
                 confidence = 0.96
 
-            # 2. Vùng Mắt & Tai (Chỉ ngón tay trỏ vào Mắt hoặc Tai)
-            elif any_pointing and 0.24 <= act_y < 0.38 and 0.35 <= act_x <= 0.65:
+            # 2.3 Hai tay che mắt / cử chỉ ngủ
+            elif hand_count > 1 and act_y < 0.38 and hands_dist < 0.20 and total_fingers < 6 and not any_upright:
+                result_token = "TỐI-QUA"
+                result_label = "Khởi phát: Từ tối qua (Hai tay che mắt / cử chỉ ngủ 🌙)"
+                confidence = 0.95
+
+            # 2.4 Cử chỉ Ngứa (Hai tay chạm nhau cào gãi mu bàn tay / cẳng tay)
+            elif hand_count > 1 and 0.45 <= act_y < 0.80 and hands_dist < 0.22 and motion["is_rubbing_or_patting"]:
+                result_token = "NGỨA"
+                result_label = "Ngứa ngáy / Nổi mẩn (Động tác gãi tay 🦟)"
+                confidence = 0.95
+
+            # 2.5 Cử chỉ Cổ tay (Một tay nắm chặt cổ tay còn lại)
+            elif hand_count > 1 and 0.45 <= act_y < 0.80 and hands_dist < 0.16 and (any_fist or not any_upright):
+                result_token = "CỔ-TAY"
+                secondary_token = "ĐAU"
+                result_label = "Vùng Cổ tay (Nắm giữ cổ tay 🤲)"
+                confidence = 0.95
+
+            # 2.6 Cử chỉ Khám bệnh (Hai tay bắt chéo trước ngực)
+            elif hand_count > 1 and 0.42 <= act_y < 0.70 and hands_dist < 0.18 and not motion["is_rubbing_or_patting"] and not any_fist and not any_upright:
+                result_token = "KHÁM"
+                result_label = "Khám bệnh / Đến khám (Hai tay bắt chéo trước ngực 🩺)"
+                confidence = 0.95
+
+            # 2.7 Cử chỉ Chấn thương / Va đập (Nắm đấm đập vào lòng bàn tay mở)
+            elif hand_count > 1 and any_fist and any_open_palm and hands_dist < 0.20:
+                result_token = "CHẤN-THƯƠNG"
+                secondary_token = "ĐAU"
+                result_label = "Chấn thương / Ngã / Va đập mạnh 💥"
+                confidence = 0.95
+
+            # 2.8 Cử chỉ Ôm gáy / Đau mỏi gáy (Hai tay ôm sau gáy)
+            elif hand_count > 1 and 0.30 <= act_y < 0.48 and hands_dist < 0.30 and not any_upright:
+                result_token = "GÁY"
+                secondary_token = "HỌNG"
+                result_label = "Vùng Gáy / Đau mỏi vai gáy (Hai tay ôm sau gáy 💆)"
+                confidence = 0.95
+
+            # 3. SPATIAL ZONING - VÙNG TIẾP XÚC GIẢI PHẪU ĐẶC THÙ (Ưu tiên cao hơn số đếm để không bị cướp):
+            # 3.1 Vùng Mắt: Chỉ ngón tay vào mắt (0.22 <= act_y < 0.40 và ở giữa mặt)
+            elif any_pointing and 0.22 <= act_y < 0.40 and 0.32 <= act_x <= 0.68:
                 result_token = "MẮT"
+                secondary_token = "ĐẦU"
                 result_label = "Vùng Mắt / Nhức mắt (Chỉ ngón tay vào mắt 👁️)"
-                confidence = 0.95
-            elif any_pointing and 0.26 <= act_y < 0.46 and (act_x < 0.32 or act_x > 0.68):
+                confidence = 0.96
+
+            # 3.2 Vùng Tai: Chỉ ngón tay vào tai hoặc áp tay sát vành tai (0.24 <= act_y < 0.40 và nằm sát rìa)
+            elif (any_pointing or not any_upright) and (act_x < 0.28 or act_x > 0.72) and 0.24 <= act_y < 0.40:
                 result_token = "TAI"
+                secondary_token = "ĐẦU"
                 result_label = "Vùng Tai / Đau tai (Chỉ tay vào vành tai 👂)"
+                confidence = 0.96
+
+            # 3.3 Vùng Trán / Đỉnh đầu (act_y < 0.36, không phải chỉ trỏ): Sốt hoặc Đau đầu
+            elif act_y < 0.36:
+                if any_open_palm or any_upright:
+                    result_token = "SỐT"
+                    secondary_token = "ĐẦU"
+                    result_label = "Sốt nóng / Thân nhiệt cao (Áp tay lên trán 🤒)"
+                    confidence = 0.96
+                else:
+                    result_token = "ĐẦU"
+                    result_label = "Vùng Đầu / Trán"
+                    confidence = 0.95
+
+            # 3.4 Vùng Má / Hàm / Răng: Áp bàn tay vào má (không dựng đứng ngón đếm số)
+            elif (0.24 <= act_x <= 0.38 or 0.62 <= act_x <= 0.76) and 0.34 <= act_y < 0.52 and (not any_upright or any_fist):
+                result_token = "RĂNG"
+                secondary_token = "ĐẦU"
+                result_label = "Đau răng / Nhức hàm (Áp bàn tay vào má 🦷)"
                 confidence = 0.95
 
-            # 3. Cử chỉ Chỉ sau vai -> Khởi phát: Hôm qua
-            elif any_pointing and (act_x < 0.25 or act_x > 0.75) and 0.35 <= act_y < 0.55:
-                result_token = "HÔM-QUA"
-                result_label = "Khởi phát: Từ hôm qua (Chỉ ngón tay về sau vai 👈)"
-                confidence = 0.94
+            # 3.5 Vùng Miệng / Cổ họng (0.36 <= act_y < 0.54 and on_body_axis):
+            elif 0.36 <= act_y < 0.54 and on_body_axis and (any_fist or any_pointing or (any_open_palm and not any_upright)):
+                if any_fist:
+                    result_token = "HO"
+                    secondary_token = "HỌNG"
+                    result_label = "Ho nhiều / Đau rát họng (Nắm tay trước miệng 🗣️)"
+                    confidence = 0.96
+                elif any_pointing:
+                    result_token = "HỌNG"
+                    result_label = "Vùng Cổ họng (Chỉ tay vào cổ 🧣)"
+                    confidence = 0.95
+                else:
+                    result_token = "BUỒN-NÔN"
+                    result_label = "Buồn nôn / Nôn nao (Che miệng 🤢)"
+                    confidence = 0.95
 
-            # 4. Vùng Lưng (Đưa tay ra sau eo / thắt lưng)
-            elif act_y >= 0.62 and (act_x < 0.24 or act_x > 0.76) and (any_fist or any_open_palm):
+            # 3.6 Vùng Vai: Đặt tay lên mỏm vai (0.38 <= act_y < 0.60, sát vai và không dựng đứng ngón đếm số)
+            elif (act_x < 0.28 or act_x > 0.72) and 0.38 <= act_y < 0.60 and (not any_upright or any_fist):
+                result_token = "VAI"
+                secondary_token = "ĐAU"
+                result_label = "Vùng Vai / Khớp vai (Đặt tay lên vai 💪)"
+                confidence = 0.95
+
+            # 3.7 Vùng Ngực (0.54 <= act_y < 0.74 and on_body_axis):
+            elif 0.54 <= act_y < 0.74 and on_body_axis and (motion["is_rubbing_or_patting"] or any_fist or any_pointing or motion["is_clenching"]):
+                if motion["is_rubbing_or_patting"] and any_open_palm:
+                    result_token = "TIM-ĐẬP-NHANH"
+                    secondary_token = "NGỰC"
+                    result_label = "Tim đập nhanh / Hồi hộp (Vỗ rung trước ngực 💓)"
+                    confidence = 0.96
+                elif any_pointing:
+                    result_token = "NGỰC"
+                    result_label = "Vùng Ngực (Chỉ tay vào ngực 🫁)"
+                    confidence = 0.95
+                elif any_fist or motion["is_clenching"]:
+                    result_token = "NGỰC"
+                    secondary_token = "ĐAU"
+                    result_label = "Đau tức vùng Ngực (Nắm tay trước ngực 💔)"
+                    confidence = 0.96
+                else:
+                    result_token = "KHÓ-THỞ"
+                    secondary_token = "NGỰC"
+                    result_label = "Khó thở / Tức ngực (Áp tay lên ngực 😮‍💨)"
+                    confidence = 0.96
+
+            # 3.8 Vùng Bụng (act_y >= 0.74 or (act_y >= 0.65 and motion["is_rubbing_or_patting"])):
+            elif (act_y >= 0.74 and not any_upright) or (act_y >= 0.65 and motion["is_rubbing_or_patting"]):
+                if act_y >= 0.85:
+                    result_token = "BỤNG-DƯỚI"
+                    secondary_token = "ĐAU"
+                    result_label = "Đau quặn vùng Bụng dưới"
+                else:
+                    result_token = "BỤNG"
+                    secondary_token = "ĐAU"
+                    result_label = "Đau vùng Bụng (Dạ dày / Tiêu hoá)"
+                confidence = 0.95
+
+            # 3.9 Vùng Hông (Chống tay lên hông / eo)
+            elif 0.62 <= act_y < 0.78 and (act_x < 0.22 or act_x > 0.78) and not any_upright:
+                result_token = "HÔNG"
+                secondary_token = "LƯNG"
+                result_label = "Vùng Hông / Eo (Chống tay lên hông)"
+                confidence = 0.95
+
+            # 3.10 Vùng Mông (Đưa tay ra sau hông dưới / mông)
+            elif act_y >= 0.78 and (act_x < 0.22 or act_x > 0.78) and (any_fist or any_open_palm) and not any_upright:
+                result_token = "MÔNG"
+                secondary_token = "LƯNG"
+                result_label = "Vùng Mông / Hông dưới"
+                confidence = 0.95
+
+            # 3.11 Vùng Lưng (Đưa tay ra sau eo / thắt lưng)
+            elif act_y >= 0.60 and (act_x < 0.24 or act_x > 0.76) and (any_fist or any_open_palm):
                 result_token = "LƯNG"
                 secondary_token = "ĐAU"
                 result_label = "Đau vùng Lưng / Cột sống (Đưa tay ra sau eo/lưng)"
                 confidence = 0.95
 
-            # 5. Vùng Chân (Chỉ ngón tay chúc xuống phía đùi/chân)
-            elif act_y >= 0.82 and any_pointing:
-                result_token = "CHÂN"
-                result_label = "Vùng Chân / Đầu gối (Chỉ tay xuống chân 🦵)"
+            # 3.12 Vùng Đầu gối & Chân (act_y >= 0.82)
+            elif act_y >= 0.82 and (any_pointing or hand_count > 1 or not any_upright):
+                result_token = "ĐẦU-GỐI" if (hand_count > 1 or not any_pointing) else "CHÂN"
+                secondary_token = "CHÂN" if result_token == "ĐẦU-GỐI" else "ĐẦU-GỐI"
+                result_label = "Vùng Khớp gối / Đầu gối (🦵)" if result_token == "ĐẦU-GỐI" else "Vùng Chân / Cẳng chân (🦵)"
+                confidence = 0.95
+
+            # 3.13 Vùng Gáy (Đưa tay ra sau gáy / ôm gáy)
+            elif 0.28 <= act_y < 0.48 and (act_x < 0.26 or act_x > 0.74) and not any_upright:
+                result_token = "GÁY"
+                secondary_token = "HỌNG"
+                result_label = "Vùng Gáy / Đau mỏi vai gáy (Ôm sau gáy 💆)"
+                confidence = 0.95
+
+            # 3.11 Khởi phát: Hôm qua (Chỉ ngón tay về sau vai)
+            elif any_pointing and (act_x < 0.25 or act_x > 0.75) and 0.35 <= act_y < 0.55:
+                result_token = "HÔM-QUA"
+                result_label = "Khởi phát: Từ hôm qua (Chỉ ngón tay về sau vai 👈)"
                 confidence = 0.94
 
-            # 6. Vùng Cánh tay (Hai tay tương tác ở cánh tay hoặc một tay chỉ/nắm bắp tay)
-            elif hand_count > 1 and 0.45 <= act_y < 0.75 and (act_x < 0.34 or act_x > 0.66):
-                result_token = "TAY"
-                secondary_token = "ĐAU"
-                result_label = "Vùng Cánh tay / Bắp tay (Nắm/chỉ vào cánh tay 💪)"
-                confidence = 0.94
-
-            # 7. Nhận diện Đếm số ngón tay / Mức độ đau 1-10 khi giơ ngón tay dựng đứng hướng camera:
-            # Cho phép giơ tự do ở giữa màn hình hoặc cạnh bên, không bị gò ép!
-            elif any_upright and total_fingers > 0 and act_y >= 0.35:
-                level = min(10, max(1, total_fingers))
-                result_token = f"MỨC-{level}"
-                result_label = f"Mức độ đau {level} / 10 (Giơ {total_fingers} ngón tay)"
-                confidence = 0.96
-
-            # 8. Cơn đau nhức dữ dội / Co quặn (Nắm chặt nắm đấm ✊)
+            # 3.12 Cơn đau dữ dội / co quặn (Nắm chặt nắm đấm ở không gian ngoài)
             elif any_fist and total_fingers == 0 and not on_body_axis:
                 result_token = "ĐAU"
                 result_label = "Đau nhức / Cơn đau quặn (Nắm chặt tay ✊)"
                 confidence = 0.95
 
-            # 9. Khi bàn tay tương tác trực tiếp trên trục giữa cơ thể (Đầu / Cổ / Ngực / Bụng):
-            else:
-                # Vùng Trán / Đỉnh đầu (act_y < 0.36)
-                if act_y < 0.36:
-                    if any_open_palm:
-                        result_token = "SỐT"
-                        secondary_token = "ĐẦU"
-                        result_label = "Sốt nóng / Nhức đầu (Áp tay lên trán)"
-                        confidence = 0.96
-                    else:
-                        result_token = "ĐẦU"
-                        if motion["is_rubbing_or_patting"] or any_fist:
-                            secondary_token = "ĐAU"
-                            result_label = "Đau vùng Đầu / Trán"
-                        else:
-                            result_label = "Vùng Đầu / Trán"
-                        confidence = 0.94
-
-                # Vùng Miệng / Cổ họng (0.36 <= act_y < 0.54)
-                elif 0.36 <= act_y < 0.54:
-                    if any_fist:
-                        result_token = "HO"
-                        secondary_token = "HỌNG"
-                        result_label = "Ho nhiều / Đau rát họng (Nắm tay trước miệng)"
-                        confidence = 0.95
-                    elif any_pointing:
-                        result_token = "HỌNG"
-                        result_label = "Vùng Cổ họng (Chỉ tay vào cổ)"
-                        confidence = 0.94
-                    elif any_open_palm and not any_upright:
-                        result_token = "BUỒN-NÔN"
-                        result_label = "Buồn nôn / Nôn nao (Che miệng)"
-                        confidence = 0.94
-                    else:
-                        result_token = f"MỨC-{total_fingers}"
-                        result_label = f"Mức độ đau {total_fingers} / 10 ({total_fingers} ngón tay)"
-                        confidence = 0.92
-
-                # Vùng Ngực (0.54 <= act_y < 0.74)
-                elif 0.54 <= act_y < 0.74:
-                    # Triệu chứng: Tim đập nhanh / Hồi hộp khi tay vỗ rung nhanh trước ngực
-                    if motion["is_rubbing_or_patting"] and any_open_palm:
-                        result_token = "TIM-ĐẬP-NHANH"
-                        secondary_token = "NGỰC"
-                        result_label = "Tim đập nhanh / Hồi hộp (Vỗ nhanh trước ngực 💓)"
-                        confidence = 0.96
-                    elif any_fist or motion["is_clenching"]:
-                        result_token = "NGỰC"
-                        secondary_token = "ĐAU"
-                        result_label = "Đau tức vùng Ngực (Nắm tay trước ngực)"
-                        confidence = 0.95
-                    elif any_pointing:
-                        result_token = "NGỰC"
-                        result_label = "Vùng Ngực (Chỉ tay vào ngực)"
-                        confidence = 0.94
-                    elif any_open_palm and not any_upright:
-                        result_token = "KHÓ-THỞ"
-                        secondary_token = "NGỰC"
-                        result_label = "Khó thở / Tức ngực (Áp tay lên ngực)"
-                        confidence = 0.95
-                    else:
-                        result_token = f"MỨC-{total_fingers}"
-                        result_label = f"Mức độ đau {total_fingers} / 10 ({total_fingers} ngón tay)"
-                        confidence = 0.92
-
-                # Vùng Bụng (act_y >= 0.74 - Tay đặt thật sự thấp xuống vùng bụng)
+            # 4. KHÔNG GIAN TRUNG TÍNH (NEUTRAL SIGNING SPACE): NHẬN DIỆN SỐ ĐẾM 1-10
+            # Khi giơ tay tự do trong khoảng không gian phía trước mà không tiếp xúc các mốc giải phẫu
+            elif any_upright and total_fingers > 0:
+                level = min(10, max(1, total_fingers))
+                result_token = f"MỨC-{level}"
+                secondary_token = str(level)
+                if hand_count > 1 and total_fingers >= 5:
+                    result_label = f"Mức độ đau {level} / 10 ({total_fingers} ngón tay - 2 bàn tay)"
+                elif level == 2 and any_v_sign:
+                    result_label = f"Mức độ đau 2 / 10 (2 ngón tay - chữ V ✌️)"
+                elif level == 1:
+                    result_label = f"Mức độ đau 1 / 10 (Giơ 1 ngón tay ☝️)"
                 else:
-                    if motion["is_rubbing_or_patting"] or any_fist:
-                        result_token = "BỤNG-DƯỚI" if act_y >= 0.85 else "BỤNG"
-                        secondary_token = "ĐAU"
-                        result_label = "Đau quặn vùng Bụng (Động tác ôm/xoa bụng)"
-                        confidence = 0.96
-                    elif act_y >= 0.85:
-                        result_token = "BỤNG-DƯỚI"
-                        result_label = "Vùng Bụng dưới"
-                        confidence = 0.94
-                    else:
-                        result_token = "BỤNG"
-                        result_label = "Vùng Bụng (Dạ dày / Tiêu hoá)"
-                        confidence = 0.94
+                    result_label = f"Mức độ đau {level} / 10 (Giơ {total_fingers} ngón tay)"
+                confidence = 0.96
+
+            # 5. MẶC ĐỊNH THEO VÙNG CAO/THẤP NẾU KHÔNG TRÚNG CÁC ĐIỀU KIỆN TRÊN
+            else:
+                if act_y < 0.40:
+                    result_token = "ĐẦU"
+                    result_label = "Vùng Đầu / Trán"
+                elif act_y < 0.65:
+                    result_token = "NGỰC"
+                    result_label = "Vùng Ngực"
+                else:
+                    result_token = "BỤNG"
+                    result_label = "Vùng Bụng"
+                confidence = 0.88
 
         # Cộng hưởng độ tin cậy từ mạng VTN Sequence
         vtn_boost = self._compute_vtn_sequence_boost()
@@ -885,7 +968,11 @@ class VSLInferenceEngine:
             "suggested_next_step": next_step,
             "top_k": top_k,
             "latency_ms": latency_ms,
-            "model_source": "best_checkpoints.pth (VTN Temporal + 3D Motion Trajectory)"
+            "model_source": (
+                "best_checkpoints.pth (FullVTNModel PyTorch)"
+                if self.is_model_loaded
+                else "3D Spatial Geometry & Motion Trajectory (Edge Heuristic <1ms)"
+            )
         }
 
     def predict_from_landmarks(

@@ -3,8 +3,8 @@ import { MockRecognizer, ONTOLOGY_GLOSSES } from '../../src/services/vsl/MockRec
 import { RecognizedGloss } from '../../src/services/vsl/types';
 
 describe('MockRecognizer', () => {
-  it('contains the 15 seed ontology glosses', () => {
-    expect(ONTOLOGY_GLOSSES.length).toBe(15);
+  it('contains the standardized 60 ontology glosses', () => {
+    expect(ONTOLOGY_GLOSSES.length).toBe(60);
     const codes = ONTOLOGY_GLOSSES.map((g) => g.gloss);
     expect(codes).toContain('ĐAU');
     expect(codes).toContain('NGỰC');

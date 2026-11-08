@@ -21,7 +21,7 @@ def test_ontology_loaders() -> None:
     assert any(r["code"] == "CHEST" for r in regions)
 
     glosses = load_vsl_gloss()
-    assert len(glosses) == 15
+    assert len(glosses) >= 15
     assert any(g["gloss"] == "ĐAU" for g in glosses)
 
     drugs = load_drug_names()

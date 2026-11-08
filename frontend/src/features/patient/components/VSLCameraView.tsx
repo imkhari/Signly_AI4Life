@@ -36,27 +36,71 @@ const GLOSS_METADATA: Record<
     maps_to?: RecognizedGloss['maps_to'];
   }
 > = {
+  // 1. Nhóm Triệu chứng (Symptoms) -> maps_to chief_complaint codes
   ĐAU: { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'PAIN' } },
-  SỐT: { category: 'symptom', maps_to: { field: 'symptom', code: 'FEVER' } },
-  HO: { category: 'symptom', maps_to: { field: 'symptom', code: 'COUGH' } },
-  'KHÓ-THỞ': { category: 'symptom', maps_to: { field: 'symptom', code: 'DYSPNEA' } },
-  'BUỒN-NÔN': { category: 'symptom', maps_to: { field: 'symptom', code: 'NAUSEA' } },
-  'TIM-ĐẬP-NHANH': { category: 'symptom', maps_to: { field: 'symptom', code: 'PALPITATION' } },
-  'CHÓNG-MẶT': { category: 'symptom', maps_to: { field: 'symptom', code: 'DIZZINESS' } },
-  'MỆT-MỎI': { category: 'symptom', maps_to: { field: 'symptom', code: 'FATIGUE' } },
+  SỐT: { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'FEVER' } },
+  HO: { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'COUGH' } },
+  'KHÓ-THỞ': { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'BREATH_DIFFICULTY' } },
+  'BUỒN-NÔN': { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'NAUSEA_VOMIT' } },
+  'CHÓNG-MẶT': { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'DIZZY' } },
+  'MỆT-MỎI': { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'OTHER' } },
+  'TIM-ĐẬP-NHANH': { category: 'symptom', maps_to: { field: 'chief_complaint', code: 'OTHER' } },
+
+  // 2. Nhóm Vùng cơ thể (Body regions) -> maps_to pain.body_regions codes
   ĐẦU: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'HEAD' } },
   NGỰC: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'CHEST' } },
   BỤNG: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'ABDOMEN_UPPER' } },
   'BỤNG-DƯỚI': { category: 'region', maps_to: { field: 'pain.body_regions', code: 'ABDOMEN_LOWER' } },
-  LƯNG: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'BACK' } },
-  CHÂN: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'LEG_LEFT' } },
-  TAY: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'ARM_RIGHT' } },
-  HỌNG: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'THROAT' } },
-  'DỊ-ỨNG': { category: 'allergy', maps_to: { field: 'allergy.has_allergy', value: true } },
-  KHÔNG: { category: 'modifier', maps_to: { field: 'allergy.has_allergy', value: false } },
-  CÓ: { category: 'modifier' },
+  LƯNG: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'LOWER_BACK' } },
+  HỌNG: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'NECK' } },
+  TAY: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'ARM_R' } },
+  CHÂN: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'LEG_L' } },
+  MẮT: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'HEAD' } },
+  TAI: { category: 'region', maps_to: { field: 'pain.body_regions', code: 'HEAD' } },
+
+  // 3. Nhóm Thời gian (Time) -> maps_to pain.onset & time_unit
   'HÔM-NAY': { category: 'time', maps_to: { field: 'pain.onset', value: 0, unit: 'day' } },
   'HÔM-QUA': { category: 'time', maps_to: { field: 'pain.onset', value: 1, unit: 'day' } },
+  '2-NGÀY': { category: 'time', maps_to: { field: 'pain.onset', value: 2, unit: 'day' } },
+  'TỐI-QUA': { category: 'time', maps_to: { field: 'pain.onset', value: 1, unit: 'day' } },
+  SÁNG: { category: 'time', maps_to: { field: 'pain.onset', value: 0, unit: 'day' } },
+  TỐI: { category: 'time', maps_to: { field: 'pain.onset', value: 0, unit: 'day' } },
+  'TUẦN-TRƯỚC': { category: 'time', maps_to: { field: 'pain.onset', value: 7, unit: 'day' } },
+  GIỜ: { category: 'time_unit', maps_to: { field: 'time_unit', unit: 'hour' } },
+  NGÀY: { category: 'time_unit', maps_to: { field: 'time_unit', unit: 'day' } },
+
+  // 4. Nhóm Mức độ & Số (Severity & Numbers) -> maps_to pain.severity & number
+  '1': { category: 'severity', maps_to: { field: 'pain.severity', value: 1 } },
+  '2': { category: 'severity', maps_to: { field: 'pain.severity', value: 2 } },
+  '3': { category: 'severity', maps_to: { field: 'pain.severity', value: 3 } },
+  '4': { category: 'severity', maps_to: { field: 'pain.severity', value: 4 } },
+  '5': { category: 'severity', maps_to: { field: 'pain.severity', value: 5 } },
+  '6': { category: 'severity', maps_to: { field: 'pain.severity', value: 6 } },
+  '7': { category: 'severity', maps_to: { field: 'pain.severity', value: 7 } },
+  '8': { category: 'severity', maps_to: { field: 'pain.severity', value: 8 } },
+  '9': { category: 'severity', maps_to: { field: 'pain.severity', value: 9 } },
+  '10': { category: 'severity', maps_to: { field: 'pain.severity', value: 10 } },
+  'MỨC-0': { category: 'severity', maps_to: { field: 'pain.severity', value: 0 } },
+  'MỨC-1': { category: 'severity', maps_to: { field: 'pain.severity', value: 1 } },
+  'MỨC-2': { category: 'severity', maps_to: { field: 'pain.severity', value: 2 } },
+  'MỨC-3': { category: 'severity', maps_to: { field: 'pain.severity', value: 3 } },
+  'MỨC-4': { category: 'severity', maps_to: { field: 'pain.severity', value: 4 } },
+  'MỨC-5': { category: 'severity', maps_to: { field: 'pain.severity', value: 5 } },
+  'MỨC-6': { category: 'severity', maps_to: { field: 'pain.severity', value: 6 } },
+  'MỨC-7': { category: 'severity', maps_to: { field: 'pain.severity', value: 7 } },
+  'MỨC-8': { category: 'severity', maps_to: { field: 'pain.severity', value: 8 } },
+  'MỨC-9': { category: 'severity', maps_to: { field: 'pain.severity', value: 9 } },
+  'MỨC-10': { category: 'severity', maps_to: { field: 'pain.severity', value: 10 } },
+  HAI: { category: 'number', maps_to: { field: 'number', value: 2 } },
+  NẶNG: { category: 'severity', maps_to: { field: 'pain.severity', value: 8 } },
+  NHẸ: { category: 'severity', maps_to: { field: 'pain.severity', value: 2 } },
+
+  // 5. Nhóm Định từ & Dị ứng (Modifier & Allergy)
+  CÓ: { category: 'modifier', maps_to: { field: 'modifier', value: true } },
+  KHÔNG: { category: 'modifier', maps_to: { field: 'modifier', value: false } },
+  'DỊ-ỨNG': { category: 'allergy', maps_to: { field: 'allergy.has_allergy', value: true } },
+  'KHÔNG-DỊ-ỨNG': { category: 'allergy', maps_to: { field: 'allergy.has_allergy', value: false } },
+  THUỐC: { category: 'allergy', maps_to: { field: 'allergy.category', value: 'drug' } },
 };
 
 export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
@@ -69,10 +113,10 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const stabilizerRef = useRef<GestureStabilizer>(
     new GestureStabilizer({
-      minStabilityDurationMs: 800,
+      minStabilityDurationMs: 500,
       minConfidence: 0.7,
       minStableFrames: 3,
-      cooldownMs: 2500,
+      cooldownMs: 2000,
     })
   );
 
@@ -153,12 +197,13 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         // Chỉ tạo candidate khi bộ lọc xác nhận cử chỉ đã giữ ổn định đủ lâu
         if (stabResult.candidate) {
           const cand = stabResult.candidate;
-          const meta = GLOSS_METADATA[cand.gloss] || {
+          const cleanGloss = cand.gloss.replace('MỨC-', '');
+          const meta = GLOSS_METADATA[cand.gloss] || GLOSS_METADATA[cleanGloss] || {
             category: cand.gloss.startsWith('MỨC-') ? 'severity' : 'symptom',
             maps_to: cand.gloss.startsWith('MỨC-')
               ? {
                   field: 'pain.severity',
-                  value: parseInt(cand.gloss.replace('MỨC-', '')) || 5,
+                  value: parseInt(cleanGloss) || 5,
                 }
               : undefined,
           };

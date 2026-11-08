@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Generator
 from typing import Any
 
 import pytest
@@ -7,32 +8,49 @@ from starlette.websockets import WebSocketDisconnect
 
 from app.main import app
 
-client = TestClient(app)
+
+@pytest.fixture
+def client() -> Generator[TestClient, None, None]:
+    with TestClient(app) as c:
+        yield c
 
 
-def _setup_session() -> tuple[str, str, str, str]:
+def _setup_session(client: TestClient | None = None) -> tuple[str, str, str, str]:
     """Helper tạo phiên và lấy (session_id, pairing_code, token_nurse, token_patient)."""
-    create_res = client.post("/api/sessions")
-    assert create_res.status_code == 201
-    c_data = create_res.json()
-    session_id = c_data["session_id"]
-    pairing_code = c_data["pairing_code"]
-    token_nurse = c_data["token_nurse"]
+    if client is not None:
+        create_res = client.post("/api/sessions")
+        assert create_res.status_code == 201
+        c_data = create_res.json()
+        session_id = c_data["session_id"]
+        pairing_code = c_data["pairing_code"]
+        token_nurse = c_data["token_nurse"]
 
-    join_res = client.post("/api/sessions/join", json={"pairing_code": pairing_code})
-    assert join_res.status_code == 200
-    token_patient = join_res.json()["token_patient"]
+        join_res = client.post("/api/sessions/join", json={"pairing_code": pairing_code})
+        assert join_res.status_code == 200
+        token_patient = join_res.json()["token_patient"]
 
-    return session_id, pairing_code, token_nurse, token_patient
+        return session_id, pairing_code, token_nurse, token_patient
+
+    with TestClient(app) as c:
+        create_res = c.post("/api/sessions")
+        assert create_res.status_code == 201
+        c_data = create_res.json()
+        session_id = c_data["session_id"]
+        pairing_code = c_data["pairing_code"]
+        token_nurse = c_data["token_nurse"]
+
+        join_res = c.post("/api/sessions/join", json={"pairing_code": pairing_code})
+        assert join_res.status_code == 200
+        token_patient = join_res.json()["token_patient"]
+
+        return session_id, pairing_code, token_nurse, token_patient
 
 
-def test_ws_full_happy_path_and_ram_wipe() -> None:
-    session_id, pairing_code, token_nurse, token_patient = _setup_session()
-    client_nurse = TestClient(app)
-    client_patient = TestClient(app)
+def test_ws_full_happy_path_and_ram_wipe(client: TestClient) -> None:
+    session_id, pairing_code, token_nurse, token_patient = _setup_session(client)
 
     # 1. Nurse connects
-    with client_nurse.websocket_connect(
+    with client.websocket_connect(
         f"/ws/{session_id}?role=nurse&token={token_nurse}"
     ) as ws_nurse:
         # Nurse receives SESSION_JOINED (nurse)
@@ -41,7 +59,7 @@ def test_ws_full_happy_path_and_ram_wipe() -> None:
         assert ev["payload"]["role"] == "nurse"
 
         # 2. Patient connects
-        with client_patient.websocket_connect(
+        with client.websocket_connect(
             f"/ws/{session_id}?role=patient&token={token_patient}"
         ) as ws_patient:
             # Patient receives SESSION_JOINED (patient)
@@ -168,17 +186,15 @@ def test_ws_full_happy_path_and_ram_wipe() -> None:
     assert res_join.json()["detail"]["code"] == "SESSION_NOT_FOUND"
 
 
-def test_ws_role_authorization_and_safety_checks() -> None:
-    session_id, _, token_nurse, token_patient = _setup_session()
-    client_nurse = TestClient(app)
-    client_patient = TestClient(app)
+def test_ws_role_authorization_and_safety_checks(client: TestClient) -> None:
+    session_id, _, token_nurse, token_patient = _setup_session(client)
 
-    with client_nurse.websocket_connect(
+    with client.websocket_connect(
         f"/ws/{session_id}?role=nurse&token={token_nurse}"
     ) as ws_nurse:
         _ = ws_nurse.receive_json()  # SESSION_JOINED
 
-        with client_patient.websocket_connect(
+        with client.websocket_connect(
             f"/ws/{session_id}?role=patient&token={token_patient}"
         ) as ws_patient:
             _ = ws_patient.receive_json()  # SESSION_JOINED
@@ -221,8 +237,8 @@ def test_ws_role_authorization_and_safety_checks() -> None:
             assert err_nurse["payload"]["code"] == "VALIDATION_ERROR"
 
 
-def test_ws_heartbeat_ping_pong() -> None:
-    session_id, _, token_nurse, _ = _setup_session()
+def test_ws_heartbeat_ping_pong(client: TestClient) -> None:
+    session_id, _, token_nurse, _ = _setup_session(client)
 
     with client.websocket_connect(f"/ws/{session_id}?role=nurse&token={token_nurse}") as ws:
         _ = ws.receive_json()  # SESSION_JOINED
@@ -231,8 +247,8 @@ def test_ws_heartbeat_ping_pong() -> None:
         assert pong["event"] == "PONG"
 
 
-def test_ws_interpreter_request_and_status() -> None:
-    session_id, _, token_nurse, token_patient = _setup_session()
+def test_ws_interpreter_request_and_status(client: TestClient) -> None:
+    session_id, _, token_nurse, token_patient = _setup_session(client)
 
     with client.websocket_connect(
         f"/ws/{session_id}?role=patient&token={token_patient}"
@@ -260,12 +276,10 @@ def test_ws_interpreter_request_and_status() -> None:
         assert ev_status["payload"]["status"] == "connecting"
 
 
-def test_ws_reconnect_replay_missed_events() -> None:
-    session_id, _, token_nurse, token_patient = _setup_session()
-    client_nurse = TestClient(app)
-    client_patient = TestClient(app)
+def test_ws_reconnect_replay_missed_events(client: TestClient) -> None:
+    session_id, _, token_nurse, token_patient = _setup_session(client)
 
-    with client_nurse.websocket_connect(
+    with client.websocket_connect(
         f"/ws/{session_id}?role=nurse&token={token_nurse}"
     ) as ws_nurse:
         _ = ws_nurse.receive_json()  # seq 1 (SESSION_JOINED)
@@ -284,7 +298,7 @@ def test_ws_reconnect_replay_missed_events() -> None:
         _ = ws_nurse.receive_json()  # seq 2 (NURSE_QUESTION)
 
         # Now patient connects with last_seq=1 -> must replay seq 2
-        with client_patient.websocket_connect(
+        with client.websocket_connect(
             f"/ws/{session_id}?role=patient&token={token_patient}&last_seq=1"
         ) as ws_patient:
             replayed = ws_patient.receive_json()
@@ -292,17 +306,17 @@ def test_ws_reconnect_replay_missed_events() -> None:
             assert replayed["seq"] == 2
 
 
-def test_ws_invalid_token_rejected() -> None:
-    session_id, _, _, _ = _setup_session()
+def test_ws_invalid_token_rejected(client: TestClient) -> None:
+    session_id, _, _, _ = _setup_session(client)
     with pytest.raises(WebSocketDisconnect) as exc_info:
         with client.websocket_connect(f"/ws/{session_id}?role=patient&token=WRONG_TOKEN"):
             pass
     assert exc_info.value.code == 4003
 
 
-def test_ws_privacy_logging_no_pii(caplog: pytest.LogCaptureFixture) -> None:
+def test_ws_privacy_logging_no_pii(client: TestClient, caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.INFO, logger="ai4care.ws")
-    session_id, _, _, token_patient = _setup_session()
+    session_id, _, _, token_patient = _setup_session(client)
 
     sensitive_text = "Tôi tên Nguyễn Văn A số điện thoại 0912345678"
     with client.websocket_connect(f"/ws/{session_id}?role=patient&token={token_patient}") as ws:

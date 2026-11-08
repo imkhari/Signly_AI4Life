@@ -34,7 +34,7 @@ check-backend:
 	@echo "==> [Backend] Type checking with mypy..."
 	$(VENV)/bin/mypy backend/app backend/tests
 	@echo "==> [Backend] Running unit tests with pytest..."
-	$(VENV)/bin/pytest backend
+	PYTHONUNBUFFERED=1 $(VENV)/bin/pytest -v backend/tests/unit backend/tests/safety backend/tests/integration
 
 check-frontend:
 	@echo "==> [Frontend] Linting with eslint..."

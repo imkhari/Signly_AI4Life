@@ -22,6 +22,7 @@ export class GestureStabilizer {
   private firstSeenTime: number = 0;
   private consecutiveCount: number = 0;
   private confidenceAccumulator: number = 0;
+  private graceCount: number = 0;
   private minStabilityDurationMs: number;
   private minConfidence: number;
   private minStableFrames: number;
@@ -93,10 +94,27 @@ export class GestureStabilizer {
 
     // 4. Nếu đổi sang một từ khác
     if (this.activeGloss !== gloss) {
+      const isNum = (g: string | null) => !!g && (g.startsWith('MỨC-') || /^\d+$/.test(g));
+      // Cho phép dung sai 1 frame đối với số đếm ngón tay khi trước đó đã ổn định >= 2 frame
+      if (isNum(this.activeGloss) && isNum(gloss) && this.consecutiveCount >= 2 && this.graceCount === 0) {
+        this.graceCount = 1;
+        const duration = now - this.firstSeenTime;
+        const progressPercent = Math.min(99, Math.round((duration / this.minStabilityDurationMs) * 100));
+        return {
+          isStable: false,
+          status: 'holding',
+          statusMessage: `Giữ yên (${progressPercent}%)...`,
+          candidate: null,
+          currentGloss: this.activeGloss,
+          progressPercent,
+        };
+      }
+
       this.activeGloss = gloss;
       this.firstSeenTime = now;
       this.consecutiveCount = 1;
       this.confidenceAccumulator = confidence;
+      this.graceCount = 0;
 
       return {
         isStable: false,
@@ -109,6 +127,7 @@ export class GestureStabilizer {
     }
 
     // 5. Cùng một từ xuất hiện tiếp tục
+    this.graceCount = 0;
     this.consecutiveCount += 1;
     this.confidenceAccumulator += confidence;
 
@@ -175,5 +194,6 @@ export class GestureStabilizer {
     this.firstSeenTime = 0;
     this.consecutiveCount = 0;
     this.confidenceAccumulator = 0;
+    this.graceCount = 0;
   }
 }

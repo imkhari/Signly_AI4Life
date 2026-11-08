@@ -108,4 +108,21 @@ describe('GestureStabilizer', () => {
     expect(res.progressPercent).toBeLessThan(50);
     expect(res.candidate).toBeNull();
   });
+
+  it('tolerates a single frame glitch when holding number gestures', () => {
+    const t0 = 1000;
+    // Frame 1: MỨC-3
+    stabilizer.process(mockPrediction({ gloss: 'MỨC-3' }), t0);
+    // Frame 2: MỨC-3
+    stabilizer.process(mockPrediction({ gloss: 'MỨC-3' }), t0 + 200);
+    // Frame 3: momentary 1-frame glitch to MỨC-2
+    const resGlitch = stabilizer.process(mockPrediction({ gloss: 'MỨC-2' }), t0 + 400);
+    expect(resGlitch.isStable).toBe(false);
+    expect(resGlitch.currentGloss).toBe('MỨC-3'); // Giữ tracking MỨC-3 nhờ grace frame!
+
+    // Frame 4: quay lại MỨC-3 sau 850ms
+    const resFinal = stabilizer.process(mockPrediction({ gloss: 'MỨC-3' }), t0 + 850);
+    expect(resFinal.isStable).toBe(true);
+    expect(resFinal.candidate?.gloss).toBe('MỨC-3');
+  });
 });

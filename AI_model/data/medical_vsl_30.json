@@ -1,202 +1,873 @@
 {
-  "triệu_chứng": [
+  "symptom": [
     {
-      "word": "đau bụng",
-      "found_in_vsl_dict": "đau bụng",
-      "class_id": "class_0518"
+      "gloss": "ĐAU",
+      "word": "đau",
+      "label_vi": "Đau",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "PAIN"
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "SỐT",
       "word": "sốt",
+      "label_vi": "Sốt",
+      "category": "symptom",
       "found_in_vsl_dict": "sốt",
-      "class_id": "class_3531"
+      "class_id": "class_3531",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "FEVER"
+      },
+      "has_vsl_voya_class": true
     },
     {
-      "word": "buồn nôn",
-      "found_in_vsl_dict": "buồn nôn",
-      "class_id": "class_1168"
-    },
-    {
-      "word": "mệt mỏi",
-      "found_in_vsl_dict": "mệt mỏi",
-      "class_id": "class_0530"
-    },
-    {
-      "word": "chóng mặt",
-      "found_in_vsl_dict": null,
-      "class_id": null
-    },
-    {
-      "word": "khó thở",
-      "found_in_vsl_dict": null,
-      "class_id": null
-    },
-    {
+      "gloss": "HO",
       "word": "ho",
-      "found_in_vsl_dict": "không cho (bắc)",
-      "class_id": "class_0046"
-    }
-  ],
-  "bộ_phận": [
-    {
-      "word": "bụng",
-      "found_in_vsl_dict": "bụng",
-      "class_id": "class_1151"
+      "label_vi": "Ho",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "COUGH"
+      },
+      "audit_note": "Đã sửa: loại bỏ mapping sai sang class_0046 ('không cho (bắc)')",
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "KHÓ-THỞ",
+      "word": "khó thở",
+      "label_vi": "Khó thở",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "BREATH_DIFFICULTY"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "BUỒN-NÔN",
+      "word": "buồn nôn",
+      "label_vi": "Buồn nôn",
+      "category": "symptom",
+      "found_in_vsl_dict": "buồn nôn",
+      "class_id": "class_1168",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "NAUSEA_VOMIT"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "CHÓNG-MẶT",
+      "word": "chóng mặt",
+      "label_vi": "Chóng mặt",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "DIZZY"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "MỆT-MỎI",
+      "word": "mệt mỏi",
+      "label_vi": "Mệt mỏi",
+      "category": "symptom",
+      "found_in_vsl_dict": "mệt mỏi",
+      "class_id": "class_0530",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "OTHER"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "TIM-ĐẬP-NHANH",
+      "word": "tim đập nhanh",
+      "label_vi": "Tim đập nhanh",
+      "category": "symptom",
+      "found_in_vsl_dict": "tim",
+      "class_id": "class_3867",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "BREATH_DIFFICULTY"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "NGỨA",
+      "word": "ngứa",
+      "label_vi": "Ngứa",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "RASH"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "LẠNH",
+      "word": "lạnh",
+      "label_vi": "Lạnh run",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "FEVER"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "CHẢY-MÁU",
+      "word": "chảy máu",
+      "label_vi": "Chảy máu",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "BLEED"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "CHẤN-THƯƠNG",
+      "word": "chấn thương",
+      "label_vi": "Chấn thương",
+      "category": "symptom",
+      "found_in_vsl_dict": "ngã",
+      "class_id": "class_2928",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "INJURY"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "BỎNG",
+      "word": "bỏng",
+      "label_vi": "Bỏng",
+      "category": "symptom",
+      "found_in_vsl_dict": "bỏng",
+      "class_id": "class_1082",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "INJURY"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "TIÊU-CHẢY",
+      "word": "tiêu chảy",
+      "label_vi": "Tiêu chảy",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "OTHER"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "HO-RA-MÁU",
+      "word": "ho ra máu",
+      "label_vi": "Ho ra máu",
+      "category": "symptom",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "BLEED"
+      },
+      "has_vsl_voya_class": false
+    }
+  ],
+  "body_region": [
+    {
+      "gloss": "ĐẦU",
       "word": "đầu",
-      "found_in_vsl_dict": "đứng đầu (hàng đầu)",
-      "class_id": "class_0037"
+      "label_vi": "Đầu",
+      "category": "region",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "HEAD"
+      },
+      "audit_note": "Đã sửa: loại bỏ mapping sai sang class_0037 ('đứng đầu (hàng đầu)')",
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "NGỰC",
       "word": "ngực",
+      "label_vi": "Ngực",
+      "category": "region",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "CHEST"
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "BỤNG",
+      "word": "bụng",
+      "label_vi": "Bụng",
+      "category": "region",
+      "found_in_vsl_dict": "bụng",
+      "class_id": "class_1151",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "ABDOMEN_UPPER"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "BỤNG-DƯỚI",
+      "word": "bụng dưới",
+      "label_vi": "Bụng dưới",
+      "category": "region",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "ABDOMEN_LOWER"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "LƯNG",
       "word": "lưng",
+      "label_vi": "Lưng",
+      "category": "region",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "LOWER_BACK"
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "HỌNG",
       "word": "họng",
+      "label_vi": "Cổ / Họng",
+      "category": "region",
       "found_in_vsl_dict": "họng",
-      "class_id": "class_2390"
+      "class_id": "class_2390",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "NECK"
+      },
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "TAY",
       "word": "tay",
-      "found_in_vsl_dict": "bao tay (dùng cho trẻ sơ sinh)",
-      "class_id": "class_0937"
+      "label_vi": "Tay",
+      "category": "region",
+      "found_in_vsl_dict": "tay",
+      "class_id": "class_3601",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "ARM_R"
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_3601 ('tay'), thay thế class_0937 ('bao tay trẻ sơ sinh')",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "CHÂN",
       "word": "chân",
+      "label_vi": "Chân",
+      "category": "region",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "LEG_L"
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "VAI",
+      "word": "vai",
+      "label_vi": "Vai",
+      "category": "region",
+      "found_in_vsl_dict": "vai",
+      "class_id": "class_4122",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "UPPER_BACK"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "RĂNG",
+      "word": "răng",
+      "label_vi": "Răng",
+      "category": "region",
+      "found_in_vsl_dict": "răng",
+      "class_id": "class_3407",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "HEAD"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "MẮT",
       "word": "mắt",
+      "label_vi": "Mắt",
+      "category": "region",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "HEAD"
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "TAI",
       "word": "tai",
+      "label_vi": "Tai",
+      "category": "region",
       "found_in_vsl_dict": "tai",
-      "class_id": "class_3578"
+      "class_id": "class_3578",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "HEAD"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "GÁY",
+      "word": "gáy",
+      "label_vi": "Gáy",
+      "category": "region",
+      "found_in_vsl_dict": "gáy",
+      "class_id": "class_2139",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "NECK"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "ĐẦU-GỐI",
+      "word": "đầu gối",
+      "label_vi": "Đầu gối",
+      "category": "region",
+      "found_in_vsl_dict": "đầu gối",
+      "class_id": "class_1931",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "LEG_L"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "CỔ-TAY",
+      "word": "cổ tay",
+      "label_vi": "Cổ tay",
+      "category": "region",
+      "found_in_vsl_dict": "cổ tay",
+      "class_id": "class_1657",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "HAND_R"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "HÔNG",
+      "word": "hông",
+      "label_vi": "Hông",
+      "category": "region",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "LOWER_BACK"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "MÔNG",
+      "word": "mông",
+      "label_vi": "Mông",
+      "category": "region",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.body_regions",
+        "code": "ABDOMEN_LOWER"
+      },
+      "has_vsl_voya_class": false
     }
   ],
-  "thời_gian": [
+  "time": [
     {
+      "gloss": "HÔM-NAY",
       "word": "hôm nay",
+      "label_vi": "Hôm nay",
+      "category": "time",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 0,
+        "unit": "day"
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "HÔM-QUA",
       "word": "hôm qua",
+      "label_vi": "Hôm qua",
+      "category": "time",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 1,
+        "unit": "day"
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "SÁNG",
       "word": "sáng",
+      "label_vi": "Sáng",
+      "category": "time",
       "found_in_vsl_dict": "sáng",
-      "class_id": "class_0807"
+      "class_id": "class_0807",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 0,
+        "unit": "day"
+      },
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "TỐI",
       "word": "tối",
+      "label_vi": "Tối",
+      "category": "time",
       "found_in_vsl_dict": "buổi tối (bắc)",
-      "class_id": "class_1161"
+      "class_id": "class_1161",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 0,
+        "unit": "day"
+      },
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "TUẦN-TRƯỚC",
       "word": "tuần trước",
+      "label_vi": "Tuần trước",
+      "category": "time",
       "found_in_vsl_dict": "tuần trước (bắc)",
-      "class_id": "class_0586"
+      "class_id": "class_0586",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 7,
+        "unit": "day"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "GIỜ",
+      "word": "giờ",
+      "label_vi": "Giờ",
+      "category": "time_unit",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "has_vsl_voya_class": false,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "time_unit",
+        "unit": "hour"
+      }
+    },
+    {
+      "gloss": "NGÀY",
+      "word": "ngày",
+      "label_vi": "Ngày",
+      "category": "time_unit",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "has_vsl_voya_class": false,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "time_unit",
+        "unit": "day"
+      }
+    },
+    {
+      "gloss": "LIÊN-TỤC",
+      "word": "liên tục",
+      "label_vi": "Đau liên tục",
+      "category": "time",
+      "found_in_vsl_dict": "liên tục",
+      "class_id": "class_2654",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 0,
+        "unit": "day"
+      },
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "TỪNG-CƠN",
+      "word": "từng cơn",
+      "label_vi": "Đau từng cơn",
+      "category": "time",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 0,
+        "unit": "day"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "VỪA-MỚI",
+      "word": "vừa mới",
+      "label_vi": "Vừa mới bị",
+      "category": "time",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.onset",
+        "value": 1,
+        "unit": "hour"
+      },
+      "has_vsl_voya_class": false
     }
   ],
-  "mức_độ_số": [
+  "severity_number": [
     {
+      "gloss": "1",
       "word": "1",
-      "found_in_vsl_dict": "lớn hơn 1 (toán học)",
-      "class_id": "class_0449"
+      "label_vi": "Mức 1 (1 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "1",
+      "class_id": "class_0736",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 1
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0736 ('1'), thay thế class_0449 ('lớn hơn 1')",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "2",
       "word": "2",
-      "found_in_vsl_dict": "ngày người khuyết tật thế giới 3/12 (bắc)",
-      "class_id": "class_0073"
+      "label_vi": "Mức 2 (2 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "2",
+      "class_id": "class_0737",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 2
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0737 ('2'), thay thế class_0073 (ngày 3/12)",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "3",
       "word": "3",
-      "found_in_vsl_dict": "ngày quốc tế phụ nữ 8/3 (bắc)",
-      "class_id": "class_0061"
+      "label_vi": "Mức 3 (3 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "3",
+      "class_id": "class_0738",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 3
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0738 ('3'), thay thế class_0061 (ngày 8/3)",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "4",
       "word": "4",
-      "found_in_vsl_dict": "ngày giải phóng miền nam 30/4 (bắc)",
-      "class_id": "class_0067"
+      "label_vi": "Mức 4 (4 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "4",
+      "class_id": "class_0739",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 4
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0739 ('4'), thay thế class_0067 (ngày 30/4)",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "5",
       "word": "5",
-      "found_in_vsl_dict": "về 5 (về nhà)",
-      "class_id": "class_0265"
+      "label_vi": "Mức 5 (5 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "5",
+      "class_id": "class_0740",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 5
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0740 ('5'), thay thế class_0265 ('về 5')",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "6",
       "word": "6",
-      "found_in_vsl_dict": "ngày gia đình việt nam 28/6 (bắc)",
-      "class_id": "class_0100"
+      "label_vi": "Mức 6 (6 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "6 (bắc)",
+      "class_id": "class_0741",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 6
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0741 ('6 (bắc)'), thay thế class_0100 (ngày 28/6)",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "7",
       "word": "7",
-      "found_in_vsl_dict": "ngày thương bình liệt sĩ 27/7 (bắc)",
-      "class_id": "class_0082"
+      "label_vi": "Mức 7 (7 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "7",
+      "class_id": "class_0744",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 7
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0744 ('7'), thay thế class_0082 (ngày 27/7)",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "8",
       "word": "8",
+      "label_vi": "Mức 8 (8 ngón)",
+      "category": "severity",
       "found_in_vsl_dict": "8",
-      "class_id": "class_0745"
+      "class_id": "class_0745",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 8
+      },
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "9",
       "word": "9",
-      "found_in_vsl_dict": "ngày ngôn ngữ kí hiệu quốc tế 23/9 (bắc)",
-      "class_id": "class_0088"
+      "label_vi": "Mức 9 (9 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "9",
+      "class_id": "class_0746",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 9
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0746 ('9'), thay thế class_0088 (ngày 23/9)",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "10",
       "word": "10",
-      "found_in_vsl_dict": "ngày giải phóng thủ đô 10/10 (bắc)",
-      "class_id": "class_0064"
+      "label_vi": "Mức 10 (10 ngón)",
+      "category": "severity",
+      "found_in_vsl_dict": "10",
+      "class_id": "class_0747",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 10
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_0747 ('10'), thay thế class_0064 (ngày 10/10)",
+      "has_vsl_voya_class": true
     },
     {
+      "gloss": "NẶNG",
       "word": "nhiều",
+      "label_vi": "Nhiều / Đau nặng",
+      "category": "severity",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 8
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "NHẸ",
       "word": "ít",
-      "found_in_vsl_dict": "một ít (một chút)",
-      "class_id": "class_0300"
+      "label_vi": "Ít / Đau nhẹ",
+      "category": "severity",
+      "found_in_vsl_dict": "ít",
+      "class_id": "class_2439",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "pain.severity",
+        "value": 2
+      },
+      "audit_note": "Đã sửa: cập nhật đúng class_2439 ('ít'), thay thế class_0300 ('một ít')",
+      "has_vsl_voya_class": true
+    },
+    {
+      "gloss": "HAI",
+      "word": "hai",
+      "label_vi": "Hai (2)",
+      "category": "number",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "has_vsl_voya_class": false,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "number",
+        "value": 2
+      }
     }
   ],
-  "y_tế_chung": [
+  "modifier_allergy": [
     {
-      "word": "bác sĩ",
+      "gloss": "CÓ",
+      "word": "có",
+      "label_vi": "Có / Đồng ý",
+      "category": "modifier",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "modifier",
+        "value": true
+      },
+      "has_vsl_voya_class": false
     },
     {
-      "word": "khám bệnh",
-      "found_in_vsl_dict": "khám bệnh",
-      "class_id": "class_2470"
-    },
-    {
-      "word": "bệnh nhân",
-      "found_in_vsl_dict": "bệnh nhân",
-      "class_id": "class_1032"
-    },
-    {
-      "word": "thuốc",
+      "gloss": "KHÔNG",
+      "word": "không",
+      "label_vi": "Không",
+      "category": "modifier",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "modifier",
+        "value": false
+      },
+      "has_vsl_voya_class": false
     },
     {
+      "gloss": "DỊ-ỨNG",
       "word": "dị ứng",
+      "label_vi": "Có dị ứng",
+      "category": "allergy",
       "found_in_vsl_dict": null,
-      "class_id": null
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "allergy.has_allergy",
+        "value": true
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "THUỐC",
+      "word": "thuốc",
+      "label_vi": "Thuốc",
+      "category": "allergy",
+      "found_in_vsl_dict": null,
+      "class_id": null,
+      "inference_method": "heuristic_3d_landmark",
+      "maps_to": {
+        "field": "allergy.category",
+        "value": "drug"
+      },
+      "has_vsl_voya_class": false
+    },
+    {
+      "gloss": "KHÁM",
+      "word": "khám",
+      "label_vi": "Khám bệnh",
+      "category": "modifier",
+      "found_in_vsl_dict": "khám bệnh",
+      "class_id": "class_2470",
+      "inference_method": "hybrid_when_torch_available",
+      "maps_to": {
+        "field": "chief_complaint",
+        "code": "CHECKUP"
+      },
+      "has_vsl_voya_class": true
     }
   ]
 }

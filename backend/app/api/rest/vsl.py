@@ -171,7 +171,7 @@ async def get_vsl_status() -> dict[str, Any]:
         "checkpoint_path": checkpoint_path,
         "checkpoint_exists": checkpoint_exists,
         "checkpoint_size_mb": checkpoint_size_mb,
-        "supported_gestures_count": 35,
+        "supported_gestures_count": len(_engine.vocab) if _engine else 60,
         "latency_ms_benchmark": 15.0 if is_model_loaded else 0.06,
         "note": (
             "MVP uses high-precision edge 3D geometry engine (<1ms). "
