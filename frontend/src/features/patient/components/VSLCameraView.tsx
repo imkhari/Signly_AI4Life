@@ -20,7 +20,7 @@ import { useCamera } from '../../../hooks/useCamera';
 import { mediaPipeDetector } from '../../../services/vsl/MediaPipeHandDetector';
 import { drawHandLandmarks } from '../../../services/vsl/drawHandSkeleton';
 import { HandData, restApi, VSLPredictionResponse } from '../../../services/api/rest';
-import { GestureStabilizer, StabilizationResult } from '../../../services/vsl/GestureStabilizer';
+import { GestureStabilizer, StabilizationResult, CAMERA_STABILIZER_OPTIONS } from '../../../services/vsl/GestureStabilizer';
 import { RecognizedGloss } from '../../../services/vsl/types';
 import { Button } from '../../../ui/Button';
 
@@ -114,12 +114,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const stabilizerRef = useRef<GestureStabilizer>(
-    new GestureStabilizer({
-      minStabilityDurationMs: 500,
-      minConfidence: 0.7,
-      minStableFrames: 3,
-      cooldownMs: 2000,
-    })
+    new GestureStabilizer(CAMERA_STABILIZER_OPTIONS)
   );
 
   const [handCount, setHandCount] = useState<number>(0);
@@ -192,7 +187,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         const res = await restApi.predictVSL(hands, contextStep);
         setLivePrediction(res);
 
-        // Đưa qua bộ lọc ổn định cử chỉ (yêu cầu giữ >= 800ms, confidence >= 70%)
+        // Apply the shared camera stability thresholds.
         const stabResult = stabilizerRef.current.process(res, Date.now());
         setStabilization(stabResult);
 
@@ -447,7 +442,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                   </span>
                 </div>
 
-                {/* Thanh tiến trình giữ yên cử chỉ (0.8s hold progress) */}
+                {/* Tiến trình giữ yên cử chỉ theo cấu hình camera */}
                 {stabilization.status === 'holding' && (
                   <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
                     <div

@@ -31,6 +31,7 @@ check: check-backend check-frontend
 check-backend:
 	@echo "==> [Backend] Linting with ruff..."
 	$(VENV)/bin/ruff check backend
+	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/evaluation
 	@echo "==> [Backend] Type checking with mypy..."
 	$(VENV)/bin/mypy backend/app backend/tests
 	@echo "==> [Backend] Running unit tests with pytest..."
@@ -73,3 +74,7 @@ demo-https:
 
 clean:
 	rm -rf backend/.venv frontend/node_modules frontend/dist
+
+.PHONY: evaluate-vsl
+evaluate-vsl:
+	$(PYTHON) -m AI_model.evaluation.evaluate --synthetic --output AI_model/evaluation/reports/synthetic.json

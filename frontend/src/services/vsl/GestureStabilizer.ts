@@ -1,5 +1,13 @@
 import { VSLPredictionResponse } from '../api/rest';
 
+export const CAMERA_STABILIZER_OPTIONS = {
+  minStabilityDurationMs: 500,
+  minConfidence: 0.7,
+  minStableFrames: 3,
+  cooldownMs: 2000,
+};
+
+
 export interface StableCandidate {
   gloss: string;
   label_vi: string;
