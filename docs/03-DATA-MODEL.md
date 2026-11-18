@@ -104,3 +104,13 @@ Tên template + test: `backend/app/ai/fallback_template.py`.
 
 ## 6. Lưu ý đồng bộ
 Pydantic (`backend/app/domain/models.py`) ⇄ TypeScript (`frontend/src/types/frame.ts`) phải khớp 1-1 về tên trường. Dùng `pydantic → JSON Schema → json-schema-to-typescript` nếu kịp; nếu không, sửa tay và thêm test hợp đồng (`tests/contract/`).
+
+## 7. Quy ước B1 được duyệt ngày 19/11/2026
+
+Giữ schema_version 1.0. chief_complaint giữ lý do chính, extra_symptoms giữ mã các triệu chứng đi kèm hiện diện. Xóa mã khỏi extra_symptoms nghĩa là bỏ lựa chọn, chưa biểu diễn một câu trả lời phủ định có cấu trúc. Chạm hoặc camera chỉ tác động mục đang hỏi. Chọn vị trí giữ nguyên pain.present, chỉ câu trả lời rõ về đau mới đặt true/false.
+
+Phiếu trực quan cho sửa lý do chính, tình trạng/vị trí đau, mức đau, thời gian, triệu chứng đi kèm và dị ứng. Nhận ứng viên là chọn giá trị. PATIENT_CONFIRMED tiếp tục xác nhận toàn phiếu. Sửa trước duyệt hủy xác nhận toàn phiếu, tạo summary mới. Sau duyệt giữ phiếu chỉ xem và cần phiên mới để sửa.
+
+Triệu chứng đi kèm phải hiện trong phiếu, nurse_view, tóm tắt/fallback và bản in. Validator từ chối đầu ra bỏ sót hoặc phủ định nhãn extra_symptoms đã khai và chuyển sang fallback. Mức độ bao phủ ngôn ngữ của validator vẫn được đánh giá bằng test cụ thể.
+
+Câu trả lời dị ứng có reply_to trỏ tới câu hỏi còn hiệu lực. Có dị ứng nhưng chưa có tên vẫn là mục cần hỏi lại. B1 dùng câu hỏi dị ứng tổng quát để ánh xạ đúng allergy.has_allergy.

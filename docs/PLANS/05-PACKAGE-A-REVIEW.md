@@ -1,5 +1,7 @@
 # Gói A — Kiểm kê và phạm vi đề xuất để duyệt
 
+Bản ghi kiểm kê trước triển khai. Chủ dự án đã duyệt B0+B1 qua Q-20 sau khi đọc báo cáo, kết quả triển khai được ghi trong 99-PROGRESS-LOG.md.
+
 Ngày kiểm tra 19/11/2026. Mốc mã nguồn eaa37e7. Đầu ra gồm kiểm kê, thiết kế luồng, tác vụ và đề xuất cần chốt cho Gói B.
 
 ## 1. Điều kiện chủ dự án vừa xác nhận

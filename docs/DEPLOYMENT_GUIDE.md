@@ -66,3 +66,9 @@ Thêm người chưa tập trước, nhờ người dùng hoặc phiên dịch v
 - Nút /demo khóa. Dùng chính tab bệnh nhân đã ghép cho dữ liệu mẫu, tab điều dưỡng để reset.
 - Camera lỗi. Chọn Chuyển sang Chạm.
 - Backend dừng. Khởi chạy lại, tạo phiên và ghép cặp mới.
+
+## 6. Thao tác B0/B1 sau cập nhật
+
+Trong triệu chứng, chọn tab theo mục muốn khai. Lý do chính giữ nguyên khi thêm mục trong tab Triệu chứng đi kèm. Tab vị trí yêu cầu bệnh nhân trả lời Có đau trước khi chọn trên body map. Mức đau và thời gian có mục Chưa rõ. Số từ camera chỉ áp dụng vào tab đang mở, đơn vị thời gian chọn bằng Chạm.
+
+Phiếu rà soát có sáu thẻ và nút Sửa mục này. Sửa trước duyệt cần xem lại tóm tắt và xác nhận lại. Điều dưỡng hỏi dị ứng tổng quát bằng nút hiện có, người bệnh trả lời tại hộp thoại. Sau duyệt, sửa dữ liệu bị backend từ chối và cần tạo phiên mới. B2 về phủ định từng triệu chứng và revision từng trường còn là đề xuất.

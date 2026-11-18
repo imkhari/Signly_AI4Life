@@ -73,3 +73,9 @@ Danh sách seed (cần chuyên gia y tế rà soát — Q-07): `BREATH_DIFFICULT
 - [ ] Không log nội dung bệnh nhân; không `localStorage`.
 - [ ] Test an toàn mới được thêm cho mọi quy tắc mới.
 - [ ] Đường thoát "Gọi phiên dịch/nhân viên" vẫn hiện ở mọi bước.
+
+## 8. Kiểm tra bổ sung B0/B1 ngày 19/11/2026
+
+Chủ dự án duyệt triển khai B0+B1 trong Q-20. Backend kiểm critical ack trước duyệt, chặn xác nhận PAIN_FALSE_BUT_SEVERITY, và chặn cập nhật dữ liệu sau duyệt. Phiếu đã duyệt cần phiên mới nếu sửa. Mỗi phiên có một câu hỏi dị ứng tổng quát đang chờ, chỉ nhận câu trả lời gắn đúng question_id và cần xác nhận lại toàn phiếu.
+
+Các thẻ rà soát có biểu tượng, nhãn và giá trị chưa rõ. Chọn vị trí không tự khẳng định có đau. Giữ lời khai bổ sung xuyên suốt dữ liệu cấu trúc, diễn đạt và bàn giao. Test bổ sung kiểm tra bỏ sót/phủ định triệu chứng đi kèm để kích hoạt fallback. Các quy tắc cảnh báo y tế và ngưỡng severity giữ theo cấu hình đã chốt.

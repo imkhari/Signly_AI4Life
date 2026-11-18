@@ -7,8 +7,8 @@ Cập nhật ngày 19/11/2026. Hai màn hình đã ghép cặp, dữ liệu gi�
 | Mốc | Người thao tác | Lời dẫn |
 |---|---|---|
 | 0:00–0:20 | Hiện màn bệnh nhân và điều dưỡng đã ghép. | AI4Care hỗ trợ khai triệu chứng tại quầy tiếp nhận. Hai bên kiểm tra thông tin trước khi duyệt. |
-| 0:20–1:05 | Chọn Chạm → Tiếp tục → Sốt / Nóng → khai tình trạng đau phù hợp ca giả lập → Tiếp tục → Không dị ứng → Tiếp tục. | Thông tin xuất hiện phía điều dưỡng khi bệnh nhân khai. Trạng thái hiện tại là đang nhập. |
-| 1:05–1:40 | Chờ bản tóm tắt mới. Kiểm tra mục dị ứng. Bấm Đúng, xác nhận. | Bệnh nhân kiểm tra lại trước khi xác nhận. Có thể bấm Sửa lại để điều chỉnh. |
+| 0:20–1:05 | Chạm → Đau / Nhức → tab Vị trí đau, chọn Có đau và Bụng trên → tab Mức đau, chọn 3/10 → tab thời gian, chọn 2 giờ → tab Triệu chứng đi kèm, chọn Ho → Tiếp tục → Không dị ứng → Tiếp tục. | Thông tin xuất hiện phía điều dưỡng khi bệnh nhân khai. Trạng thái hiện tại là đang nhập. |
+| 1:05–1:40 | Chờ phiếu mới, chỉ vào thẻ lý do chính và Ho đi kèm. Bấm Sửa ở thẻ thời gian, đổi 2 giờ thành 1 giờ rồi đi lại tới phiếu và bấm Đúng, xác nhận. | Bệnh nhân kiểm tra lại trước khi xác nhận. Có thể bấm Sửa lại để điều chỉnh. |
 | 1:40–2:10 | Điều dưỡng kiểm tra và bấm Duyệt phiếu tiếp nhận. Chỉ vào STT phía bệnh nhân. Có thể mở bản in nếu còn thời gian. | Điều dưỡng duyệt rồi hệ thống hiển thị số thứ tự. |
 | 2:10–2:30 | Kết thúc phiên → Xác nhận xóa & Làm mới. Kiểm tra bệnh nhân trở về nhập mã. | Kết thúc phiên xóa dữ liệu tiếp nhận khỏi kho phiên của ứng dụng. |
 | 2:30–3:00 | Dùng phiên riêng đã chuẩn bị, chọn một nhánh an toàn dưới đây. | Nêu cấu hình và trạng thái thật của nhánh đang minh họa. |
@@ -44,3 +44,7 @@ Ký hiệu VSL → Tiếp tục → cử chỉ đã diễn tập → Nhận → 
 - **Mất Internet thì sao?** Hai thiết bị vẫn cần kết nối LAN tới máy chủ. Trước thi phải thử ngắt đường Internet bên ngoài và chạy lại Chạm + mock.
 - **Độ trễ bao nhiêu?** Dùng số đo click → DOM điều dưỡng làm tham khảo localhost. RTT /health là phép đo HTTP riêng. Cần đo lại trên LAN.
 - **Vai trò y tế?** Thu thập thông tin, phát hiện thiếu/mâu thuẫn và yêu cầu nhân viên kiểm tra. Danh sách cảnh báo seed cần chuyên gia y tế rà soát.
+
+## Câu hỏi điều dưỡng trong B1
+
+Điều dưỡng có thể bấm câu hỏi tiền sử dị ứng tổng quát. Có / Không / Chưa rõ cập nhật phiếu theo question_id, bản nháp bệnh nhân nhận lại cùng dữ liệu. Cần xem tóm tắt mới và bệnh nhân xác nhận lại trước duyệt. Mỗi phiên có một câu hỏi đang chờ. Phiếu sau duyệt khóa chỉnh, cần phiên mới nếu sửa.

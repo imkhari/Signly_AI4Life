@@ -117,7 +117,8 @@ Client gửi **phần thay đổi** (patch). Server gộp vào frame hiện tạ
 }
 ```
 - `decision` ∈ `confirmed` | `needs_edit` | `unsure`.
-- `needs_edit` → server đặt `status = draft`, bệnh nhân quay lại wizard, `confirmed_fields` rỗng.
+- `needs_edit` → server đặt `status = collecting`, bệnh nhân quay lại wizard, `confirmed_fields` rỗng.
+- decision=confirmed bị từ chối khi có PAIN_FALSE_BUT_SEVERITY hoặc câu hỏi đang chờ.
 - `unsure` → server tự sinh alert `PATIENT_UNSURE` + gợi ý bật `REQUEST_INTERPRETER` phía y tá.
 
 ### 4.5 `NURSE_QUESTION` (nurse → server → patient)
@@ -133,7 +134,9 @@ Client gửi **phần thay đổi** (patch). Server gộp vào frame hiện tạ
   }
 }
 ```
-Bệnh nhân trả lời bằng `INPUT_UPDATED` có `reply_to: "q-allergy-drug"`.
+Bệnh nhân trả lời bằng `INPUT_UPDATED` có `reply_to: "q-allergy-drug"` và patch allergy.has_allergy mang true, false hoặc "unsure". Backend kiểm question_id còn hiệu lực, chỉ nhận câu trả lời một lần và trả step=nurse_reply. Wizard nhận lại frame để cập nhật bản nháp.
+
+Bản B1 hiện chỉ mở template ASK_DRUG_ALLERGY cho câu hỏi tiền sử dị ứng tổng quát “Bạn có dị ứng nào không?”. ASK_DRUG được giữ như alias tương thích. Mỗi phiên có tối đa một câu hỏi đang chờ. Gửi câu mới khi đang chờ hoặc sau duyệt trả ERROR. Câu hỏi làm hủy xác nhận và summary cũ, cần tóm tắt và xác nhận lại sau trả lời. Các template thời gian, sốt, khó thở và thai kỳ đang chờ mapping/schema tương ứng trước khi mở lại.
 
 ### 4.6 `NURSE_VERIFIED` (nurse → server → all)
 ```json
@@ -148,7 +151,8 @@ Bệnh nhân trả lời bằng `INPUT_UPDATED` có `reply_to: "q-allergy-drug"`
   }
 }
 ```
-- Chỉ hợp lệ khi `status == patient_confirmed`. Nếu chưa → `ERROR: VALIDATION_ERROR`.
+- Chỉ hợp lệ khi `status == patient_confirmed`, không còn câu hỏi đang chờ và acknowledged_alerts chứa đủ các mã critical hiện tại. Backend kiểm các điều kiện này. Vi phạm trả ERROR với VALIDATION_ERROR.
+- INPUT_UPDATED ở nurse_verified, exported hoặc reset bị từ chối trước khi đổi frame. Muốn sửa phiếu đã duyệt, tạo phiên mới.
 - `queue_number` = **STT (số thứ tự)** do y tá nhập hoặc server gán tự tăng trong demo.
 
 ### 4.7 `RECORD_EXPORTED` (NEEDS-CONFIRM Q-03)
@@ -198,3 +202,9 @@ created → paired → collecting → summary_ready → patient_confirmed → nu
 ```
 - Mọi `INPUT_UPDATED` sau `patient_confirmed` đưa trạng thái về `collecting` và xóa dấu xác nhận.
 - `REQUEST_INTERPRETER` không đổi trạng thái chính; thêm cờ `interpreter_requested = true`.
+
+## 7. Camera tùy chọn trong B1
+
+POST /api/vsl/predict nhận hands và context_step. Luồng UI dùng symptom cho chọn lý do/triệu chứng đi kèm, location cho vị trí, severity cho nhận số. Ở lượt thời gian, số đếm từ context severity được gắn vào pain.onset.value, đơn vị do bệnh nhân chọn bằng Chạm. Không chuyển gloss HÔM-NAY thành thời gian bằng 0.
+
+GET /api/vsl/status trả trạng thái engine và danh mục. Bộ luật chọn nhãn, checkpoint nếu tải được điều chỉnh điểm. Các gợi ý trên UI được lọc theo mục đang trả lời và cần bệnh nhân Nhận rồi Áp dụng.
