@@ -27,3 +27,4 @@
 | D-019 | 2026-11-19 | Ưu tiên thứ tự công việc theo mức ảnh hưởng vì thời gian gấp, đánh giá với người thử nội bộ, camera còn chờ dữ liệu người ký hợp lệ | Chủ dự án trả lời Q-17, Q-18, Q-19. Ngày thi cụ thể chưa có, dữ liệu thử nội bộ được ghi đúng phạm vi | FINAL |
 
 | D-020 | 2026-11-19 | Triển khai B0+B1 dùng schema 1.0, kiểm điều kiện duyệt tại backend, khóa chỉnh sau duyệt, câu hỏi dị ứng tương quan và phiếu trực quan | Chủ dự án duyệt Q-20. B2 tri-state từng triệu chứng và revision để ở bước phát triển tiếp | FINAL |
+| D-021 | 2026-11-19 | Triển khai Gói C theo mục 6: kiểm kê, công cụ và báo cáo tổng hợp; đánh giá VSL theo người ký vẫn chờ dữ liệu hợp lệ | Chủ dự án yêu cầu làm Gói C; Q-19 xác nhận chưa có dữ liệu. Không thêm model/thư viện hay thu dữ liệu nghiên cứu. Camera tiếp tục tùy chọn theo D-017 | FINAL |
