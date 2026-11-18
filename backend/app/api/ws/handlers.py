@@ -56,9 +56,36 @@ async def handle_ws_message(
             await hub.send_to_role(session.session_id, role, err)
             return
 
+        if session.status in ["nurse_verified", "exported", "reset"]:
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Phiếu đã đóng chỉnh sửa. Vui lòng tạo phiên mới nếu cần sửa.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
+        reply_to = payload.get("reply_to")
+        if reply_to:
+            pending = session.pending_question
+            answer = payload.get("patch", {}).get("allergy", {}).get("has_allergy")
+            if (
+                role != "patient"
+                or not pending
+                or reply_to != pending["question_id"]
+                or pending["template_code"] != "ASK_DRUG_ALLERGY"
+                or (answer is not True and answer is not False and answer != "unsure")
+                or set(payload.get("patch", {})) != {"allergy"}
+            ):
+                err = make_error_envelope(
+                    session.session_id, session.current_seq, "VALIDATION_ERROR",
+                    "Câu trả lời chưa khớp câu hỏi hiện tại. Vui lòng hỏi lại điều dưỡng.",
+                )
+                await hub.send_to_role(session.session_id, role, err)
+                return
+
         patch = payload.get("patch", {})
         raw_input = payload.get("raw_input")
-        step = payload.get("step", "")
+        step = "nurse_reply" if reply_to else payload.get("step", "")
         modality = payload.get("modality", "touch")
 
         if modality not in session.frame.modality:
@@ -71,6 +98,8 @@ async def handle_ws_message(
             session_id=session.session_id,
         )
         session.frame = parse_result.frame
+        if reply_to:
+            session.pending_question = None
 
         try:
             session.state_machine.on_input_updated()
@@ -186,6 +215,17 @@ async def handle_ws_message(
             return
 
         decision = payload.get("decision", "confirmed")
+        if decision == "confirmed" and (
+            any(a.code == "PAIN_FALSE_BUT_SEVERITY" for a in session.frame.conflicts)
+            or session.pending_question is not None
+        ):
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Cần trả lời câu hỏi và sửa thông tin chưa khớp trước khi xác nhận.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
         try:
             session.state_machine.on_patient_confirmed(decision)
         except InvalidStateTransitionError:
@@ -231,6 +271,30 @@ async def handle_ws_message(
             await hub.send_to_role(session.session_id, role, err)
             return
 
+        if (
+            session.status in ["nurse_verified", "exported", "reset"]
+            or session.pending_question is not None
+            or payload.get("template_code") not in ["ASK_DRUG_ALLERGY", "ASK_DRUG"]
+            or not payload.get("question_id")
+        ):
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Câu hỏi chưa sẵn sàng. Hãy hoàn tất câu hỏi dị ứng hiện tại trước.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+        payload = {
+            "question_id": payload["question_id"],
+            "template_code": "ASK_DRUG_ALLERGY",
+            "text_vi": "Bạn có dị ứng nào không?",
+            "answer_type": "yes_no_unsure",
+            "icon": "pill",
+        }
+        session.pending_question = payload
+        if session.status in ["summary_ready", "patient_confirmed"]:
+            session.state_machine.on_input_updated()
+            session.summary = None
+
         envelope = make_envelope(
             event="NURSE_QUESTION",
             session_id=session.session_id,
@@ -262,6 +326,22 @@ async def handle_ws_message(
                 "VALIDATION_ERROR",
                 "Chỉ có thể duyệt sau khi bệnh nhân đã xác nhận phiếu",
                 detail={"current_status": session.status},
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
+        acknowledged = payload.get("acknowledged_alerts", [])
+        if not isinstance(acknowledged, list) or any(
+            not isinstance(code, str) for code in acknowledged
+        ):
+            acknowledged = []
+        if session.pending_question is not None or any(
+            alert.level == "critical" and alert.code not in acknowledged
+            for alert in session.frame.conflicts
+        ):
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Cần giải quyết câu hỏi và xác nhận đã biết cảnh báo trước khi duyệt.",
             )
             await hub.send_to_role(session.session_id, role, err)
             return
@@ -358,6 +438,7 @@ async def handle_ws_message(
 
         session.state_machine.on_session_reset()
         clear_vsl_motion_buffer()
+        session.pending_question = None
         reset_payload = {
             "reason": payload.get("reason", "completed"),
             "wipe": True,

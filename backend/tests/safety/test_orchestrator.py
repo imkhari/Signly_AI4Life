@@ -198,3 +198,14 @@ async def test_orchestrator_removes_identifiers_from_payload() -> None:
         assert value not in client.user_payload
     assert "penicillin" in client.user_payload
     assert frame.allergy.items[0].name == "person@example.invalid"
+
+
+def test_validator_rejects_missing_or_negated_additional_symptom() -> None:
+    import json
+
+    from app.ai.validator import validate_summary_output
+
+    frame = SemanticFrame(session_id='synthetic', extra_symptoms=['COUGH'])
+    for text in ['Chưa rõ tình trạng.', 'Bạn không ho.']:
+        report = validate_summary_output(json.dumps({'text_vi': text}), frame)
+        assert any('V6_EXTRA_SYMPTOM' in value for value in report.violations)

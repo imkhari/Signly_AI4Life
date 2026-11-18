@@ -36,6 +36,8 @@ class SessionData:
         self.current_seq: int = 0
         self.event_buffer: list[dict[str, Any]] = []
 
+        self.pending_question: dict[str, Any] | None = None
+
         self.force_fallback: bool = False
         self.interpreter_requested: bool = False
         self.queue_number: int | None = None
