@@ -161,14 +161,14 @@ describe('QuestionPicker', () => {
     render(<QuestionPicker onSendQuestion={handleSend} />);
 
     expect(screen.getByTestId('btn-question-ASK_DRUG_ALLERGY')).toBeInTheDocument();
-    expect(screen.getByTestId('btn-question-ASK_PAIN_DURATION')).toBeInTheDocument();
-    expect(screen.getByTestId('btn-question-ASK_FEVER')).toBeInTheDocument();
+    expect(screen.queryByTestId('btn-question-ASK_PAIN_DURATION')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('btn-question-ASK_FEVER')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('btn-question-ASK_DRUG_ALLERGY'));
     expect(handleSend).toHaveBeenCalledWith(
       expect.objectContaining({
         templateCode: 'ASK_DRUG_ALLERGY',
-        textVi: 'Bạn có dị ứng thuốc nào không?',
+        textVi: 'Bạn có dị ứng nào không?',
       })
     );
   });

@@ -47,6 +47,10 @@ export function useSessionSocket() {
       }
     );
 
+    const unsubQuestion = socketClient.on('NURSE_QUESTION', () => {
+      dispatch({ type: 'PATIENT_CONFIRMED', payload: { status: 'collecting' } });
+    });
+
     const unsubSummary = socketClient.on<SummaryReadyPayload>(
       'SUMMARY_READY',
       (payload) => {
@@ -95,6 +99,7 @@ export function useSessionSocket() {
       unsubError();
       unsubInput();
       unsubSummary();
+      unsubQuestion();
       unsubConfirm();
       unsubVerified();
       unsubInterpreter();
@@ -104,12 +109,13 @@ export function useSessionSocket() {
   }, [sessionId, role, token, dispatch]);
 
   const sendInput = useCallback(
-    (step: string, patch: Record<string, unknown>, modality: string = 'touch', rawInput?: { type: string; text: string }) => {
+    (step: string, patch: Record<string, unknown>, modality: string = 'touch', rawInput?: { type: string; text: string }, replyTo?: string) => {
       return socketClient.send('INPUT_UPDATED', {
         step,
         modality,
         patch,
         raw_input: rawInput,
+        reply_to: replyTo,
       });
     },
     []

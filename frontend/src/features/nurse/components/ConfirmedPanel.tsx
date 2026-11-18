@@ -1,3 +1,4 @@
+import { complaintLabels } from '../../../i18n/intakeLabels';
 import React from 'react';
 import { CheckCircle2, Clock, Bot, ShieldCheck } from 'lucide-react';
 import { SemanticFrame, SessionStatus, TriageSummary } from '../../../types';
@@ -106,6 +107,10 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
         )}
       </div>
 
+      {frame.extra_symptoms.length > 0 && <div className="p-3 rounded-xl bg-paper border mb-4">
+        <p className="font-bold">{vi.intake.extras}</p>
+        <p>{frame.extra_symptoms.map(code => complaintLabels[code] || code).join(', ')}</p>
+      </div>}
       {/* Symptoms list */}
       <div className="space-y-3.5 flex-1">
         <div className="flex items-start gap-3 p-3 rounded-xl bg-paper/80 border border-gray-200/60">

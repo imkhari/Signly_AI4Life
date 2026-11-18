@@ -1,4 +1,24 @@
 export const vi = {
+  intake: {
+    extras: 'Triệu chứng đi kèm',
+    extraPrompt: 'Bạn còn muốn khai triệu chứng nào?',
+    unknown: 'Chưa rõ',
+    pain: 'Tình trạng đau',
+    location: 'Vị trí đau',
+    severity: 'Mức đau',
+    onset: 'Bắt đầu từ khi nào?',
+    main: 'Lý do khám chính',
+    edit: 'Sửa mục này',
+    accept: 'Nhận câu trả lời',
+    retry: 'Chọn lại',
+    review: 'Kiểm tra từng mục trước khi xác nhận',
+    cameraButton: 'Thử camera cho câu hỏi này',
+    contextHint: 'Chỉ nhận gợi ý phù hợp với câu hỏi đang mở.',
+    noExtras: 'Chưa chọn triệu chứng đi kèm',
+    noPain: 'Không đau',
+    hasPain: 'Có đau',
+    units: { minute: 'phút', hour: 'giờ', day: 'ngày', week: 'tuần', month: 'tháng' },
+  },
   app: {
     title: 'AI4Care',
     slogan: 'Trợ lý tiếp nhận ban đầu cho người Điếc và người khó khăn về lời nói',
@@ -84,7 +104,7 @@ export const vi = {
     resetAction: 'Kết thúc phiên',
     waitingPatientConfirm: 'Chờ bệnh nhân xác nhận trên màn hình',
     questions: {
-      askDrugAllergy: 'Bạn có dị ứng thuốc nào không?',
+      askDrugAllergy: 'Bạn có dị ứng nào không?',
       askPainDuration: 'Cơn đau đã kéo dài bao lâu rồi?',
       askFever: 'Bạn có bị sốt hoặc ớn lạnh không?',
       askBreathing: 'Bạn có cảm thấy khó thở không?',

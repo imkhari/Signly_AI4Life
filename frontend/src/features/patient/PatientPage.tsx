@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { PairingScreen } from './components/PairingScreen';
 import { ChooseModeStep } from './components/ChooseModeStep';
-import { SymptomsStep } from './components/SymptomsStep';
+import { SymptomsStep, type SymptomTab } from './components/SymptomsStep';
 import { AllergyStep } from './components/AllergyStep';
 import { ConfirmStep } from './components/ConfirmStep';
 import { WaitingStep } from './components/WaitingStep';
@@ -18,7 +18,7 @@ import { ConnectionBadge } from '../../ui/ConnectionBadge';
 import { StepProgress } from '../../ui/StepProgress';
 import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
-import { NurseQuestionPayload } from '../../types';
+import { NurseQuestionPayload, InputUpdatedServerPayload } from '../../types';
 import { vi } from '../../i18n/vi';
 
 export const PatientPage: React.FC = () => {
@@ -44,8 +44,10 @@ export const PatientPage: React.FC = () => {
     goToStep,
     flushInput,
     resetWizard,
+    receiveFrame,
   } = useWizard(sendInput);
 
+  const [editTab, setEditTab] = useState<SymptomTab>('complaint');
   const [isInterpreterModalOpen, setIsInterpreterModalOpen] = useState(false);
   const [nurseQuestion, setNurseQuestion] = useState<NurseQuestionPayload | null>(null);
 
@@ -54,8 +56,16 @@ export const PatientPage: React.FC = () => {
     const unsub = socketClient.on<NurseQuestionPayload>('NURSE_QUESTION', (payload) => {
       setNurseQuestion(payload);
     });
-    return () => unsub();
-  }, []);
+    const unsubAnswer = socketClient.on<InputUpdatedServerPayload>('INPUT_UPDATED', (payload) => {
+      if (payload.step === 'nurse_reply') {
+        receiveFrame(payload.frame);
+        setNurseQuestion(null);
+        if (step === 4) requestSummary();
+        if (step === 5) goToStep(4);
+      }
+    });
+    return () => { unsub(); unsubAnswer(); };
+  }, [receiveFrame, step, requestSummary, goToStep]);
 
   // Idle reset: tự động kết thúc sau 10 phút, cảnh báo trước 60 giây
   const { showWarning: showIdleWarning, secondsRemaining, dismissWarning } = useIdleReset({
@@ -96,8 +106,11 @@ export const PatientPage: React.FC = () => {
 
   const handleNurseAnswer = (ans: string) => {
     if (nurseQuestion) {
-      sendInput('nurse_reply', { answer: ans }, draft.selectedMode);
-      setNurseQuestion(null);
+      if (!flushInput() || socketStatus !== 'connected') return;
+      const value = ans === 'Có' ? true : ans === 'Không' ? false : 'unsure';
+      sendInput('nurse_reply', {
+        allergy: { has_allergy: value, items: value === true ? draft.allergy.items : [] },
+      }, 'touch', undefined, nurseQuestion.question_id);
     }
   };
 
@@ -156,6 +169,7 @@ export const PatientPage: React.FC = () => {
             {/* Bước 2: Triệu chứng */}
             {step === 2 && (
               <SymptomsStep
+                initialTab={editTab}
                 data={draft.symptoms}
                 selectedMode={draft.selectedMode}
                 onChange={updateSymptoms}
@@ -183,10 +197,19 @@ export const PatientPage: React.FC = () => {
                 error={socketError?.message_vi}
                 connected={socketStatus === 'connected'}
                 onConfirm={() => {
-                  confirmPatient('confirmed', ['chief_complaint', 'pain', 'allergy']);
+                  confirmPatient('confirmed', ['chief_complaint', 'pain', 'extra_symptoms', 'allergy']);
+                }}
+                onEditField={(target) => {
+                  confirmPatient('needs_edit', []);
+                  if (target === 'allergy') goToStep(3);
+                  else {
+                    setEditTab(['pain_scale', 'onset'].includes(target) && draft.symptoms.hasPain !== true ? 'pain_body' : target);
+                    goToStep(2);
+                  }
                 }}
                 onEdit={() => {
                   confirmPatient('needs_edit', []);
+                  setEditTab('complaint');
                   goToStep(2);
                 }}
                 onUnsure={() => {
@@ -212,6 +235,8 @@ export const PatientPage: React.FC = () => {
       <NurseQuestionModal
         question={nurseQuestion}
         onAnswer={handleNurseAnswer}
+        connected={socketStatus === 'connected'}
+        error={socketError?.message_vi}
         onClose={() => setNurseQuestion(null)}
       />
 

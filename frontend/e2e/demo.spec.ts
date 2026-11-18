@@ -170,3 +170,48 @@ test.describe('validator với LLM mock độc hại', () => {
     await expect(nurse.getByText(/Mẫu cố định/).first()).toBeVisible();
   });
 });
+
+test('câu trả lời điều dưỡng cập nhật phiếu và vẫn giữ sau sửa từng thẻ', async ({ context }) => {
+  const { nurse, patient } = await pair(context);
+  await enterSymptoms(patient, nurse);
+  await chooseNoAllergyAndContinue(patient);
+  await expect(patient.getByText('Không có dị ứng', { exact: true })).toBeVisible();
+  await nurse.getByTestId('btn-question-ASK_DRUG_ALLERGY').click();
+  await patient.getByRole('dialog').getByRole('button', { name: 'Có', exact: true }).click();
+  await expect(patient.getByRole('dialog')).toHaveCount(0);
+  await expect(patient.getByText('Có dị ứng', { exact: true })).toBeVisible();
+  await patient.getByRole('button', { name: 'Sửa Tiền sử dị ứng', exact: true }).click();
+  await patient.getByRole('button', { name: '+ Penicillin', exact: true }).click();
+  await next(patient).click();
+  await expect(patient.getByText('Penicillin', { exact: true })).toBeVisible();
+  await expect(nurse.getByText(/Có dị ứng \(Penicillin\)/)).toBeVisible();
+  await patient.getByRole('button', { name: 'Đúng, xác nhận' }).click();
+  await expect(approve(nurse)).toBeEnabled();
+});
+
+test('lý do chính, triệu chứng đi kèm và sửa thời gian giữ nhất quán', async ({ context }, testInfo) => {
+  const { nurse, patient } = await pair(context);
+  await next(patient).click();
+  await patient.getByRole('button', { name: 'Đau / Nhức', exact: true }).click();
+  await patient.getByRole('tab', { name: 'Triệu chứng đi kèm' }).click();
+  await patient.getByRole('button', { name: 'Ho / Đau họng', exact: true }).click();
+  await patient.getByRole('tab', { name: 'Bắt đầu từ khi nào?' }).click();
+  await patient.getByRole('button', { name: '2 giờ', exact: true }).click();
+  await next(patient).click();
+  await chooseNoAllergyAndContinue(patient);
+  await expect(patient.getByText('Ho', { exact: true })).toBeVisible();
+  await expect(patient.getByText(/None\/10/)).toHaveCount(0);
+  await expect(patient.getByText('Đau / Nhức', { exact: true })).toBeVisible();
+  await patient.screenshot({ path: testInfo.outputPath('review-1024.png'), fullPage: true });
+  await patient.setViewportSize({ width: 720, height: 768 });
+  await patient.screenshot({ path: testInfo.outputPath('review-720.png'), fullPage: true });
+  await patient.getByRole('button', { name: 'Sửa Bắt đầu từ khi nào?' }).click();
+  await patient.getByRole('button', { name: '1 giờ', exact: true }).click();
+  await next(patient).click();
+  await next(patient).click();
+  await expect(patient.getByText('1 giờ', { exact: true })).toBeVisible();
+  await expect(patient.getByText('Ho', { exact: true })).toBeVisible();
+  await expect(nurse.getByText('Ho', { exact: true })).toBeVisible();
+  await patient.getByRole('button', { name: 'Đúng, xác nhận' }).click();
+  await expect(approve(nurse)).toBeEnabled();
+});

@@ -82,7 +82,7 @@ export const QuestionPicker: React.FC<QuestionPickerProps> = ({
       </p>
 
       <div className="grid grid-cols-1 gap-2.5">
-        {QUESTION_TEMPLATES.map((tmpl) => {
+        {QUESTION_TEMPLATES.filter((template) => template.templateCode === 'ASK_DRUG_ALLERGY').map((tmpl) => {
           const IconComp = tmpl.icon;
           const isSent = recentlySent === tmpl.templateCode;
 

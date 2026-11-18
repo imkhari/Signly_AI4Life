@@ -11,6 +11,7 @@ import { ExportRecordModal } from './components/ExportRecordModal';
 import { SessionResetModal } from './components/SessionResetModal';
 import { Button } from '../../ui/Button';
 import { Modal } from '../../ui/Modal';
+import { socketClient } from '../../services/ws/socketClient';
 import { vi } from '../../i18n/vi';
 
 export const NursePage: React.FC = () => {
@@ -25,6 +26,7 @@ export const NursePage: React.FC = () => {
     resetSession,
   } = useSessionSocket();
 
+  const [questionPending, setQuestionPending] = useState(false);
   const [queueNumber, setQueueNumber] = useState<number>(42);
   const [acknowledgedAlerts, setAcknowledgedAlerts] = useState<Set<string>>(new Set());
   const [audioAlertEnabled, setAudioAlertEnabled] = useState<boolean>(true);
@@ -73,6 +75,18 @@ export const NursePage: React.FC = () => {
     }
   }, [state.sessionId, state.role, handleCreateSession]);
 
+  useEffect(() => {
+    const unsubQuestion = socketClient.on('NURSE_QUESTION', () => setQuestionPending(true));
+    const unsubInput = socketClient.on('INPUT_UPDATED', () => {
+      setAcknowledgedAlerts(new Set());
+    });
+    const unsubReply = socketClient.on<{ step: string }>('INPUT_UPDATED', payload => {
+      if (payload.step === 'nurse_reply') setQuestionPending(false);
+    });
+    const unsubReset = socketClient.on('SESSION_RESET', () => setQuestionPending(false));
+    return () => { unsubQuestion(); unsubInput(); unsubReply(); unsubReset(); };
+  }, []);
+
   // Intake code: ưu tiên từ summary/state, fallback AC-0042
   const intakeCode =
     state.intakeCode || state.summary?.intake_code || `AC-${String(queueNumber).padStart(4, '0')}`;
@@ -86,7 +100,7 @@ export const NursePage: React.FC = () => {
   );
 
   const isVerified = state.status === 'nurse_verified';
-  const canVerify = isPatientConfirmed && unacknowledgedCritical.length === 0 && !isVerified && socketStatus === 'connected';
+  const canVerify = !questionPending && isPatientConfirmed && unacknowledgedCritical.length === 0 && !isVerified && socketStatus === 'connected';
 
   // Xử lý xác nhận alert (Acknowledge)
   const handleAcknowledgeAlert = (code: string) => {
@@ -237,7 +251,7 @@ export const NursePage: React.FC = () => {
 
             <QuestionPicker
               onSendQuestion={handleSendQuestion}
-              disabled={socketStatus !== 'connected'}
+              disabled={socketStatus !== 'connected' || questionPending || isVerified}
             />
           </section>
         </div>

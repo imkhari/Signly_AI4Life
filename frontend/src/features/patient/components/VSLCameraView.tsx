@@ -25,6 +25,7 @@ import { RecognizedGloss } from '../../../services/vsl/types';
 import { Button } from '../../../ui/Button';
 
 interface VSLCameraViewProps {
+  contextStep?: 'symptom' | 'location' | 'severity';
   onApplyGlosses: (glosses: RecognizedGloss[]) => void;
   onSwitchToTouchMode?: () => void;
 }
@@ -104,6 +105,7 @@ const GLOSS_METADATA: Record<
 };
 
 export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
+  contextStep,
   onApplyGlosses,
   onSwitchToTouchMode,
 }) => {
@@ -187,7 +189,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       lastPredictionTimeRef.current = now;
 
       try {
-        const res = await restApi.predictVSL(hands);
+        const res = await restApi.predictVSL(hands, contextStep);
         setLivePrediction(res);
 
         // Đưa qua bộ lọc ổn định cử chỉ (yêu cầu giữ >= 800ms, confidence >= 70%)
@@ -203,11 +205,14 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             maps_to: cand.gloss.startsWith('MỨC-')
               ? {
                   field: 'pain.severity',
-                  value: parseInt(cleanGloss) || 5,
+                  value: parseInt(cleanGloss),
                 }
               : undefined,
           };
 
+          if (contextStep === 'location' && meta.category !== 'region') return;
+          if (contextStep === 'severity' && !['severity', 'number'].includes(meta.category)) return;
+          if (contextStep === 'symptom' && meta.category !== 'symptom') return;
           const recognized: RecognizedGloss = {
             gloss: cand.gloss,
             label_vi: cand.label_vi,
@@ -229,7 +234,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         console.warn('[VSLCameraView] Predict error:', err);
       }
     },
-    []
+    [contextStep]
   );
 
   // 3. Kết nối luồng Video với MediaPipe & Canvas vẽ khung xương ngón tay

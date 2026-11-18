@@ -1,3 +1,4 @@
+import { complaintLabels } from '../../../i18n/intakeLabels';
 import React from 'react';
 import { Printer, ShieldAlert } from 'lucide-react';
 import { Modal } from '../../../ui/Modal';
@@ -53,6 +54,10 @@ export const ExportRecordModal: React.FC<ExportRecordModalProps> = ({
           className="border border-gray-300 rounded-xl p-6 bg-white text-black space-y-4 print:border-none print:p-0"
         >
           {/* Header */}
+          {frame.extra_symptoms.length > 0 && <div className="p-3 border mb-4">
+            <p className="font-bold">Triệu chứng đi kèm</p>
+            <p>{frame.extra_symptoms.map(code => complaintLabels[code] || code).join(', ')}</p>
+          </div>}
           <div className="border-b-2 border-black pb-3 flex justify-between items-start">
             <div>
               <h2 className="text-xl font-bold uppercase tracking-wide">

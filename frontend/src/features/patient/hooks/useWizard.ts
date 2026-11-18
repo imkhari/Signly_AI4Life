@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ModalityType, OnsetUnit } from '../../../types';
+import { ModalityType, OnsetUnit, SemanticFrame } from '../../../types';
 import { SymptomsData } from '../components/SymptomsStep';
 import { AllergyData } from '../components/AllergyStep';
 
@@ -17,6 +17,7 @@ const initialDraft: WizardDraft = {
     hasPain: null,
     severity: null,
     bodyRegions: [],
+    extraSymptoms: [],
     onsetValue: null,
     onsetUnit: 'hour' as OnsetUnit,
   },
@@ -72,13 +73,14 @@ export function useWizard(
             present: currentDraft.symptoms.hasPain,
             severity: currentDraft.symptoms.severity,
             body_regions: currentDraft.symptoms.bodyRegions,
-            onset: currentDraft.symptoms.onsetValue
+            onset: currentDraft.symptoms.onsetValue !== null
               ? {
                   value: currentDraft.symptoms.onsetValue,
                   unit: currentDraft.symptoms.onsetUnit,
                 }
               : null,
           },
+          extra_symptoms: currentDraft.symptoms.extraSymptoms || [],
           allergy: {
             has_allergy: currentDraft.allergy.hasAllergy,
             items: currentDraft.allergy.items,
@@ -124,6 +126,27 @@ export function useWizard(
     [syncWithServer, step]
   );
 
+  const receiveFrame = useCallback((frame: SemanticFrame) => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    pendingInput.current = null;
+    const next: WizardDraft = {
+      selectedMode: draftRef.current.selectedMode,
+      symptoms: {
+        chiefComplaintCode: frame.chief_complaint.code ?? null,
+        chiefComplaintLabel: frame.chief_complaint.label_vi ?? null,
+        hasPain: frame.pain.present ?? null,
+        severity: frame.pain.severity ?? null,
+        bodyRegions: frame.pain.body_regions,
+        extraSymptoms: frame.extra_symptoms,
+        onsetValue: frame.pain.onset?.value ?? null,
+        onsetUnit: frame.pain.onset?.unit ?? 'hour',
+      },
+      allergy: { hasAllergy: frame.allergy.has_allergy ?? null, items: frame.allergy.items },
+    };
+    draftRef.current = next;
+    setDraft(next);
+  }, []);
+
   const nextStep = useCallback(() => {
     setStep((s) => Math.min(s + 1, 5));
   }, []);
@@ -163,5 +186,6 @@ export function useWizard(
     goToStep,
     resetWizard,
     flushInput,
+    receiveFrame,
   };
 }

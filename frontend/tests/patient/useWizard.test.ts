@@ -77,3 +77,14 @@ it('retains unsent input for retry after reconnection', () => {
   expect(handleSend).toHaveBeenCalledTimes(2);
   unmount();
 });
+
+it('keeps explicit zero time and additional symptoms in the outgoing frame', () => {
+  const send = vi.fn();
+  const { result } = renderHook(() => useWizard(send));
+  act(() => result.current.updateSymptoms({ onsetValue: 0, onsetUnit: 'hour', extraSymptoms: ['COUGH'] }));
+  act(() => result.current.flushInput());
+  expect(send).toHaveBeenCalledWith('choose_mode', expect.objectContaining({
+    pain: expect.objectContaining({ onset: { value: 0, unit: 'hour' } }),
+    extra_symptoms: ['COUGH'],
+  }), 'touch');
+});

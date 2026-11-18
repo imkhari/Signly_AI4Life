@@ -1,8 +1,10 @@
 import React from 'react';
-import { Activity, AlertTriangle, Check, Edit3, HelpCircle, Pill } from 'lucide-react';
+import { Activity, AlertTriangle, Check, Edit3, HelpCircle, Pill, MapPin, Clock, ListPlus } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { TTSButton } from '../../../ui/TTSButton';
 import { TriageSummary } from '../../../types';
+import type { SymptomTab } from './SymptomsStep';
+import { complaintLabels, regionLabels } from '../../../i18n/intakeLabels';
 import { vi } from '../../../i18n/vi';
 
 export interface ConfirmStepProps {
@@ -10,6 +12,7 @@ export interface ConfirmStepProps {
   loadingSummary: boolean;
   error?: string;
   connected?: boolean;
+  onEditField?: (target: SymptomTab | 'allergy') => void;
   onConfirm: () => void;
   onEdit: () => void;
   onUnsure: () => void;
@@ -20,6 +23,7 @@ export const ConfirmStep: React.FC<ConfirmStepProps> = ({
   loadingSummary,
   error,
   connected = true,
+  onEditField,
   onConfirm,
   onEdit,
   onUnsure,
@@ -62,37 +66,32 @@ export const ConfirmStep: React.FC<ConfirmStepProps> = ({
         </p>
       </div>
 
-      {/* Chi tiết từng mục */}
       {frame && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-paper rounded-xl border border-gray-200 flex items-start gap-3">
-            <Activity className="w-6 h-6 text-action flex-shrink-0 mt-0.5" />
-            <div>
-              <span className="block font-bold text-sm text-mute">Lý do & Triệu chứng đau:</span>
-              <span className="font-bold text-base text-ink">
-                {frame.chief_complaint.label_vi || 'Đau'}
-                {frame.pain.present && (
-                  <>
-                    {' '}· Mức {frame.pain.severity ?? 'chưa rõ'}/10 ({frame.pain.body_regions.join(', ') || 'chưa rõ vùng'})
-                  </>
-                )}
-              </span>
-            </div>
-          </div>
-
-          <div className="p-4 bg-paper rounded-xl border border-gray-200 flex items-start gap-3">
-            <Pill className="w-6 h-6 text-action flex-shrink-0 mt-0.5" />
-            <div>
-              <span className="block font-bold text-sm text-mute">Tiền sử dị ứng:</span>
-              <span className="font-bold text-base text-ink">
-                {frame.allergy.has_allergy === false
-                  ? 'Không có dị ứng'
-                  : frame.allergy.has_allergy === true
-                    ? frame.allergy.items.map((i) => i.name).join(', ') || 'Có dị ứng'
-                    : 'Chưa rõ tiền sử dị ứng'}
-              </span>
-            </div>
-          </div>
+        <div aria-label={vi.intake.review} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {([
+            { target: 'complaint', label: vi.intake.main, icon: Activity,
+              value: frame.chief_complaint.label_vi || vi.intake.unknown },
+            { target: 'pain_body', label: vi.intake.pain, icon: MapPin,
+              value: frame.pain.present === false ? vi.intake.noPain :
+                frame.pain.present === true ?
+                  `${vi.intake.hasPain} — ${frame.pain.body_regions.map(code => regionLabels[code] || code).join(', ') || vi.intake.unknown}` : vi.intake.unknown },
+            { target: 'pain_scale', label: vi.intake.severity, icon: Activity,
+              value: frame.pain.severity == null ? vi.intake.unknown : `${frame.pain.severity}/10` },
+            { target: 'onset', label: vi.intake.onset, icon: Clock,
+              value: frame.pain.onset?.value == null || !frame.pain.onset.unit ? vi.intake.unknown :
+                `${frame.pain.onset.value} ${vi.intake.units[frame.pain.onset.unit]}` },
+            { target: 'extras', label: vi.intake.extras, icon: ListPlus,
+              value: frame.extra_symptoms.map(code => complaintLabels[code] || code).join(', ') || vi.intake.noExtras },
+            { target: 'allergy', label: 'Tiền sử dị ứng', icon: Pill,
+              value: frame.allergy.has_allergy === false ? 'Không có dị ứng' :
+                frame.allergy.has_allergy === true ? frame.allergy.items.map(item => item.name).join(', ') || 'Có dị ứng' : 'Chưa rõ tiền sử dị ứng' },
+          ] as const).map(row => <div key={row.target} className="p-4 rounded-2xl bg-paper border-2 space-y-3">
+            <row.icon aria-hidden="true" className="w-8 h-8 text-action" />
+            <p className="font-bold text-lg">{row.label}</p>
+            <p className="text-xl font-bold text-ink">{row.value}</p>
+            {onEditField && <Button variant="secondary" aria-label={`Sửa ${row.label}`}
+              onClick={() => onEditField(row.target)}>{vi.intake.edit}</Button>}
+          </div>)}
         </div>
       )}
 
