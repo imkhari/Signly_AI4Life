@@ -21,3 +21,5 @@
 | Q-13 | Demo chạy **local LAN** hay **cloud** (có domain)? | Triển khai, HTTPS cho camera | Local LAN. Lưu ý: `getUserMedia` cần HTTPS hoặc `localhost` | P9 | ANSWERED | Đồng ý: Chạy local LAN (chú ý `localhost`/HTTPS cho camera) |
 | Q-14 | Phiếu/hồ sơ xuất có **thông tin định danh** (tên, tuổi, giới) không? | Privacy | **Không**. Chỉ STT, mã tiếp nhận, triệu chứng, cảnh báo | P7 | ANSWERED | Đồng ý: **Không** chứa PII; chỉ STT, mã tiếp nhận, triệu chứng, cảnh báo |
 | Q-15 | Có logo / tên nhóm / màu thương hiệu / mockup Figma sẵn không? | Style guide | Dùng token trong `06-STYLE-GUIDE.md` | P5 | ANSWERED | Đồng ý: Dùng design tokens trong `06-STYLE-GUIDE.md` |
+
+| Q-16 | Camera tùy chọn có được gửi tọa độ 3D tới backend LAN theo triển khai hiện tại? | Đồng bộ mô tả quyền riêng tư | Giữ MediaPipe trên trình duyệt và gửi tọa độ tới backend LAN | P9 | ANSWERED | Chủ dự án đồng ý cập nhật tài liệu ngày 19/11/2026 |

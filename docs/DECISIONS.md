@@ -20,3 +20,6 @@
 | D-014 | 2026-11-08 | Mở rộng danh mục từ vựng VSL lên 46 gloss nguyên tử (thêm 7 từ tự nhiên: `VAI`, `RĂNG`, `MẮT`, `TAI`, `TIM-ĐẬP-NHANH`, `NGỨA`, `LẠNH`) | Tăng độ phong phú cho bài test/demo y tế, đồng bộ 100% giữa dataset, ontology và frontend | FINAL |
 | D-015 | 2026-11-08 | Phân tầng nhận diện VSL Spatial Zoning: ưu tiên vùng tiếp xúc giải phẫu trước số đếm; giữ Mock cho `/demo` và CI | Chống tình trạng cử chỉ số cướp hết các cử chỉ triệu chứng, bảo toàn phương án dự phòng khi demo | FINAL |
 | D-016 | 2026-11-08 | Mở rộng danh mục từ vựng VSL lên 60 gloss y tế nguyên tử (+14 gloss: `CHẢY-MÁU`, `CHẤN-THƯƠNG`, `BỎNG`, `TIÊU-CHẢY`, `HO-RA-MÁU`, `GÁY`, `ĐẦU-GỐI`, `CỔ-TAY`, `HÔNG`, `MÔNG`, `LIÊN-TỤC`, `TỪNG-CƠN`, `VỪA-MỚI`, `KHÁM`) | Đáp ứng đầy đủ các tình huống tiếp nhận cấp cứu và khám bệnh thường gặp; phân bổ 5 nhóm chuẩn hóa, đồng bộ 1-1 backend, ontology, dataset và frontend | FINAL |
+
+| D-017 | 2026-11-19 | Luồng thi chính dùng Chạm + LLM mock, camera tùy chọn và yêu cầu phiên dịch mô phỏng | Phạm vi được người dùng chốt trong yêu cầu hoàn thiện demo | FINAL |
+| D-018 | 2026-11-19 | MediaPipe xử lý ảnh trong trình duyệt, camera tùy chọn gửi tọa độ bàn tay tới backend LAN | Chủ dự án xác nhận Q-16, đồng bộ docs/07 với triển khai | FINAL |

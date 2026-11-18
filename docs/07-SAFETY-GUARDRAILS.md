@@ -54,7 +54,7 @@ Danh sách seed (cần chuyên gia y tế rà soát — Q-07): `BREATH_DIFFICULT
 | Không lưu lâu dài | Backend giữ dữ liệu trong `dict` RAM theo `session_id`; không ghi đĩa, không DB, log không chứa nội dung bệnh nhân |
 | Frontend | Chỉ `sessionStorage`; không `localStorage`, không cookie theo dõi |
 | Xóa sạch | `SESSION_RESET` (hoàn tất / idle 10 phút / thủ công) → xóa RAM, sessionStorage, dừng camera + TTS, revoke object URL |
-| Camera | Xử lý khung hình **trên trình duyệt**; không upload video; chỉ gửi gloss + confidence |
+| Camera | MediaPipe xử lý khung hình **trên trình duyệt**. Camera tùy chọn gửi tọa độ 3D bàn tay tới backend LAN để gợi ý cử chỉ. Video/ảnh ở trong trình duyệt. Cấu hình này được chủ dự án xác nhận ngày 19/11/2026. |
 | LLM | Chỉ gửi `SemanticFrame` đã ẩn danh; `free_text` bị loại hoặc che (`[REDACTED]`) nếu chứa số điện thoại/CCCD/email (regex) |
 | Log | Chỉ ghi: `session_id` băm, event, thời gian, kết quả validator. Không ghi payload |
 | Hiển thị | Hiển thị rõ cho bệnh nhân: "Thông tin sẽ bị xóa khi kết thúc" |
