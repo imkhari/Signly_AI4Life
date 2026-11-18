@@ -325,7 +325,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
           </div>
           <div>
             <h3 className="text-sm sm:text-base font-black text-ink flex items-center gap-2">
-              Nhận dạng Ký hiệu Ngôn ngữ (VSL Studio)
+              Gợi ý cử chỉ qua camera
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-status-success/20 text-status-success flex items-center gap-1">
                 <IconBolt className="w-3 h-3" stroke={2.5} /> Camera Trực tiếp
               </span>
@@ -352,7 +352,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         {/* CỘT TRÁI (8 / 12 CỘT): MÀN HÌNH CAMERA VÀ KHUNG XƯƠNG NGÓN TAY CỰC TO */}
         <div className="lg:col-span-8 flex flex-col gap-2">
-          <div className="relative aspect-[16/10] sm:aspect-video lg:h-[480px] w-full rounded-2xl overflow-hidden bg-black shadow-lg border-2 border-gray-800">
+          <div className="relative aspect-[16/10] sm:aspect-video lg:h-[320px] w-full rounded-2xl overflow-hidden bg-black shadow-lg border-2 border-gray-800">
             {/* Thẻ Video phát từ webcam */}
             <video
               ref={setVideoRef}
@@ -420,7 +420,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                         <span className="text-xs font-mono text-gray-300">[{livePrediction.gloss}]</span>
                       </div>
                       <span className="text-xs text-status-success font-bold">
-                        Độ tin cậy: {Math.round(livePrediction.confidence * 100)}% · {livePrediction.latency_ms}ms
+                        Gợi ý nhận diện
                       </span>
                     </div>
                   </div>
@@ -529,7 +529,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         </div>
 
         {/* CỘT PHẢI (4 / 12 CỘT): TỪ CHỜ XÁC NHẬN & DANH SÁCH TRIỆU CHỨNG ĐÃ CHỌN */}
-        <div className="lg:col-span-4 flex flex-col justify-between gap-3 lg:h-[480px]">
+        <div className="lg:col-span-4 flex flex-col justify-between gap-3 lg:h-[320px]">
           {/* Box 1: Từ AI vừa nhận diện được (Awaiting Confirmation) */}
           <div className="bg-canvas p-3 rounded-xl border border-gray-200 flex flex-col gap-2 shadow-2xs">
             <div className="flex items-center justify-between">
@@ -561,7 +561,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                         <span className="text-[10px] font-mono font-bold text-mute shrink-0">[{cand.gloss}]</span>
                       </div>
                       <span className="text-[11px] font-bold text-status-success block">
-                        Độ tin cậy: {Math.round(cand.confidence * 100)}%
+                        Kiểm tra trước khi nhận
                       </span>
                     </div>
 
@@ -569,7 +569,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                       <button
                         type="button"
                         onClick={() => handleConfirmCandidate(cand, idx)}
-                        className="px-2.5 py-1.5 rounded-lg bg-status-success text-white hover:bg-status-success/90 font-bold text-xs flex items-center gap-1 cursor-pointer transition-transform active:scale-95 shadow-2xs"
+                        className="min-h-[64px] px-3 py-2 rounded-lg bg-status-success text-white hover:bg-status-success/90 font-bold text-xs flex items-center gap-1 cursor-pointer transition-transform active:scale-95 shadow-2xs"
                         title="Xác nhận từ này"
                       >
                         <IconCheck className="w-3.5 h-3.5" stroke={2.5} />
@@ -578,7 +578,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                       <button
                         type="button"
                         onClick={() => handleDismissCandidate(idx)}
-                        className="p-1.5 rounded-lg bg-gray-100 hover:bg-danger-bg hover:text-danger text-mute transition-colors cursor-pointer"
+                        aria-label="Bỏ qua gợi ý"
+                        className="min-h-[64px] min-w-[64px] grid place-items-center rounded-lg bg-gray-100 hover:bg-danger-bg hover:text-danger text-mute transition-colors cursor-pointer"
                         title="Bỏ qua"
                       >
                         <IconX className="w-3.5 h-3.5" stroke={2.5} />
@@ -640,7 +641,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             data-testid="btn-apply-vsl-glosses"
             onClick={handleApply}
             disabled={confirmedGlosses.length === 0}
-            className="w-full !min-h-[48px] !py-2.5 text-sm md:text-base font-extrabold shadow-md cursor-pointer"
+            className="w-full !min-h-[64px] !py-2.5 text-sm md:text-base font-extrabold shadow-md cursor-pointer"
           >
             {confirmedGlosses.length > 0
               ? `Lưu ${confirmedGlosses.length} triệu chứng & Tiếp tục ➔`

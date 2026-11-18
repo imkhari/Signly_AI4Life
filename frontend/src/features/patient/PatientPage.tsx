@@ -25,6 +25,7 @@ export const PatientPage: React.FC = () => {
   const { state } = useSession();
   const {
     socketStatus,
+    socketError,
     sendInput,
     requestSummary,
     confirmPatient,
@@ -41,6 +42,8 @@ export const PatientPage: React.FC = () => {
     nextStep,
     prevStep,
     goToStep,
+    flushInput,
+    resetWizard,
   } = useWizard(sendInput);
 
   const [isInterpreterModalOpen, setIsInterpreterModalOpen] = useState(false);
@@ -64,10 +67,20 @@ export const PatientPage: React.FC = () => {
 
   // Khi chuyển sang Bước 4 (Xác nhận), tự động gọi backend tóm tắt LLM
   useEffect(() => {
-    if (step === 4) {
-      requestSummary();
+    if (step === 4 && socketStatus === 'connected') {
+      if (flushInput()) requestSummary();
     }
-  }, [step, requestSummary]);
+  }, [step, requestSummary, flushInput, socketStatus]);
+
+  useEffect(() => {
+    if (!state.sessionId) resetWizard();
+  }, [state.sessionId, resetWizard]);
+
+  useEffect(() => {
+    if (step === 4 && (state.status === 'patient_confirmed' || state.status === 'nurse_verified')) {
+      goToStep(5);
+    }
+  }, [step, state.status, goToStep]);
 
   const stepsList = [
     { id: '1', label: 'Cách nói' },
@@ -167,9 +180,10 @@ export const PatientPage: React.FC = () => {
               <ConfirmStep
                 summary={state.summary}
                 loadingSummary={!state.summary}
+                error={socketError?.message_vi}
+                connected={socketStatus === 'connected'}
                 onConfirm={() => {
                   confirmPatient('confirmed', ['chief_complaint', 'pain', 'allergy']);
-                  goToStep(5);
                 }}
                 onEdit={() => {
                   confirmPatient('needs_edit', []);
@@ -178,6 +192,7 @@ export const PatientPage: React.FC = () => {
                 onUnsure={() => {
                   confirmPatient('unsure', []);
                   handleCallInterpreter(false);
+                  goToStep(2);
                 }}
               />
             )}
@@ -208,11 +223,11 @@ export const PatientPage: React.FC = () => {
       >
         <div className="space-y-4">
           <p className="text-base text-ink leading-relaxed">
-            Hệ thống đã nhận yêu cầu và đang kết nối tới phiên dịch viên ngôn ngữ ký hiệu (VSL) trực tuyến.
+            Bản thử nghiệm mô phỏng yêu cầu hỗ trợ phiên dịch. Nếu cần trợ giúp ngay, hãy ra hiệu cho nhân viên tại quầy.
           </p>
           <div className="p-4 bg-warn-bg text-warn rounded-xl font-bold flex items-center gap-3">
             <HelpCircle className="w-6 h-6 flex-shrink-0" />
-            <span>{vi.interpreter.statusConnecting}</span>
+            <span>{state.interpreterRequested ? 'Điều phối đã nhận yêu cầu mô phỏng.' : 'Chưa có xác nhận từ điều phối.'}</span>
           </div>
           <div className="pt-4 flex justify-end gap-3">
             <Button variant="secondary" onClick={() => setIsInterpreterModalOpen(false)}>

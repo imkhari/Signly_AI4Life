@@ -1,7 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSession } from '../state/SessionContext';
 import { socketClient } from '../services/ws/socketClient';
 import {
+  ErrorPayload,
   InputUpdatedServerPayload,
   InterpreterStatusPayload,
   NurseVerifiedPayload,
@@ -12,6 +13,7 @@ import {
 export function useSessionSocket() {
   const { state, dispatch } = useSession();
   const { sessionId, role, token } = state;
+  const [socketError, setSocketError] = useState<ErrorPayload | null>(null);
 
   useEffect(() => {
     if (!sessionId || !role || !token) return;
@@ -20,12 +22,15 @@ export function useSessionSocket() {
       sessionId,
       role,
       token,
-      lastSeq: socketClient.getLastSeq(),
+      lastSeq: 0,
     });
 
     const unsubStatus = socketClient.onStatusChange((status) => {
       dispatch({ type: 'SET_SOCKET_STATUS', payload: status });
     });
+
+    setSocketError(null);
+    const unsubError = socketClient.on<ErrorPayload>('ERROR', setSocketError);
 
     const unsubInput = socketClient.on<InputUpdatedServerPayload>(
       'INPUT_UPDATED',
@@ -87,6 +92,7 @@ export function useSessionSocket() {
 
     return () => {
       unsubStatus();
+      unsubError();
       unsubInput();
       unsubSummary();
       unsubConfirm();
@@ -98,17 +104,19 @@ export function useSessionSocket() {
   }, [sessionId, role, token, dispatch]);
 
   const sendInput = useCallback(
-    (step: string, patch: Record<string, unknown>, modality: string = 'touch') => {
-      socketClient.send('INPUT_UPDATED', {
+    (step: string, patch: Record<string, unknown>, modality: string = 'touch', rawInput?: { type: string; text: string }) => {
+      return socketClient.send('INPUT_UPDATED', {
         step,
         modality,
         patch,
+        raw_input: rawInput,
       });
     },
     []
   );
 
   const requestSummary = useCallback(() => {
+    setSocketError(null);
     socketClient.send('SUMMARY_REQUESTED', {
       language: 'vi',
       reading_level: 'simple',
@@ -117,7 +125,8 @@ export function useSessionSocket() {
 
   const confirmPatient = useCallback(
     (decision: 'confirmed' | 'needs_edit' | 'unsure', confirmedFields: string[]) => {
-      socketClient.send('PATIENT_CONFIRMED', {
+      setSocketError(null);
+    socketClient.send('PATIENT_CONFIRMED', {
         decision,
         confirmed_fields: confirmedFields,
       });
@@ -127,7 +136,8 @@ export function useSessionSocket() {
 
   const verifyNurse = useCallback(
     (intakeCode: string, queueNumber: number, acknowledgedAlerts: string[] = []) => {
-      socketClient.send('NURSE_VERIFIED', {
+      setSocketError(null);
+    socketClient.send('NURSE_VERIFIED', {
         intake_code: intakeCode,
         queue_number: queueNumber,
         verified_by: 'nurse-kiosk',
@@ -188,6 +198,7 @@ export function useSessionSocket() {
 
   return {
     socketStatus: state.socketStatus,
+    socketError,
     sendInput,
     requestSummary,
     confirmPatient,

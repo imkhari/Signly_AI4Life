@@ -8,7 +8,7 @@ export const vi = {
   roles: {
     selectRole: 'Chọn vai trò sử dụng',
     patient: 'Màn hình Bệnh nhân',
-    patientDesc: 'Khai báo triệu chứng ban đầu bằng chạm, cử chỉ VSL hoặc chữ',
+    patientDesc: 'Khai triệu chứng bằng chạm hoặc thử gợi ý cử chỉ camera',
     nurse: 'Màn hình Điều dưỡng',
     nurseDesc: 'Theo dõi thời gian thực, duyệt thông tin và cấp số thứ tự',
   },

@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from app.ai.orchestrator import orchestrate_summary
+from app.api.rest.vsl import clear_vsl_motion_buffer
 from app.api.ws.envelope import make_envelope, make_error_envelope
 from app.application.nurse_view_builder import build_nurse_view
 from app.application.session_service import session_service
@@ -75,6 +76,8 @@ async def handle_ws_message(
             session.state_machine.on_input_updated()
         except InvalidStateTransitionError:
             pass
+        if session.status == "collecting":
+            session.summary = None
 
         server_payload = {
             "frame": session.frame.model_dump(),
@@ -105,17 +108,25 @@ async def handle_ws_message(
             await hub.send_to_role(session.session_id, role, err)
             return
 
-        try:
-            session.state_machine.on_summary_ready()
-        except InvalidStateTransitionError:
-            pass
-
-        # Điều phối AI (LLM / Validator / Fallback)
+        frame = session.frame
         result = await orchestrate_summary(
-            session.frame,
+            frame,
             get_llm_client(),
             force_fallback=session.force_fallback,
         )
+        try:
+            if session.frame is not frame:
+                raise InvalidStateTransitionError(session.status, "SUMMARY_READY")
+            session.state_machine.on_summary_ready()
+        except InvalidStateTransitionError:
+            err = make_error_envelope(
+                session.session_id,
+                session.current_seq,
+                "VALIDATION_ERROR",
+                "Thông tin phiên đã thay đổi. Vui lòng mở lại bước tóm tắt.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
 
         nurse_view = build_nurse_view(session.frame)
         emergency_flag = any(a.level == "critical" for a in session.frame.conflicts)
@@ -178,7 +189,14 @@ async def handle_ws_message(
         try:
             session.state_machine.on_patient_confirmed(decision)
         except InvalidStateTransitionError:
-            pass
+            err = make_error_envelope(
+                session.session_id,
+                session.current_seq,
+                "VALIDATION_ERROR",
+                "Bản tóm tắt chưa sẵn sàng. Vui lòng kiểm tra lại thông tin.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
 
         if decision == "confirmed":
             if session.summary:
@@ -339,6 +357,7 @@ async def handle_ws_message(
             return
 
         session.state_machine.on_session_reset()
+        clear_vsl_motion_buffer()
         reset_payload = {
             "reason": payload.get("reason", "completed"),
             "wipe": True,

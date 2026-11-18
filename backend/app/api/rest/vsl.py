@@ -155,9 +155,13 @@ async def get_vsl_status() -> dict[str, Any]:
         is_model_loaded = bool(getattr(_engine, "is_model_loaded", False))
         has_torch = "torch" in sys.modules and sys.modules["torch"] is not None
 
-    model_source = "pytorch_vtn" if is_model_loaded else "heuristic_3d_spatial_geometry"
+    model_source = (
+        "heuristic_with_checkpoint_boost"
+        if is_model_loaded
+        else "heuristic_3d_spatial_geometry"
+    )
     active_engine = (
-        "FullVTNModel (PyTorch)"
+        "3D geometry with checkpoint score adjustment"
         if is_model_loaded
         else "3D Spatial Geometry & Motion Trajectory (Heuristic)"
     )
@@ -174,7 +178,14 @@ async def get_vsl_status() -> dict[str, Any]:
         "supported_gestures_count": len(_engine.vocab) if _engine else 60,
         "latency_ms_benchmark": 15.0 if is_model_loaded else 0.06,
         "note": (
-            "MVP uses high-precision edge 3D geometry engine (<1ms). "
-            "PyTorch checkpoint (208MB) is optional for server tier."
+            "Labels come from geometry rules on the LAN backend; checkpoints adjust scores. "
+            "Vocabulary count describes mappings. latency_ms_benchmark is a legacy configured "
+            "estimate; use predict latency or end-to-end measurements."
         ),
     }
+
+
+def clear_vsl_motion_buffer() -> None:
+    """Release transient landmark history when the demo session ends."""
+    if _engine:
+        _engine.motion_buffer.clear()

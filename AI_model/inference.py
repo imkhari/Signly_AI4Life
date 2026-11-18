@@ -138,8 +138,13 @@ def analyze_hand_geometry(landmarks: List[Dict[str, float]], handedness: str = "
 
     wrist = landmarks[0]
     hand_scale = calc_dist_3d(wrist, landmarks[9])
-    if hand_scale < 1e-4:
-        hand_scale = 0.1
+    if (
+        any(not math.isfinite(point[axis]) for point in landmarks[:21] for axis in ("x", "y", "z"))
+        or any(not 0.0 <= point[axis] <= 1.0 for point in landmarks[:21] for axis in ("x", "y"))
+        or max(calc_dist_3d(wrist, point) for point in landmarks[:21]) < 1e-4
+    ):
+        return None
+    hand_scale = max(hand_scale, 1e-4)
 
     palm_x = (wrist["x"] + landmarks[5]["x"] + landmarks[9]["x"] + landmarks[17]["x"]) / 4.0
     palm_y = (wrist["y"] + landmarks[5]["y"] + landmarks[9]["y"] + landmarks[17]["y"]) / 4.0
@@ -477,7 +482,8 @@ class VSLInferenceEngine:
             if analysis:
                 analyzed_hands.append(analysis)
 
-        if not analyzed_hands:
+        if len(analyzed_hands) != len(hands):
+            self.motion_buffer.clear()
             return {
                 "success": False,
                 "gloss": "UNKNOWN",
@@ -915,18 +921,14 @@ class VSLInferenceEngine:
                     result_label = f"Mức độ đau {level} / 10 (Giơ {total_fingers} ngón tay)"
                 confidence = 0.96
 
-            # 5. MẶC ĐỊNH THEO VÙNG CAO/THẤP NẾU KHÔNG TRÚNG CÁC ĐIỀU KIỆN TRÊN
             else:
-                if act_y < 0.40:
-                    result_token = "ĐẦU"
-                    result_label = "Vùng Đầu / Trán"
-                elif act_y < 0.65:
-                    result_token = "NGỰC"
-                    result_label = "Vùng Ngực"
-                else:
-                    result_token = "BỤNG"
-                    result_label = "Vùng Bụng"
-                confidence = 0.88
+                return {
+                    "success": False,
+                    "gloss": "UNKNOWN",
+                    "label_vi": "Chưa có gợi ý phù hợp. Thử lại hoặc chuyển sang Chạm.",
+                    "confidence": 0.0,
+                    "hand_count": hand_count,
+                }
 
         # Cộng hưởng độ tin cậy từ mạng VTN Sequence
         vtn_boost = self._compute_vtn_sequence_boost()
@@ -969,9 +971,9 @@ class VSLInferenceEngine:
             "top_k": top_k,
             "latency_ms": latency_ms,
             "model_source": (
-                "best_checkpoints.pth (FullVTNModel PyTorch)"
+                "3D geometry with checkpoint score adjustment"
                 if self.is_model_loaded
-                else "3D Spatial Geometry & Motion Trajectory (Edge Heuristic <1ms)"
+                else "3D geometry and motion rules (LAN backend)"
             )
         }
 

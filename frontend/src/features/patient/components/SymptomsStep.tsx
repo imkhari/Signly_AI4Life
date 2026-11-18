@@ -195,7 +195,7 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
         <div className="flex items-center justify-between px-1">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-ink">
-              {vi.wizard.step2}
+              Khai triệu chứng bằng camera
             </h2>
             <p className="text-xs text-mute">
               Dùng ngôn ngữ ký hiệu hoặc cử chỉ tự nhiên trước camera để khai báo triệu chứng.

@@ -50,3 +50,30 @@ describe('useWizard hook', () => {
     expect(result.current.draft.symptoms.severity).toBe(8);
   });
 });
+
+it('flushes the latest allergy edit once before a summary request', () => {
+  vi.useFakeTimers();
+  const handleSend = vi.fn();
+  const { result, unmount } = renderHook(() => useWizard(handleSend));
+  act(() => result.current.updateAllergy({ hasAllergy: false }));
+  act(() => result.current.flushInput());
+  expect(handleSend).toHaveBeenCalledWith(
+    'choose_mode',
+    expect.objectContaining({ allergy: { has_allergy: false, items: [] } }),
+    'touch'
+  );
+  act(() => vi.runOnlyPendingTimers());
+  expect(handleSend).toHaveBeenCalledTimes(1);
+  unmount();
+  vi.useRealTimers();
+});
+
+it('retains unsent input for retry after reconnection', () => {
+  const handleSend = vi.fn().mockReturnValueOnce(false).mockReturnValue(true);
+  const { result, unmount } = renderHook(() => useWizard(handleSend));
+  act(() => result.current.updateAllergy({ hasAllergy: true }));
+  act(() => { expect(result.current.flushInput()).toBe(false); });
+  act(() => { expect(result.current.flushInput()).toBe(true); });
+  expect(handleSend).toHaveBeenCalledTimes(2);
+  unmount();
+});

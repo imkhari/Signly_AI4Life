@@ -8,6 +8,8 @@ import { vi } from '../../../i18n/vi';
 export interface ConfirmStepProps {
   summary: TriageSummary | null;
   loadingSummary: boolean;
+  error?: string;
+  connected?: boolean;
   onConfirm: () => void;
   onEdit: () => void;
   onUnsure: () => void;
@@ -16,6 +18,8 @@ export interface ConfirmStepProps {
 export const ConfirmStep: React.FC<ConfirmStepProps> = ({
   summary,
   loadingSummary,
+  error,
+  connected = true,
   onConfirm,
   onEdit,
   onUnsure,
@@ -102,6 +106,8 @@ export const ConfirmStep: React.FC<ConfirmStepProps> = ({
         </div>
       )}
 
+      {error && <p role="alert" className="font-semibold text-danger">{error}</p>}
+      {!connected && <p role="status">Mất kết nối. Đang chờ kết nối lại để xác nhận.</p>}
       {/* 3 Nút quyết định lớn */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
         <Button
@@ -116,6 +122,7 @@ export const ConfirmStep: React.FC<ConfirmStepProps> = ({
         <Button
           variant="ghost"
           onClick={onUnsure}
+          disabled={!summary || !connected}
           icon={<HelpCircle className="w-6 h-6" />}
           className="min-h-[72px] text-lg font-bold border-2 border-gray-300 hover:bg-canvas"
         >
@@ -125,6 +132,7 @@ export const ConfirmStep: React.FC<ConfirmStepProps> = ({
         <Button
           variant="primary"
           onClick={onConfirm}
+          disabled={!summary || !connected}
           icon={<Check className="w-6 h-6" />}
           className="min-h-[72px] text-xl font-black bg-ok hover:opacity-90 border-ok"
         >

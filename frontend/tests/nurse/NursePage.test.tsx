@@ -26,7 +26,10 @@ vi.mock('../../src/services/ws/socketClient', () => {
       disconnect: vi.fn(),
       send: vi.fn(),
       getLastSeq: vi.fn().mockReturnValue(0),
-      onStatusChange: vi.fn().mockReturnValue(() => {}),
+      onStatusChange: vi.fn((listener: (status: string) => void) => {
+        listener('connected');
+        return () => {};
+      }),
       on: vi.fn().mockImplementation((ev: string, fn: (data: unknown) => void) => {
         listeners[ev] = listeners[ev] || [];
         listeners[ev].push(fn);

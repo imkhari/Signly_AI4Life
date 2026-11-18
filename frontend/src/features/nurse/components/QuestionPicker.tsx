@@ -81,7 +81,7 @@ export const QuestionPicker: React.FC<QuestionPickerProps> = ({
         Bấm 1 chạm để gửi ngay câu hỏi kèm hình minh họa tới màn hình Kiosk của người bệnh:
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-1 gap-2.5">
         {QUESTION_TEMPLATES.map((tmpl) => {
           const IconComp = tmpl.icon;
           const isSent = recentlySent === tmpl.templateCode;
@@ -109,7 +109,7 @@ export const QuestionPicker: React.FC<QuestionPickerProps> = ({
                 >
                   <IconComp className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-medium text-ink leading-tight">
+                <span className="text-sm font-medium text-ink leading-relaxed">
                   {tmpl.textVi}
                 </span>
               </div>

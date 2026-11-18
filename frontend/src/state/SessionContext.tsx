@@ -114,7 +114,8 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
         alerts: action.payload.alerts,
         completeness: action.payload.completeness,
         currentStep: action.payload.step || state.currentStep,
-        status: state.status === 'paired' ? 'collecting' : state.status,
+        summary: state.status === 'nurse_verified' ? state.summary : null,
+        status: state.status === 'nurse_verified' ? state.status : 'collecting',
       };
 
     case 'SUMMARY_READY':
@@ -128,6 +129,7 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
       return {
         ...state,
         status: action.payload.status,
+        summary: action.payload.status === 'collecting' ? null : state.summary,
       };
 
     case 'NURSE_VERIFIED':

@@ -5,6 +5,7 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
+  const backendOrigin = process.env.SIGNLY_BACKEND_ORIGIN || 'http://localhost:8000';
   const isHttps = process.env.VITE_HTTPS === 'true' || process.env.HTTPS === 'true';
 
   return {
@@ -22,17 +23,18 @@ export default defineConfig(() => {
       host: true,
       proxy: {
         '/api': {
-          target: 'http://localhost:8000',
+          target: backendOrigin,
           changeOrigin: true,
         },
         '/ws': {
-          target: 'ws://localhost:8000',
+          target: backendOrigin.replace(/^http/, 'ws'),
           ws: true,
         },
       },
     },
     test: {
       globals: true,
+      include: ['tests/**/*.test.{ts,tsx}'],
       environment: 'jsdom',
       setupFiles: './tests/setup.ts',
     },

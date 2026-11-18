@@ -76,7 +76,7 @@ describe('VSLCameraView', () => {
       </SessionProvider>
     );
 
-    expect(screen.getByText(/Nhận dạng Ký hiệu Ngôn ngữ/i)).toBeInTheDocument();
+    expect(screen.getByText(/Gợi ý cử chỉ qua camera/i)).toBeInTheDocument();
     expect(screen.getByTestId('vsl-video-element')).toBeInTheDocument();
     expect(screen.getByText(/Sẵn sàng nhận diện/i)).toBeInTheDocument();
   });

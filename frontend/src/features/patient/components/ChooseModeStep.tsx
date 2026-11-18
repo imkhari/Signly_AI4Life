@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconHandClick, IconKeyboard, IconVideo } from '@tabler/icons-react';
+import { IconHandClick, IconVideo } from '@tabler/icons-react';
 import { BigIconButton } from '../../../ui/BigIconButton';
 import { Button } from '../../../ui/Button';
 import { ModalityType } from '../../../types';
@@ -22,11 +22,11 @@ export const ChooseModeStep: React.FC<ChooseModeStepProps> = ({
           Chọn cách thức bạn muốn giao tiếp
         </h2>
         <p className="text-mute text-base">
-          Bạn có thể thay đổi bất kỳ lúc nào trong quá trình khai báo.
+          Bạn có thể quay lại bước này để đổi cách khai báo.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-10">
         <BigIconButton
           icon={<IconHandClick className="w-12 h-12 text-action" stroke={1.8} />}
           label="Chạm chọn hình"
@@ -36,17 +36,9 @@ export const ChooseModeStep: React.FC<ChooseModeStepProps> = ({
         />
 
         <BigIconButton
-          icon={<IconKeyboard className="w-12 h-12 text-action" stroke={1.8} />}
-          label="Viết chữ"
-          sublabel="Gõ bàn phím, hệ thống sẽ đọc to giúp bạn"
-          selected={selectedMode === 'text'}
-          onClick={() => onSelectMode('text')}
-        />
-
-        <BigIconButton
           icon={<IconVideo className="w-12 h-12 text-action" stroke={1.8} />}
           label="Ký hiệu VSL"
-          sublabel="Nhận diện cử chỉ ngôn ngữ ký hiệu qua camera"
+          sublabel="Thử gợi ý cử chỉ qua camera"
           selected={selectedMode === 'vsl_gloss'}
           onClick={() => onSelectMode('vsl_gloss')}
         />
