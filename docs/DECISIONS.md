@@ -23,3 +23,5 @@
 
 | D-017 | 2026-11-19 | Luồng thi chính dùng Chạm + LLM mock, camera tùy chọn và yêu cầu phiên dịch mô phỏng | Phạm vi được người dùng chốt trong yêu cầu hoàn thiện demo | FINAL |
 | D-018 | 2026-11-19 | MediaPipe xử lý ảnh trong trình duyệt, camera tùy chọn gửi tọa độ bàn tay tới backend LAN | Chủ dự án xác nhận Q-16, đồng bộ docs/07 với triển khai | FINAL |
+
+| D-019 | 2026-11-19 | Ưu tiên thứ tự công việc theo mức ảnh hưởng vì thời gian gấp, đánh giá với người thử nội bộ, camera còn chờ dữ liệu người ký hợp lệ | Chủ dự án trả lời Q-17, Q-18, Q-19. Ngày thi cụ thể chưa có, dữ liệu thử nội bộ được ghi đúng phạm vi | FINAL |

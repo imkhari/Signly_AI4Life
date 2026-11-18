@@ -23,3 +23,8 @@
 | Q-15 | Có logo / tên nhóm / màu thương hiệu / mockup Figma sẵn không? | Style guide | Dùng token trong `06-STYLE-GUIDE.md` | P5 | ANSWERED | Đồng ý: Dùng design tokens trong `06-STYLE-GUIDE.md` |
 
 | Q-16 | Camera tùy chọn có được gửi tọa độ 3D tới backend LAN theo triển khai hiện tại? | Đồng bộ mô tả quyền riêng tư | Giữ MediaPipe trên trình duyệt và gửi tọa độ tới backend LAN | P9 | ANSWERED | Chủ dự án đồng ý cập nhật tài liệu ngày 19/11/2026 |
+
+| Q-17 | Hạn nộp hoặc ngày thi gần nhất? | Chọn phạm vi và lịch | Lập thứ tự theo mức ảnh hưởng khi chưa có ngày cụ thể | P9 | ANSWERED | 19/11/2026 chủ dự án cho biết rất gấp, yêu cầu làm nhanh, chưa cung cấp ngày cụ thể |
+| Q-18 | Có người dùng hoặc điều dưỡng tham gia thử? | Giới hạn bằng chứng hiệu quả | Ghi thử nội bộ tách khỏi người dùng mục tiêu | P9 | ANSWERED | 19/11/2026 hiện chỉ có người thử nội bộ |
+| Q-19 | Có dữ liệu VSL ngoài repo với quyền sử dụng và chia người ký? | Khả năng đánh giá AI | Ưu tiên luồng tiếp nhận, chuẩn bị đánh giá camera | P9 | ANSWERED | 19/11/2026 chưa có dữ liệu như vậy |
+| Q-20 | Chọn triển khai B0 + B1 theo 05-PACKAGE-A-REVIEW.md? | Phạm vi tính năng và semantics xác nhận/duyệt | Schema 1.0, chặn xác nhận mâu thuẫn theo docs/03, kiểm critical ack tại backend, khóa sửa sau duyệt, giữ B2 chờ chọn riêng | P9-B | OPEN | Chờ duyệt phạm vi sau Gói A |
