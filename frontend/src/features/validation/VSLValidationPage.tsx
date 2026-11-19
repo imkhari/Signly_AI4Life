@@ -20,6 +20,9 @@ export function VSLValidationPage() {
   const [familiarity,setFamiliarity]=useState('learning');
   const [condition,setCondition]=useState('normal');
   const [intentId,setIntentId]=useState('NEG_REST');
+  const cameraAreaRef=useRef<HTMLDivElement|null>(null);
+  const resultAreaRef=useRef<HTMLDivElement|null>(null);
+  const [needsReload,setNeedsReload]=useState(false);
   const [preparing,setPreparing]=useState(false);
   const [workerState,setWorkerState]=useState('unknown');
   const [active,setActive]=useState(false);
@@ -38,6 +41,14 @@ export function VSLValidationPage() {
       .catch(() => {});
     return () => controller.abort();
   },[]);
+
+  useEffect(() => {
+    if(active) cameraAreaRef.current?.scrollIntoView?.({block:'start',behavior:'auto'});
+  },[active]);
+
+  useEffect(() => {
+    if(locked) resultAreaRef.current?.scrollIntoView?.({block:'center',behavior:'auto'});
+  },[locked]);
 
   const record=useCallback((result:CameraTrialResult) => {
     if(recordedRef.current || !profile) return;
@@ -94,9 +105,18 @@ export function VSLValidationPage() {
       </select></label>
     </fieldset>
     <p className="text-lg font-semibold">{reference.kind==='negative_valid' || reference.kind==='negative_invalid' ? vi.validation.negativeInstruction : vi.validation.positiveInstruction}</p>
+    {needsReload && <p role="alert">{vi.validation.profileChanged}</p>}
     {split==='final' && <p className="text-lg">{vi.validation.finalNotice}</p>}
-    {!active ? <Button disabled={!consent || !profile || preparing} onClick={async () => {
+    {!active ? <Button disabled={!consent || !profile || preparing || needsReload} onClick={async () => {
       setPreparing(true);
+      try {
+        const versionResponse=await fetch(`/vsl-validation-profile.json?t=${Date.now()}`,{cache:'no-store'});
+        if(!versionResponse.ok) throw new Error();
+        const fresh=await versionResponse.json();
+        if(fresh.profile_id!==profile || (rows.length>0 && rows[0].profile_id!==fresh.profile_id)) {
+          setNeedsReload(true);setPreparing(false);return;
+        }
+      } catch {setNeedsReload(true);setPreparing(false);return;}
       try {
         const response=await fetch('/api/vsl/status',{cache:'no-store'});
         const status=await response.json();
@@ -104,20 +124,20 @@ export function VSLValidationPage() {
       } catch {setWorkerState('unknown');}
       recordedRef.current=false;setLocked(false);setApplied(false);setPreparing(false);setActive(true);
     }}>{vi.validation.startTrial}</Button> : <>
-      <VSLCameraView contextStep={reference.context as 'symptom'|'location'} captureDisabled={locked}
-        onApplyGlosses={() => setApplied(true)} onTrialResult={record} />
+      <div ref={cameraAreaRef}><VSLCameraView contextStep={reference.context as 'symptom'|'location'} captureDisabled={locked}
+        onApplyGlosses={() => setApplied(true)} onTrialResult={record} /></div>
       {applied && <p>{vi.validation.applied}</p>}
-      {locked ? <Button onClick={() => setActive(false)}>{vi.validation.nextTrial}</Button> :
+      <div ref={resultAreaRef}>{locked ? <Button onClick={() => setActive(false)}>{vi.validation.nextTrial}</Button> :
         <Button variant="secondary" onClick={() => {
           record({gloss:'UNKNOWN',reason:'cancelled',frame_count:0,capture_duration_ms:0,
             candidate_latency_ms:null,response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
           setActive(false);
-        }}>{vi.validation.cancelTrial}</Button>}
+        }}>{vi.validation.cancelTrial}</Button>}</div>
     </>}
     <section aria-live="polite" className="space-y-3">
       <h2 className="text-2xl font-bold">{vi.validation.results} ({rows.length})</h2>
       {rows.map(row => <p key={row.trial_id} className="p-3 border rounded-xl text-lg">
-        {row.trial_id} · {row.participant_code} · {row.intent_id}: {row.displayed_candidate} · {vi.validation.outcomes[row.outcome as keyof typeof vi.validation.outcomes]}
+        {row.trial_id} · {row.participant_code} · {row.intent_id}: {row.displayed_candidate} · {policy.intents.find(item => item.id===row.intent_id)?.kind==='negative_valid' && row.response_latency_ms==='' ? vi.validation.ineligibleShort : vi.validation.outcomes[row.outcome as keyof typeof vi.validation.outcomes]}
         {row.candidate_latency_ms && ` · ${row.candidate_latency_ms} ms`}
         {' · '}{vi.camera.reasons[row.reason as keyof typeof vi.camera.reasons]}
         {policy.intents.find(item => item.id===row.intent_id)?.kind==='negative_valid' &&

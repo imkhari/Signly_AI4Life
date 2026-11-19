@@ -14,6 +14,11 @@ describe('single sentence bounds',() => {
     expect(capture.recording).toBe(false);expect(capture.summary(1200).frame_count).toBe(0);
     expect(capture.finish(1200)).toMatchObject({reason:'insufficient_frames'});
   });
+  it('rejects a missing leading section instead of accepting a partial sentence',() => {
+    const capture=new SentenceCapture();capture.begin(0);
+    expect(capture.push(frame(800))).toMatchObject({reason:'tracking_gap'});
+    expect(capture.summary(800).frame_count).toBe(0);
+  });
   it('rejects a gap and releases the old utterance',() => {
     const capture=new SentenceCapture();capture.begin(0);capture.push(frame(0));
     expect(capture.push(frame(600))).toMatchObject({reason:'tracking_gap'});

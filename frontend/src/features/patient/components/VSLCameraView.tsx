@@ -118,6 +118,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const [previewAspect,setPreviewAspect] = useState(4/3);
   const [handCount, setHandCount] = useState(0);
   const [readyToSign,setReadyToSign] = useState(false);
+  const recordingStartedRef=useRef(0);
+  const [remainingSeconds,setRemainingSeconds]=useState(6);
   const [captureState,setCaptureState] = useState<'idle'|'recording'|'processing'>('idle');
   const [captureMessage,setCaptureMessage] = useState<string>(vi.camera.ready);
   const [livePrediction,setLivePrediction] = useState<VSLPredictionResponse|null>(null);
@@ -161,7 +163,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
 
   const beginSentence = () => {
     clearSequence(); setCandidates([]); setLivePrediction(null);
-    captureRef.current.begin(performance.now());
+    recordingStartedRef.current=performance.now();setRemainingSeconds(6);
+    captureRef.current.begin(recordingStartedRef.current);
     setCaptureState('recording'); setCaptureMessage(vi.camera.signNow);
     captureTimerRef.current=setTimeout(() => {
       if (captureRef.current.recording) showFailure(captureRef.current.fail('sequence_limit',performance.now()));
@@ -205,6 +208,13 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       if (requestRef.current===controller) {requestRef.current=null;setCaptureState('idle');}
     }
   };
+
+  useEffect(() => {
+    if (captureState!=='recording') return;
+    const timer=setInterval(() => setRemainingSeconds(Math.max(0,Math.ceil(
+      (SENTENCE_LIMITS.maxMs-(performance.now()-recordingStartedRef.current))/1000))),100);
+    return () => clearInterval(timer);
+  },[captureState]);
 
   // Observe the DOM commit, never send reference/participant data to inference.
   useEffect(() => {
@@ -350,6 +360,9 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         }}>{vi.common.cancel}</Button>}
       </div>
       <p role="status" className="text-lg mb-4">{captureMessage}</p>
+      {captureState==='recording' && <p role="timer" aria-live="off" className="text-2xl font-bold text-action mb-4">
+        {vi.camera.remaining(remainingSeconds)}
+      </p>}
 
       {/* Layout 2 cột: BÊN TRÁI LÀ CAMERA TO RỘNG (8/12), BÊN PHẢI LÀ KẾT QUẢ & XÁC NHẬN (4/12) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">

@@ -42,6 +42,8 @@ test('guided synthetic trial uses the real capture UI, keeps reference out of re
   await page.getByRole('button',{name:'Bắt đầu lượt thử',exact:true}).click();
   const begin=page.getByRole('button',{name:'Bắt đầu ký',exact:true});await expect(begin).toBeEnabled();
   await begin.click();
+  await expect(page.getByRole('timer')).toContainText('Còn');
+  await page.screenshot({path:'test-results/vsl-validation-countdown.png',fullPage:true});
   const start=await page.evaluate(() => (window as unknown as {testObservedFrames:number}).testObservedFrames);
   await expect.poll(() => page.evaluate(() => (window as unknown as {testObservedFrames:number}).testObservedFrames)).toBeGreaterThan(start+28);
   expect(requests).toBe(0);
@@ -70,6 +72,7 @@ test('missing shoulders reject a synthetic trial before HTTP and show a result a
   await page.evaluate(() => {Object.assign(window,{testMissingShoulders:true});});
   await expect(page.getByText(/T0001.*NEG_REST: UNKNOWN/)).toBeVisible();
   expect(requests).toBe(0);
+  await expect(page.getByText(/T0001.*Chưa đủ điều kiện đo/)).toBeVisible();
   await expect(page.getByRole('button',{name:'Lượt tiếp theo',exact:true})).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:'test-results/vsl-validation-720.png',fullPage:true});

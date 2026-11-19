@@ -37,7 +37,8 @@ export class SentenceCapture {
       frame.landmarks.some(v => !Number.isFinite(v) || Math.abs(v)>10)) return this.fail('invalid_landmarks',now);
     if (now-this.started>SENTENCE_LIMITS.maxMs || this.frames.length>=SENTENCE_LIMITS.maxFrames)
       return this.fail('sequence_limit',now);
-    if (previous && (now<=previous.timestamp_ms || now-previous.timestamp_ms>SENTENCE_LIMITS.maxGapMs))
+    if ((previous && now<=previous.timestamp_ms) ||
+      now-(previous?.timestamp_ms ?? this.started)>SENTENCE_LIMITS.maxGapMs)
       return this.fail('tracking_gap',now);
     if (!hasValidShoulders(frame)) return this.fail('missing_shoulders',now);
     if (!frame.landmarks.slice(285).some(v => v!==0)) return this.fail('tracking_gap',now);

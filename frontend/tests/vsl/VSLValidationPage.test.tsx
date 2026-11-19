@@ -22,3 +22,16 @@ it('waits for voluntary start and records a wrong negative once without changing
   expect(screen.getByText('Emit controlled prediction')).toBeDisabled();
   expect(screen.getByRole('button',{name:'Tải kết quả CSV'})).toBeEnabled();
 });
+
+it('blocks mixing results after the running profile changes',async () => {
+  render(<VSLValidationPage />);await act(async () => {});
+  fireEvent.click(screen.getByRole('checkbox'));
+  await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Bắt đầu lượt thử'}));});
+  fireEvent.click(screen.getByText('Emit controlled prediction'));
+  fireEvent.click(screen.getByRole('button',{name:'Lượt tiếp theo'}));
+  vi.stubGlobal('fetch',vi.fn(async () => ({ok:true,json:async () => ({profile_id:'b'.repeat(64)})})));
+  await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Bắt đầu lượt thử'}));});
+  expect(screen.getByRole('alert')).toHaveTextContent('Cấu hình đã đổi');
+  expect(screen.getByRole('button',{name:'Bắt đầu lượt thử'})).toBeDisabled();
+  expect(screen.getByRole('button',{name:'Tải kết quả CSV'})).toBeEnabled();
+});
