@@ -2,7 +2,7 @@ import asyncio
 import json
 from typing import Literal
 
-from app.domain.ontology.loader import find_chief_complaint_by_code
+from app.domain.ontology.loader import find_body_region_by_code, find_chief_complaint_by_code
 from app.infrastructure.llm.base import LLMError, LLMTimeoutError
 
 MockMode = Literal["ok", "toxic", "timeout", "error", "malformed_json"]
@@ -42,7 +42,10 @@ class MockLLMClient:
             pain = data.get("pain", {})
             parts: list[str] = []
             if pain.get("present"):
-                regions = ", ".join(pain.get("body_regions", [])) or "vùng chưa rõ"
+                regions = ", ".join(
+                    item["label_vi"] for code in pain.get("body_regions", [])
+                    if (item := find_body_region_by_code(code)) is not None
+                ) or "vùng chưa rõ"
                 severity = pain.get("severity")
                 if severity is None:
                     severity = "chưa rõ"

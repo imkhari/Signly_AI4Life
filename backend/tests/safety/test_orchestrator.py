@@ -88,6 +88,8 @@ async def test_orchestrator_happy_path() -> None:
     client = MockLLMClient(mode="ok")
     result = await orchestrate_summary(frame, client, timeout_s=1.0)
     assert result.nl_source == "llm"
+    assert "Ngực" in result.text_vi
+    assert "CHEST" not in result.text_vi
     assert result.fallback_reason is None
     assert result.validator.passed is True
     assert "Bạn" in result.text_vi
