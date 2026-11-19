@@ -115,9 +115,9 @@ export const PatientPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col">
+    <div className="patient-shell min-h-screen bg-canvas flex flex-col">
       {/* Header điều hướng Kiosk */}
-      <header className="bg-paper border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
+      <header className="bg-paper border-b border-gray-200 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <Link
             to="/"
@@ -132,15 +132,15 @@ export const PatientPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <ConnectionBadge status={socketStatus} />
+        <div className="flex flex-wrap items-center gap-3">
+          <>{state.sessionId ? <ConnectionBadge status={socketStatus} /> : <span className="text-sm font-semibold text-mute">{vi.presentation.unpaired}</span>}</>
           <A11yControls onCallHelp={() => handleCallInterpreter(false)} />
         </div>
       </header>
 
       {/* Nội dung chính */}
-      <main
-        className={`flex-1 w-full mx-auto flex flex-col justify-start transition-all duration-200 ${
+      <main lang="vi"
+        className={`flex-1 w-full mx-auto flex flex-col justify-start ${
           step === 2 && draft.selectedMode === 'vsl_gloss'
             ? 'max-w-[1360px] px-3 py-2 md:px-6 md:py-3'
             : 'max-w-5xl p-4 md:p-8'

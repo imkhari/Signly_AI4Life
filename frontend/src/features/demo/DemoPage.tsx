@@ -1,3 +1,4 @@
+import { vi } from '../../i18n/vi';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -161,7 +162,7 @@ export const DemoPage: React.FC = () => {
     <div className="min-h-screen bg-canvas flex flex-col">
       {/* Header */}
       <header className="bg-paper border-b border-gray-200 px-6 py-4 shadow-sm">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <div className="max-w-6xl mx-auto flex flex-wrap gap-4 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               to="/"
@@ -171,14 +172,14 @@ export const DemoPage: React.FC = () => {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-extrabold text-ink">Bảng Điều Khiển Demo Giám Khảo</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xl font-extrabold text-ink">{vi.presentation.demoTitle}</span>
                 <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-brand text-white">
                   ENV=demo
                 </span>
               </div>
               <p className="text-xs text-mute mt-0.5">
-                Các thao tác 1 chạm để minh họa trực quan mọi tính năng an toàn y tế và trợ năng
+                {vi.presentation.demoDescription}
               </p>
             </div>
           </div>

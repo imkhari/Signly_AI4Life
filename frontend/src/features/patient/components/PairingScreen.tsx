@@ -150,7 +150,7 @@ export const PairingScreen: React.FC<PairingScreenProps> = ({ onPaired }) => {
           return (
             <div
               key={idx}
-              className={`w-12 h-14 sm:w-14 sm:h-16 rounded-xl border-2 flex items-center justify-center font-mono text-2xl sm:text-3xl font-black transition-all ${
+              className={`w-10 h-14 sm:w-16 sm:h-16 rounded-xl border-2 flex items-center justify-center font-mono text-2xl sm:text-3xl font-black transition-colors ${
                 char
                   ? 'border-action bg-action/5 text-action shadow-sm'
                   : isCurrent
@@ -180,7 +180,7 @@ export const PairingScreen: React.FC<PairingScreenProps> = ({ onPaired }) => {
           <div className="text-[11px] font-bold text-mute uppercase tracking-wider mb-1.5 px-1">
             Chữ số (0 - 9)
           </div>
-          <div className="grid grid-cols-10 gap-1.5 sm:gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {NUMPAD_KEYS.map((k) => (
               <button
                 key={k}
@@ -202,14 +202,14 @@ export const PairingScreen: React.FC<PairingScreenProps> = ({ onPaired }) => {
             Chữ cái (A - Z)
           </div>
           {LETTER_KEYS.map((row, rowIdx) => (
-            <div key={rowIdx} className="flex justify-center gap-1.5 sm:gap-2">
+            <div key={rowIdx} className="flex flex-wrap justify-center gap-2">
               {row.map((k) => (
                 <button
                   key={k}
                   type="button"
                   onClick={() => handleKeyPress(k)}
                   disabled={code.length >= 6 || loading}
-                  className="flex-1 max-w-[56px] h-12 rounded-xl bg-canvas hover:bg-action hover:text-white font-bold text-lg border border-gray-200 transition-colors cursor-pointer select-none disabled:opacity-40"
+                  className="w-[64px] h-16 rounded-xl bg-canvas hover:bg-action hover:text-white font-bold text-lg border border-gray-200 transition-colors cursor-pointer select-none disabled:opacity-40"
                   aria-label={`Chữ ${k}`}
                 >
                   {k}
@@ -266,7 +266,7 @@ export const PairingScreen: React.FC<PairingScreenProps> = ({ onPaired }) => {
       </Button>
 
       {/* Chỉ dẫn mở tab Điều dưỡng */}
-      <div className="flex items-center gap-2 text-sm text-mute">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-mute">
         <span>Chưa thấy mã kết nối?</span>
         <a
           href="/nurse"

@@ -75,3 +75,6 @@ Thumbs.db
 
 # Anonymous individual trial exports stay local; only empty template/aggregate evidence is tracked.
 docs/validation/vsl-v2/local/
+
+# Private slide authoring and validation intermediates.
+.ai4life-build/

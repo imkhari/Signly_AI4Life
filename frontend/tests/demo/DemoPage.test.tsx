@@ -41,7 +41,7 @@ describe('DemoPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Bảng Điều Khiển Demo Giám Khảo')).toBeInTheDocument();
+    expect(screen.getByText('Điều khiển demo')).toBeInTheDocument();
     expect(screen.getByText('ENV=demo')).toBeInTheDocument();
 
     await waitFor(() => {

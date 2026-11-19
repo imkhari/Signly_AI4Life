@@ -102,7 +102,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
                 data-testid={`alert-item-${alert.code}`}
                 className={`p-3.5 rounded-xl border transition-all ${
                   isAck
-                    ? 'bg-canvas/50 border-gray-200 text-mute opacity-60'
+                    ? 'bg-canvas/50 border-gray-200 text-mute'
                     : isCritical
                     ? 'bg-status-danger/5 border-status-danger/40 text-ink ring-1 ring-status-danger/20'
                     : isWarning
@@ -110,8 +110,8 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
                     : 'bg-canvas border-gray-200 text-ink'
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1 basis-[180px]">
                     <span className="mt-0.5">
                       {isCritical ? (
                         <AlertCircle
@@ -125,9 +125,9 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
                         <Info className="w-5 h-5 text-brand" />
                       )}
                     </span>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-mute">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-mute break-all">
                           [{alert.code}]
                         </span>
                         {isCritical && (
@@ -145,7 +145,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
                     type="button"
                     onClick={() => onAcknowledgeAlert(alert.code)}
                     disabled={isAck}
-                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                    className={`shrink-0 min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
                       isAck
                         ? 'bg-canvas text-mute border border-gray-200 cursor-default'
                         : isCritical

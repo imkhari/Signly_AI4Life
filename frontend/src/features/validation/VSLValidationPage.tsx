@@ -77,7 +77,7 @@ export function VSLValidationPage() {
   };
   const selectClass='block w-full min-h-[64px] border-2 rounded-xl p-3 text-lg';
 
-  return <main lang="vi" className="max-w-5xl mx-auto p-4 space-y-5">
+  return <main lang="vi" className="max-w-5xl mx-auto p-4 sm:p-8 space-y-5">
     <h1 className="text-3xl font-bold">{vi.validation.title}</h1>
     {synthetic && <p role="status">{vi.validation.synthetic}</p>}
     <p className="text-lg">{vi.validation.scope}</p>
@@ -87,6 +87,7 @@ export function VSLValidationPage() {
       <input type="checkbox" checked={consent} disabled={active || preparing} onChange={event => setConsent(event.target.checked)} className="w-8 h-8" />
       {vi.validation.consent}
     </label>
+    <h2 className="text-2xl font-bold">{vi.presentation.validationSetup}</h2>
     <fieldset disabled={active || preparing} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <label>{vi.validation.participant}<select className={selectClass} value={participant} onChange={event => setParticipant(event.target.value)}>
         {Object.entries(policy.participants).map(([code,part]) => <option key={code} value={code}>{code} — {part==='final' ? vi.validation.finalPhase : vi.validation.developmentPhase}</option>)}
@@ -107,6 +108,7 @@ export function VSLValidationPage() {
     <p className="text-lg font-semibold">{reference.kind==='negative_valid' || reference.kind==='negative_invalid' ? vi.validation.negativeInstruction : vi.validation.positiveInstruction}</p>
     {needsReload && <p role="alert">{vi.validation.profileChanged}</p>}
     {split==='final' && <p className="text-lg">{vi.validation.finalNotice}</p>}
+    <h2 className="text-2xl font-bold">{vi.presentation.validationCapture}</h2>
     {!active ? <Button disabled={!consent || !profile || preparing || needsReload} onClick={async () => {
       setPreparing(true);
       try {

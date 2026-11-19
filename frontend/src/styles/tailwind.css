@@ -82,3 +82,29 @@ html.high-contrast .card-border {
     border: 1px solid #000000 !important;
   }
 }
+
+/* Keep kiosk controls reachable and preserve text growth at narrow widths. */
+.patient-shell button { min-height: 64px; }
+.patient-shell h2 { line-height: 1.25; }
+.patient-shell main { font-size: 1.25rem; }
+.patient-shell main button { font-size: 1.25rem; }
+.patient-shell main p { overflow-wrap: anywhere; }
+.patient-shell header > div { min-width: 0; }
+.patient-shell header [role='toolbar'] { gap: 8px; }
+
+html.high-contrast :is(header, main, section, footer, button, input, select, textarea, [role='dialog'], [class*='bg-']) {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+html.high-contrast :is(a, p, span, h1, h2, h3, h4, label, svg) { color: #000 !important; }
+html.high-contrast :is(button[aria-pressed='true'], button[aria-selected='true']) {
+  outline: 3px solid #000;
+  outline-offset: 2px;
+  text-decoration: underline;
+}
+html.high-contrast a { text-decoration: underline; }
+html.high-contrast * { transition: none !important; box-shadow: none !important; }
+@media (min-width: 768px) {
+  .patient-shell button,
+  .patient-shell header a { min-width: 64px; min-height: 64px; }
+}

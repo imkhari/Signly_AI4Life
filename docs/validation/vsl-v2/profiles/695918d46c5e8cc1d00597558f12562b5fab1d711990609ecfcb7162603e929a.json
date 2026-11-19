@@ -1,0 +1,146 @@
+{
+  "profile_id": "695918d46c5e8cc1d00597558f12562b5fab1d711990609ecfcb7162603e929a",
+  "sources": {
+    "AI_model/vsl_v2/engine.py": "5fdbe53272d04e9c2798708a668c56ff77b090099b54ead0867a2eac72af93ce",
+    "AI_model/vsl_v2/trials.py": "a822312b353988c1716939ef1df499a6d284055c3089b02c8490188d23fa63bb",
+    "frontend/src/features/validation/VSLValidationPage.tsx": "da5cab53ddac83dfd137bb6def1e3408376c6944cc9f0f86f86a41abc8e1b4b2",
+    "AI_model/vsl_v2/worker.py": "bde5312a8b5135508b6d74c85485b18fe0ef8f51468ea7b7ec6bb4f8ba63f245",
+    "backend/app/ai/vsl_v2.py": "3360814c936e344077f71190869d03b825407e8c2d1d9c58d8b80578ed2c005e",
+    "backend/app/api/rest/vsl.py": "ccba915207f9a74c29a3230f8b10290a7180f037e3f2f5e7cc99bac859d43dd0",
+    "frontend/src/services/vsl/HolisticDetector.ts": "21e745e12adaa40cc123f49b8660f5523e7f0c893f5366669af59e88f1fa9b36",
+    "frontend/src/services/vsl/SentenceCapture.ts": "dfb57346bdc6321e505f7d17eca311f49da54d4c04c7ee80fa0928dcc20b2c1e",
+    "frontend/src/features/patient/components/VSLCameraView.tsx": "8b507798c3249c7997e1d8a1efd04154bdac9ad19c04de3f9696b5371b9b0624",
+    "frontend/src/services/vsl/validationProtocol.json": "ab33a37b860095e99a78bf2755188d0178b33812aa61efee345eb878a7939936",
+    "AI_model/vsl_v2/model-manifest.json": "fa0cfe022050e24f7332689d9d8a4a43ac11c42dbb34691bd09a73a0d395e14f",
+    "AI_model/runtime/requirements-lock.txt": "688a91dbbafaf3b535be811fec9198f8250f7701fba9e78e0c84c82a57a4aeb0",
+    "frontend/package-lock.json": "3f0159bba0ccf7f456c1beaeab88c1daed6eb3c73b931fc110f4cb7bb3ff5cc9",
+    "AI_model/vsl_v2/asset-manifest.json": "938d6ca004c024f6b9199ea84c8dff3399cf97cb5bc37ee34dc7f94c2ba1a655",
+    "AI_model/vsl_v2/translation-vocabulary.json": "f43f686da08fcab6ade5fa5bffec1379e24e7032c5b4ef7709a302e3ff2b5dcb",
+    "checkpoint_sha256": "d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246",
+    "holistic_task_sha256": "e2dab61191e2dcd0a15f943d8e3ed1dce13c82dfa597b9dd39f562975a50c3f8",
+    "policy_canonical_sha256": "7f050b1c73568b39c726eb09842b192f1e1b1b001beb977b1e05143d3b01d763"
+  },
+  "protocol": "vsl-v2-internal-1",
+  "policy": {
+    "version": "vsl-v2-internal-1",
+    "criteria_approval": "Q-25/D-026",
+    "cohort": "internal",
+    "participants": {
+      "P01": "development",
+      "P02": "development",
+      "P03": "final"
+    },
+    "conditions": [
+      "normal",
+      "low_light",
+      "off_axis",
+      "distance"
+    ],
+    "familiarities": [
+      "learning",
+      "fluent",
+      "unknown"
+    ],
+    "devices": [
+      "D01",
+      "D02"
+    ],
+    "expected_per_intent_final": 5,
+    "required_correct_per_intent": 4,
+    "expected_per_negative_final": 5,
+    "candidate_p95_ms_limit": 5000,
+    "intents": [
+      {
+        "id": "HEAD_SYMPTOM",
+        "label": "Đau đầu",
+        "kind": "positive",
+        "context": "symptom",
+        "expected": "ĐAU"
+      },
+      {
+        "id": "CHEST_LOCATION",
+        "label": "Vị trí đau ngực",
+        "kind": "positive",
+        "context": "location",
+        "expected": "NGỰC"
+      },
+      {
+        "id": "BREATH_SYMPTOM",
+        "label": "Khó thở",
+        "kind": "positive",
+        "context": "symptom",
+        "expected": "KHÓ-THỞ"
+      },
+      {
+        "id": "FEVER_DIAGNOSTIC",
+        "label": "Sốt — kiểm lỗi đã biết",
+        "kind": "diagnostic",
+        "context": "symptom",
+        "expected": "SỐT"
+      },
+      {
+        "id": "NEG_REST",
+        "label": "Tay nghỉ trong khung",
+        "kind": "negative_valid",
+        "context": "symptom",
+        "expected": "UNKNOWN"
+      },
+      {
+        "id": "NEG_MOTION",
+        "label": "Động tác thông thường",
+        "kind": "negative_valid",
+        "context": "symptom",
+        "expected": "UNKNOWN"
+      },
+      {
+        "id": "NEG_OUTSIDE",
+        "label": "Ý ngoài danh mục thử",
+        "kind": "negative_valid",
+        "context": "symptom",
+        "expected": "UNKNOWN"
+      },
+      {
+        "id": "NEG_MISSING",
+        "label": "Mất landmark / rời khung",
+        "kind": "negative_invalid",
+        "context": "symptom",
+        "expected": "UNKNOWN"
+      },
+      {
+        "id": "NEG_GAP",
+        "label": "Gián đoạn tracking",
+        "kind": "negative_invalid",
+        "context": "symptom",
+        "expected": "UNKNOWN"
+      }
+    ],
+    "reasons": [
+      "accepted",
+      "unknown",
+      "missing_shoulders",
+      "tracking_gap",
+      "sequence_limit",
+      "insufficient_frames",
+      "invalid_landmarks",
+      "network_error",
+      "inference_timeout",
+      "cancelled"
+    ],
+    "allowed_labels": [
+      "UNKNOWN",
+      "ĐAU",
+      "ĐẦU",
+      "BỤNG",
+      "BỤNG-DƯỚI",
+      "NGỰC",
+      "HỌNG",
+      "LƯNG",
+      "HO",
+      "SỐT",
+      "KHÓ-THỞ"
+    ]
+  },
+  "status": "CANDIDATE",
+  "live_trials": 0,
+  "camera_data_persisted": false
+}

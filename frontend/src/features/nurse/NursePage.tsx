@@ -188,7 +188,7 @@ export const NursePage: React.FC = () => {
               <div>
                 <p className="font-extrabold text-sm">{sessionError}</p>
                 <p className="text-xs text-ink/70 mt-0.5">
-                  Vui lòng kiểm tra Terminal và chạy: <code>make demo</code> hoặc <code>make dev</code>
+                  {vi.presentation.retryConnection}
                 </p>
               </div>
             </div>
@@ -215,7 +215,7 @@ export const NursePage: React.FC = () => {
                   {vi.nurse.verifiedBadge} — STT: {queueNumber} ({intakeCode})
                 </p>
                 <p className="text-xs text-status-success/80">
-                  Màn hình Kiosk bệnh nhân đã nhận được số thứ tự và hướng dẫn vào phòng khám.
+                  {vi.presentation.verifiedDetail}
                 </p>
               </div>
             </div>
@@ -257,9 +257,9 @@ export const NursePage: React.FC = () => {
         </div>
 
         {/* Verification Action Bar (Bottom Sticky) */}
-        <div className="sticky top-0 order-first z-10 bg-paper border border-gray-200 rounded-2xl p-3 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className=" bg-paper border border-gray-200 rounded-2xl p-3 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="space-y-0.5 text-center sm:text-left">
-            <h3 className="text-sm font-bold text-ink">Quyết định tiếp nhận & Cấp STT</h3>
+            <h3 className="text-sm font-bold text-ink">{vi.presentation.decision}</h3>
             {socketError && <p role="alert" className="font-semibold text-danger">{socketError.message_vi} Kiểm tra lại trạng thái xác nhận rồi thử lại.</p>}
             <p className="text-xs text-mute">
               {socketStatus !== 'connected'

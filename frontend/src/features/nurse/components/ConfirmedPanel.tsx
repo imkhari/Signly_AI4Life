@@ -1,4 +1,4 @@
-import { complaintLabels } from '../../../i18n/intakeLabels';
+import { complaintLabels, regionLabels } from '../../../i18n/intakeLabels';
 import React from 'react';
 import { CheckCircle2, Clock, Bot, ShieldCheck } from 'lucide-react';
 import { SemanticFrame, SessionStatus, TriageSummary } from '../../../types';
@@ -26,11 +26,11 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
 
   const regionsText =
     frame.pain.body_regions && frame.pain.body_regions.length > 0
-      ? frame.pain.body_regions.join(', ')
+      ? frame.pain.body_regions.map(code => regionLabels[code] || code).join(', ')
       : 'Chưa chọn vùng';
 
   const onsetText = frame.pain.onset
-    ? `${frame.pain.onset.value} ${frame.pain.onset.unit}`
+    ? `${frame.pain.onset.value} ${vi.intake.units[frame.pain.onset.unit!]}`
     : 'Chưa rõ thời gian';
 
   // Format allergy
@@ -55,7 +55,7 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-200/80 mb-5">
+      <div className="flex flex-wrap gap-3 items-center justify-between pb-4 border-b border-gray-200/80 mb-5">
         <div className="flex items-center gap-2.5">
           {isConfirmed ? (
             <div className="w-8 h-8 rounded-full bg-status-success/15 text-status-success flex items-center justify-center">

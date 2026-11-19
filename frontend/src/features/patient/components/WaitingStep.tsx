@@ -21,32 +21,32 @@ export const WaitingStep: React.FC<WaitingStepProps> = ({
 
           <div>
             <span className="block text-sm font-bold text-mute uppercase tracking-widest mb-1">
-              Số thứ tự của bạn (STT)
+              {vi.presentation.queue}
             </span>
             <span className="text-7xl font-black text-ok font-mono">{queueNumber}</span>
           </div>
 
           <div className="py-3 px-6 bg-canvas rounded-xl inline-block border border-gray-200">
-            <span className="text-sm font-semibold text-mute">Mã tiếp nhận: </span>
-            <span className="text-lg font-bold text-ink">{intakeCode || 'AC-0042'}</span>
+            <span className="text-sm font-semibold text-mute">{vi.presentation.intake} </span>
+            <span className="text-lg font-bold text-ink">{intakeCode || '—'}</span>
           </div>
 
           <div className="p-4 bg-ok-bg text-ok rounded-2xl border border-ok/20 font-bold text-lg">
-            Điều dưỡng đã duyệt phiếu tiếp nhận. Vui lòng ngồi ghế chờ và nhìn màn hình gọi số.
+            {vi.presentation.approved}
           </div>
         </div>
       ) : (
         <div className="bg-paper p-8 rounded-3xl border border-gray-200 shadow-sm w-full space-y-6">
-          <div className="w-20 h-20 bg-action/10 text-action rounded-full flex items-center justify-center mx-auto animate-pulse">
+          <div className="w-20 h-20 bg-action/10 text-action rounded-full flex items-center justify-center mx-auto">
             <Clock className="w-10 h-10" />
           </div>
 
           <div className="space-y-2">
             <h2 className="text-3xl font-extrabold text-ink">
-              Đã gửi thông tin cho điều dưỡng
+              {vi.presentation.waiting}
             </h2>
             <p className="text-mute text-lg max-w-md mx-auto">
-              Điều dưỡng đang kiểm tra phiếu khai của bạn và sẽ cấp số thứ tự ngay.
+              {vi.presentation.waitingDetail}
             </p>
           </div>
 
@@ -58,7 +58,7 @@ export const WaitingStep: React.FC<WaitingStepProps> = ({
 
       <div className="flex items-center gap-2 text-mute text-sm">
         <Stethoscope className="w-5 h-5 text-action" />
-        <span>Bác sĩ sẽ kiểm tra lại kỹ lưỡng khi đến lượt bạn vào phòng khám.</span>
+        <span>{vi.presentation.nextInstruction}</span>
       </div>
     </div>
   );

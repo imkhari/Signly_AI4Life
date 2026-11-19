@@ -6,6 +6,8 @@ export default {
     extend: {
       colors: {
         ink: '#10283C',
+        brand: { DEFAULT: '#0A6B8F', dark: '#10283C', light: '#EAF1F4' },
+        status: { success: '#17703F', warning: '#8A5200', danger: '#B3261E' },
         paper: '#FFFFFF',
         canvas: '#EAF1F4',
         action: '#0A6B8F',
