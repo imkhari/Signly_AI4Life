@@ -1,6 +1,6 @@
 # Bản AI cho buổi thi — CANDIDATE
 
-**Chưa đóng băng chất lượng.** Q-24 capture/guard và Q-25 tiêu chí nội bộ đã được duyệt, nhưng pilot cũ chỉ có1dòng hết thời gian, chưa có phép thử ca âm hợp lệ gọi API; bản mới chưa có lượt. Chưa đạt điều kiện chuyển sang tuyên bố model đã hoàn tất. Có thể tiếp tục hoàn thiện tài liệu chuẩn bị mà không gán số liệu chưa có.
+**Chưa đóng băng chất lượng.** Profile hiện tại đã có1lượt tay nghỉ nội bộ hợp lệ được đối chiếu CSV (P01/phát triển,103frame,5219,90ms,UNKNOWN,response107,60ms). Chưa có lượt dương VSL hoặc thử cuối; không coi một ca âm là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
 
 ## Phiên bản kỹ thuật
 
@@ -19,7 +19,7 @@ Chỉ xem xét đau đầu (symptom), đau ngực (location), khó thở (sympto
 
 ## Điều kiện đổi trạng thái
 
-`metrics.json` của bản mới đang n=0; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
+`metrics.json` của bản mới đang n=1 ca âm phát triển; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
 
 Đạt số học không tự thành kiểm chứng VSL/người dùng mục tiêu. Nếu sửa cấu hình sau lượt cuối, giữ snapshot cũ và thử cuối mới; không ghi đè kết quả thất bại. Ghi rõ cohort nội bộ đang học theo Q-26.
 
@@ -49,3 +49,7 @@ Profile đổi do bố cục trang thử nội bộ được chia bước; weigh
 ## Sửa gián đoạn thao tác thử camera
 
 Profile 4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f thêm kiểm độ mới của tracking trước bắt đầu theo maxGap500ms đã duyệt, giữ lỗi tại camera và xuất CSV thủ công. Snapshot 695918d46c5e8cc1d00597558f12562b5fab1d711990609ecfcb7162603e929a giữ riêng. Weights,500ms,6giây,180frame,24frame/800ms,ngưỡng0,7 và mọi guard giữ nguyên. Có1ảnh báo lượt gián đoạn được chủ dự án cho giữ; không có CSV/timing/profile xác minh và không tính vào gate. Bản mới0lượt trực tiếp; CANDIDATE.
+
+## Bổ sung CSV tay nghỉ hợp lệ
+
+Đã kiểm1lượt P01/NEG_REST của profile4e4ebb từ nội dung người dùng sao chép, không từ ảnh. Đủ điều kiện ca âm theo protocol:103frame,5219,90ms,response107,60ms,UNKNOWN,worker ready. `metrics.json` mới có1live_internal và0positive, không có gợi ý sai trong lượt đó; p95candidate vẫnnull. CSV cá nhân Git ignore, không lưu ảnh camera. Nội dung0lượt trong các mục lịch sử phía trên là snapshot trước khi nhận CSV này. Weights/threshold không đổi, CANDIDATE.

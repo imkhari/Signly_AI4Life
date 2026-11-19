@@ -1,6 +1,6 @@
 # Thử kỹ thuật camera V2 — Q-24/Q-25
 
-Trạng thái **CANDIDATE**. Đã nhập1lượt pilot cũ vượt giới hạn, chưa có lượt ca âm tracking hợp lệ gọi API; bản mới có đếm ngược đang chờ thử lại. Hiện nhóm chưa biết VSL (Q-26). Chỉ thử kỹ thuật nội bộ bằng ca giả lập; chưa có bằng chứng khả năng dùng VSL hoặc hiệu quả bệnh viện. Kế hoạch và tiêu chí đã duyệt ở `docs/PLANS/12-VSL-V2-DEMO-FREEZE.md`.
+Trạng thái **CANDIDATE**. Cập nhật mới nhất: profile4e4ebb đã có1lượt tay nghỉ nội bộ hợp lệ được đối chiếu CSV (103frame,5,22giây,response107,60ms,UNKNOWN);0lượt dương và chưa có thử cuối. Các pilot cũ bên dưới là lịch sử. Đã nhập1lượt pilot cũ vượt giới hạn, chưa có lượt ca âm tracking hợp lệ gọi API; bản mới có đếm ngược đang chờ thử lại. Hiện nhóm chưa biết VSL (Q-26). Chỉ thử kỹ thuật nội bộ bằng ca giả lập; chưa có bằng chứng khả năng dùng VSL hoặc hiệu quả bệnh viện. Kế hoạch và tiêu chí đã duyệt ở `docs/PLANS/12-VSL-V2-DEMO-FREEZE.md`.
 
 ## Mở bộ thử
 
