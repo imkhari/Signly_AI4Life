@@ -1,6 +1,6 @@
 # Thử kỹ thuật camera V2 — Q-24/Q-25
 
-Trạng thái **CANDIDATE**. Cập nhật mới nhất: profile4e4ebb đã có11ca âm hợp lệ được đối chiếu CSV (5tay nghỉ+5cử động thông thường+1vẫy chào,cả11UNKNOWN);0lượt dương và chưa có thử cuối. Các pilot cũ bên dưới là lịch sử. Đã nhập1lượt pilot cũ vượt giới hạn, chưa có lượt ca âm tracking hợp lệ gọi API; bản mới có đếm ngược đang chờ thử lại. Hiện nhóm chưa biết VSL (Q-26). Chỉ thử kỹ thuật nội bộ bằng ca giả lập; chưa có bằng chứng khả năng dùng VSL hoặc hiệu quả bệnh viện. Kế hoạch và tiêu chí đã duyệt ở `docs/PLANS/12-VSL-V2-DEMO-FREEZE.md`.
+Trạng thái **CANDIDATE**. Luồng sản phẩm Q-27 dùng cả câu để gợi ý nhiều trường; trang này giữ protocol nhãn symptom/location để đánh giá riêng. Phiên bản mới có0lượt live. Có11ca âm profile4e4ebb được giữ nguyên tại baseline (5tay nghỉ+5cử động thông thường+1vẫy chào,cả11UNKNOWN), không chuyển thành kết quả luồng nhận cả câu. Chưa có lượt dương VSL hoặc thử cuối. Hiện nhóm chưa biết VSL (Q-26); thử kỹ thuật nội bộ không chứng minh khả năng dùng VSL hoặc hiệu quả bệnh viện.
 
 ## Mở bộ thử
 
@@ -20,7 +20,7 @@ Mã người P01/P02 dùng phát triển; P03 để cuối sau khóa cấu hình
 3. Đưa thân trên và bàn tay vào khung, đủ sáng. Chờ nút **Bắt đầu ký** mở. Nút còn khóa nghĩa là chưa theo dõi được vai/tay; điều chỉnh khoảng cách/góc, không tự coi là lỗi model.
 4. Bấm **Bắt đầu ký**. Giữ bàn tay nghỉ, không khai triệu chứng, đến khi đồng hồ hiện **Còn 3 giây** thì bấm **Xong câu**; mỗi lượt tối đa6giây/180frame, cần ít nhất24frame và800ms. Không quá thời gian để tránh thử thành ca sai đầu vào.
 5. Đáp án lượt này là **UNKNOWN/không có gợi ý**. Nếu hiện ĐAU/HO/SỐT/... thì là gợi ý sai; ghi nguyên kết quả. Không bấm Nhận nếu không đúng ý.
-6. Trang đưa kết quả và nút Lượt tiếp theo vào tầm nhìn. Nhìn hàng T0001: nhãn, kết quả và timing được tự ghi. Bấm **Lượt tiếp theo** rồi lặp đủ5lượt, không xóa lượt lỗi. Cuối nhóm5lượt bấm **Tải kết quả CSV**. Giữ cùng trang để mã T không bị lặp giữa các lần xuất.
+6. Trang giữ vị trí camera khi lượt dừng; bấm Xem kết quả khi muốn xem bảng. Nhìn hàng T0001: nhãn, kết quả và timing được tự ghi. Bấm **Lượt tiếp theo** rồi lặp đủ5lượt, không xóa lượt lỗi. Cuối nhóm5lượt bấm **Tải kết quả CSV**. Giữ cùng trang để mã T không bị lặp giữa các lần xuất.
 7. Nếu hủy lượt, hệ thống ghi `aborted`, không coi là ca âm đạt. Nếu thiếu vai/quá ngắn/đứt tracking, giữ dòng lỗi; trường hợp đó không đủ chứng cứ cho ca âm tracking hợp lệ. Không sửa loại ca sau khi xem kết quả để làm đẹp số.
 
 Có thể tiếp tục ca âm mà không cần VSL:
@@ -75,4 +75,4 @@ Lỗi capture giữ nguyên màn camera, hiện lý do và “Lượt đã dừn
 
 Bấm Tải kết quả CSV để hiện thêm ô Nội dung CSV để sao chép. Nếu không có tệp tải xuống, bấm Sao chép CSV hoặc chọn toàn bộ trong ô và sao chép thủ công, dán vào tệp văn bản `.csv`. Không đóng/tải lại trang cho tới khi giữ được bản xuất, trừ khi chủ dự án chấp nhận mất phần chi tiết chưa xuất. Không suy từ ảnh kết quả thành số frame/timing chưa biết.
 
-Các bản xuất khác trang/lần mở được giữ thành nhóm nguồn riêng. Nếu mãTtrùng giữa hai nhóm, kiểm CSV từng nhóm trước rồi tổng hợp theo(batch_id,trial_id), ghi hash nguồn; không sửa mã gốc hoặc ghép CSV để bỏ qua kiểm tra trùng. Snapshot tích lũy mới của cùng nhóm thay bản cũ, không cộng lặp. Metrics hiện có provenance của rest-batch-01, motion-batch-01 và outside-batch-01; CSV nguồn nằm local Git ignore.
+Các bản xuất khác trang/lần mở được giữ thành nhóm nguồn riêng. Nếu mãTtrùng giữa hai nhóm, kiểm CSV từng nhóm trước rồi tổng hợp theo(batch_id,trial_id), ghi hash nguồn; không sửa mã gốc hoặc ghép CSV để bỏ qua kiểm tra trùng. Snapshot tích lũy mới của cùng nhóm thay bản cũ, không cộng lặp. Baseline4e4ebb có provenance của rest-batch-01, motion-batch-01 và outside-batch-01; CSV nguồn nằm local Git ignore.

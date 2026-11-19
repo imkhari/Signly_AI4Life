@@ -78,7 +78,7 @@ Danh sách seed (cần chuyên gia y tế rà soát — Q-07): `BREATH_DIFFICULT
 
 Chủ dự án duyệt triển khai B0+B1 trong Q-20. Backend kiểm critical ack trước duyệt, chặn xác nhận PAIN_FALSE_BUT_SEVERITY, và chặn cập nhật dữ liệu sau duyệt. Phiếu đã duyệt cần phiên mới nếu sửa. Mỗi phiên có một câu hỏi dị ứng tổng quát đang chờ, chỉ nhận câu trả lời gắn đúng question_id và cần xác nhận lại toàn phiếu.
 
-Các thẻ rà soát có biểu tượng, nhãn và giá trị chưa rõ. Chọn vị trí không tự khẳng định có đau. Giữ lời khai bổ sung xuyên suốt dữ liệu cấu trúc, diễn đạt và bàn giao. Test bổ sung kiểm tra bỏ sót/phủ định triệu chứng đi kèm để kích hoạt fallback. Các quy tắc cảnh báo y tế và ngưỡng severity giữ theo cấu hình đã chốt.
+Các thẻ rà soát có biểu tượng, nhãn và giá trị chưa rõ. Chọn riêng vị trí không tự khẳng định có đau; Q-27 cho phép cả câu khẳng định đau và vùng đi cùng nhau sau khi người bệnh nhận gợi ý. Giữ lời khai bổ sung xuyên suốt dữ liệu cấu trúc, diễn đạt và bàn giao. Test bổ sung kiểm tra bỏ sót/phủ định triệu chứng đi kèm để kích hoạt fallback. Các quy tắc cảnh báo y tế và ngưỡng severity giữ theo cấu hình đã chốt.
 
 ## 9. Review V2 và ngoại lệ skill — Q-23
 
@@ -98,3 +98,12 @@ Chủ dự án duyệt capture theo câu và trang `/vsl-validation`, dữ liệ
 Trang thử không tạo phiên bệnh nhân. Chỉ lưu nhãn kiểm soát, mã P01/P02/P03-D01/D02, split/điều kiện và timing trong RAM; xuất CSV theo yêu cầu người thử, không video/ảnh/landmark/câu decoder/tên/tình trạng sức khỏe thật. Kết quả thử rời rạc tách khỏi dữ liệu phiên y tế và không gửi LLM; bản xuất cá nhân để thư mục local Git ignore. Không tự bật webcam bằng agent hoặc ghi kết quả mô phỏng thành người thật. Q-26 xác nhận nhóm chưa biết VSL; lượt dương chưa có reference ký được kiểm tra giữ pending.
 
 Lượt E2E có `evidence=synthetic` được ghi nhãn và loại khỏi gate người thật. Không công bố đạt tiêu chí chỉ vì test tự động qua. CLI không tự đóng băng; cần kết quả đúng split và xác nhận đánh giá cuối chưa dùng để tune. Từ chối nhiều hơn là trade-off cần ghi, không che lượt lỗi.
+
+
+## 11. Review luồng nhận cả câu V2 — Q-27
+
+Chủ dự án chọn giữ V2 theo câu, kế hoạch14. Không đổi checkpoint, extractor, điểm0,7, giới hạn capture hoặc quy tắc cảnh báo y tế. Chỉ context intake mới tạo gợi ý nhiều trường từ toàn câu trong allowlist. Không mở dịch hội thoại hoặc suy luận lâm sàng. Câu không đủ thông tin vẫn hỏi bổ sung bằng Chạm; không biến câu ho thành “không đau”, không đoán vị trí cụ thể từ bụng/lưng chung chung.
+
+Một gợi ý được kiểm tra như một đơn vị, không có giỏ ghép các từ từ nhiều câu. Trước khi nhận không ghi bản nháp hoặc server. Sau khi nhận, patch đồng thời các trường liên quan và xóa detail cũ nếu ý thay đổi, có thông báo trước; chưa xác nhận toàn phiếu. Ngắt kết nối hoặc phiếu đổi làm hủy gợi ý/request cũ. Mọi bước patient confirmation, Post-LLM Validator/fallback, critical ack và khóa sau duyệt tiếp tục tại backend như trước.
+
+Review bằng checklist và tests theo Q-23: ánh xạ toàn câu, từ chối phủ định/đa ý, nhận/sửa/bỏ, patch đồng thời, xóa detail cũ, không phủ định dữ liệu chưa hỏi, stale response, đồng bộ hai màn và xác nhận/duyệt/reset. Các lượt tự động dùng đầu vào mô phỏng, không tính thành lượt VSL thật. Profile mới tách khỏi11ca âm profile4e4ebb; các kết quả cũ vẫn giữ baseline. Chưa có lượt dương được người biết VSL xác minh, trạng thái model vẫn CANDIDATE.

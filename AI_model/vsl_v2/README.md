@@ -1,6 +1,6 @@
 # Camera V2 — runtime thử nghiệm
 
-Được chủ dự án duyệt Q-23. Camera mới dùng **mô hình học sâu V2**, không dùng luật hình học để chọn nhãn. Video xử lý tại trình duyệt; chuỗi 411 tọa độ thân/mặt/tay gửi trong LAN. Chỉ các câu trong allowlist được gợi ý theo ngữ cảnh, bệnh nhân phải Nhận → Áp dụng → xác nhận phiếu. Mức đau/thời gian dùng Chạm. Không chẩn đoán hay tự ghi câu dịch vào hồ sơ.
+Được chủ dự án duyệt Q-23. Camera mới dùng **mô hình học sâu V2**, không dùng luật hình học để chọn nhãn. Video xử lý tại trình duyệt; chuỗi 411 tọa độ thân/mặt/tay gửi trong LAN. Chỉ các câu trong allowlist được gợi ý theo ngữ cảnh, context intake (Q-27) gợi ý cả lý do và thông tin đau liên quan, bệnh nhân bấm Dùng thông tin này rồi bổ sung Chạm và xác nhận toàn phiếu. Context symptom/location cũ giữ Nhận → Áp dụng. Mức đau/thời gian dùng Chạm. Không chẩn đoán hay tự ghi câu dịch vào hồ sơ.
 
 ## Chạy trên máy này
 

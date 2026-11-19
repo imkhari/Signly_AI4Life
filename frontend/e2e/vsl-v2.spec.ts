@@ -53,7 +53,7 @@ for (const width of [1024,720]) {
     await page.keyboard.press('Enter');
     await page.getByRole('button',{name:/Ký hiệu VSL/}).click();
     await page.getByRole('button',{name:'Tiếp tục',exact:true}).click();
-    await expect(page.getByRole('heading',{name:/Gợi ý cử chỉ qua camera/})).toBeVisible();
+    await expect(page.getByRole('heading',{name:/Nhận một câu ký hiệu/})).toBeVisible();
     await expect(page.getByText('Đang mở nhận diện camera...',{exact:true})).not.toBeVisible({timeout:30000});
     await page.evaluate(() => window.scrollTo(0,0));
     await page.screenshot({fullPage:true,path:`test-results/camera-v2-${width}.png`});

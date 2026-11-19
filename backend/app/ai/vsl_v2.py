@@ -40,6 +40,11 @@ LABELS = {
     "SỐT": "Sốt",
     "KHÓ-THỞ": "Khó thở",
 }
+COMPLAINT_CODES = {"ĐAU": "PAIN", "HO": "COUGH", "SỐT": "FEVER", "KHÓ-THỞ": "BREATH_DIFFICULTY"}
+REGION_CODES = {
+    "ĐẦU": "HEAD", "NGỰC": "CHEST", "BỤNG": "ABDOMEN_UPPER",
+    "BỤNG-DƯỚI": "ABDOMEN_LOWER", "HỌNG": "NECK", "LƯNG": "LOWER_BACK",
+}
 
 
 def map_candidate(result: dict[str, Any], context: str | None) -> dict[str, Any]:
@@ -65,13 +70,13 @@ def map_candidate(result: dict[str, Any], context: str | None) -> dict[str, Any]
     symptom, region = PHRASES[phrase]
     if context == "location":
         gloss = region
-    elif context in (None, "symptom", "general"):
+    elif context in (None, "symptom", "general", "intake"):
         gloss = symptom
     else:
         gloss = None
     if gloss is None:
         return unknown
-    return {
+    candidate: dict[str, Any] = {
         "success": True,
         "gloss": gloss,
         "tokens": [gloss],
@@ -81,6 +86,13 @@ def map_candidate(result: dict[str, Any], context: str | None) -> dict[str, Any]
         "model_source": "vsl_v2_learned_translation",
         "latency_ms": float(result.get("forward_decode_ms", 0)),
     }
+    if context == "intake":
+        candidate["intake_suggestion"] = {
+            "chief_complaint_code": COMPLAINT_CODES[symptom],
+            "pain_present": True if symptom == "ĐAU" else None,
+            "body_regions": [REGION_CODES[region]] if region is not None else [],
+        }
+    return candidate
 
 
 class V2Runtime:

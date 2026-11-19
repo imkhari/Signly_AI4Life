@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { PairingScreen } from './components/PairingScreen';
@@ -22,6 +22,17 @@ import { NurseQuestionPayload, InputUpdatedServerPayload } from '../../types';
 import { vi } from '../../i18n/vi';
 
 export const PatientPage: React.FC = () => {
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  useEffect(() => {
+    const header=headerRef.current;
+    if (!header) return;
+    const measure=()=>setHeaderHeight(header.getBoundingClientRect().height);
+    measure();
+    if (typeof ResizeObserver==='undefined') return;
+    const observer=new ResizeObserver(measure);observer.observe(header);
+    return ()=>observer.disconnect();
+  },[]);
   const { state } = useSession();
   const {
     socketStatus,
@@ -115,9 +126,10 @@ export const PatientPage: React.FC = () => {
   };
 
   return (
-    <div className="patient-shell min-h-screen bg-canvas flex flex-col">
+    <div className="patient-shell min-h-screen bg-canvas flex flex-col"
+      style={{'--patient-header-height':`${headerHeight}px`} as React.CSSProperties}>
       {/* Header điều hướng Kiosk */}
-      <header className="bg-paper border-b border-gray-200 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm sticky top-0 z-30">
+      <header ref={headerRef} className="bg-paper border-b border-gray-200 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <Link
             to="/"
@@ -176,6 +188,8 @@ export const PatientPage: React.FC = () => {
                 onBack={prevStep}
                 onNext={nextStep}
                 onSwitchMode={updateMode}
+                connected={socketStatus === 'connected'}
+                frameKey={JSON.stringify(state.frame)}
               />
             )}
 

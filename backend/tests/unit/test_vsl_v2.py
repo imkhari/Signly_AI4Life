@@ -36,6 +36,68 @@ def test_context_and_generic_locations_fail_closed() -> None:
     assert "translation" not in map_candidate(decoded("tôi bị sốt ."), "symptom")
 
 
+@pytest.mark.parametrize("text", ["tôi không bị sốt", "tôi bị sốt và ho", "tôi bị đau ngực 3 ngày"])
+def test_sentence_intake_rejects_partial_matches(text: str) -> None:
+    result = map_candidate(decoded(text), "intake")
+    assert not result["success"]
+    assert "intake_suggestion" not in result
+
+
+@pytest.mark.parametrize(
+    "text,code,pain,regions",
+    [
+        ("tôi bị đau ngực", "PAIN", True, ["CHEST"]),
+        ("tôi bị đau đầu", "PAIN", True, ["HEAD"]),
+        ("tôi bị đau bụng", "PAIN", True, []),
+        ("tôi bị đau lưng", "PAIN", True, []),
+        ("tôi bị đau bụng dưới", "PAIN", True, ["ABDOMEN_LOWER"]),
+        ("tôi bị ho", "COUGH", None, []),
+        ("tôi bị sốt", "FEVER", None, []),
+        ("tôi cảm thấy khó thở", "BREATH_DIFFICULTY", None, []),
+    ],
+)
+def test_sentence_intake_returns_only_asserted_fields(text, code, pain, regions) -> None:
+    result = map_candidate(decoded(text), "intake")
+    assert result["intake_suggestion"] == {
+        "chief_complaint_code": code, "pain_present": pain, "body_regions": regions,
+    }
+    assert "translation" not in result
+
+
+def test_sentence_response_contract_and_legacy_context(monkeypatch) -> None:
+    monkeypatch.setattr(v2_runtime, "infer", AsyncMock(return_value=decoded("tôi bị đau ngực")))
+    with TestClient(app) as client:
+        result = client.post("/api/vsl/predict", json={
+            "frames": frames(), "context_step": "intake",
+        }).json()
+        assert result["intake_suggestion"] == {
+            "chief_complaint_code": "PAIN", "pain_present": True, "body_regions": ["CHEST"],
+        }
+        legacy = client.post("/api/vsl/predict", json={
+            "frames": frames(), "context_step": "location",
+        }).json()
+        assert legacy["gloss"] == "NGỰC" and legacy["intake_suggestion"] is None
+        assert client.post("/api/vsl/predict", json={
+            "hands": [], "context_step": "intake",
+        }).status_code == 422
+
+
+def test_structured_suggestion_cannot_deny_pain_or_attach_unrelated_location() -> None:
+    from pydantic import ValidationError
+
+    from app.domain.vsl import IntakeSuggestion
+
+    for payload in [
+        {"chief_complaint_code": "PAIN", "pain_present": None},
+        {"chief_complaint_code": "PAIN", "pain_present": False},
+        {"chief_complaint_code": "COUGH", "body_regions": ["CHEST"]},
+        {"chief_complaint_code": "FEVER", "pain_present": True},
+        {"chief_complaint_code": "PAIN", "pain_present": True, "severity": 8},
+    ]:
+        with pytest.raises(ValidationError):
+            IntakeSuggestion.model_validate(payload)
+
+
 @pytest.mark.parametrize("score", [0, 0.69, float("nan"), float("inf"), 1.01])
 def test_invalid_uncalibrated_score_never_becomes_candidate(score: float) -> None:
     assert not map_candidate(decoded("tôi bị sốt .", score), "symptom")["success"]

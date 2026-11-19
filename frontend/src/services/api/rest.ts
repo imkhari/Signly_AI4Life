@@ -40,6 +40,7 @@ export interface VSLTopK {
 }
 
 export interface VSLPredictionResponse {
+  intake_suggestion?: import('../../types/vsl').IntakeSuggestion | null;
   success: boolean;
   gloss: string;
   token?: string | null;

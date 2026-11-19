@@ -1,5 +1,9 @@
 # Kết quả camera V2
 
+## Luồng theo câu Q-27 — phiên bản mới
+
+Đã chuyển11lượt live profile4e4ebb sang `baselines/4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f.json`, giữ nguyên nguồn/nhóm/hash. Không xóa bằng chứng và không coi đó là lượt thử luồng intake mới. `metrics.json` hiện dành cho profile mới,0lượt live; các mục bên dưới là lịch sử. Chưa có lượt dương được xác minh VSL, CANDIDATE. E2E nhận cả câu là mô phỏng detector/response, chỉ kiểm luồng và an toàn cập nhật.
+
 ## Cập nhật mới nhất — 11ca âm kỹ thuật hợp lệ
 
 Đã đối chiếu CSV NEG_OUTSIDE đầu tiên: T0001/P01/phát triển/learning/D01/normal,worker ready,92frame,4646,50ms,UNKNOWN/unknown,response198,10ms. Theo hướng dẫn trước đó, đây là vẫy chào thông thường không khai triệu chứng; không phải bộVSL ngoài từ vựng được chuyên gia xác minh. CSV ở `local/P01-outside-batch-01-4e4ebb.csv` (Git ignore), kiểm riêng cùng profile4e4ebb.

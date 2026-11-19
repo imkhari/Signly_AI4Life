@@ -1,10 +1,9 @@
 # Bản AI cho buổi thi — CANDIDATE
 
-**Chưa đóng băng chất lượng.** Profile hiện tại đã có11ca âm nội bộ hợp lệ:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật. Nhóm tay nghỉ đã được đối chiếu CSV (T0001–T0005,P01/phát triển,cả5UNKNOWN,không có gợi ý sai; response103,90–215,90ms). Chưa có lượt dương VSL hoặc thử cuối; không coi nhóm tay nghỉ của1người là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
-
+**Chưa đóng băng chất lượng.** Luồng Q-27 theo câu mới có0lượt live.11ca âm của profile4e4ebb được giữ ở baseline cùng nguồn/nhóm/hash:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật, cả11UNKNOWN. Chưa có lượt dương VSL hoặc thử cuối. Không gộp kết quả cũ vào cấu hình mới, không coi ca âm của1người là kiểm chứng nhận diện.
 ## Phiên bản kỹ thuật
 
-Profile kỹ thuật hiện tại: `4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f`. PilotC52 cũ được giữ riêng với commit232333d; không trộn kết quả giữa hai cấu hình. Code camera/tool hiện tại: `1375640`; pilot ban đầu: `232333d`. Base commit trước M0–M5: `b4432d775052a72ea9ed5fb973b04ca5a2020378`. Fingerprint ràng buộc từng file code và policy; quyết định đóng băng chưa được đưa ra.
+Profile kỹ thuật hiện tại được ghi trong `frontend/public/vsl-validation-profile.json` và snapshot `profiles/`. Profile4e4ebb cũ giữ riêng11lượt; pilotC52 riêng1lượt không đạt đầu vào. Q-27 thay ánh xạ gợi ý cả câu và UI, giữ weights. Fingerprint ràng buộc code và policy; chưa đưa ra quyết định đóng băng.
 
 - Checkpoint: `AI_model/checkpoints/vsl_v2.pt`, SHA256 `d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246`, không đổi weights.
 - Decoder tiếng Việt442 token, greedy; CTC374 không xuất gloss. Norm2 vai9/10; mọi frame phải có hai điểm vai hợp lệ, không dùng width gần0.
@@ -15,11 +14,11 @@ Profile kỹ thuật hiện tại: `4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89
 
 ## Phạm vi dự kiến
 
-Chỉ xem xét đau đầu (symptom), đau ngực (location), khó thở (symptom) ở điều kiện bình thường sau khi đạt phép thử. **Hiện chưa có ý nào được chứng minh chạy ổn định trên camera người thật.** Sốt giữ ca kiểm lỗi, không quảng bá nhận tốt; mức đau/thời gian dùng Chạm. Nhận → Lưu → bệnh nhân xác nhận toàn phiếu → điều dưỡng duyệt vẫn giữ nguyên. Chạm là luồng thi chính D-017.
+Chỉ xem xét đau đầu (symptom), đau ngực (location), khó thở (symptom) ở điều kiện bình thường sau khi đạt phép thử. **Hiện chưa có ý nào được chứng minh chạy ổn định trên camera người thật.** Sốt giữ ca kiểm lỗi, không quảng bá nhận tốt; mức đau/thời gian dùng Chạm. Context intake: kiểm cả gợi ý → Dùng thông tin này → bổ sung bằng Chạm → bệnh nhân xác nhận toàn phiếu → điều dưỡng duyệt. Context symptom/location ở trang thử giữ Nhận → Lưu. Chạm là luồng thi chính D-017.
 
 ## Điều kiện đổi trạng thái
 
-`metrics.json` của bản mới đang n=5 ca âm tay nghỉ phát triển; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
+`metrics.json` của bản mới đang n=0; baseline4e4ebb giữ11ca âm phát triển; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
 
 Đạt số học không tự thành kiểm chứng VSL/người dùng mục tiêu. Nếu sửa cấu hình sau lượt cuối, giữ snapshot cũ và thử cuối mới; không ghi đè kết quả thất bại. Ghi rõ cohort nội bộ đang học theo Q-26.
 
@@ -69,3 +68,8 @@ Người dùng gửi đầy đủT0001–T0005 cùng profile4e4ebb. Kiểm T0001
 ## Lượt NEG_OUTSIDE đầu tiên
 
 Đã đối chiếu1CSV vẫy chào:92frame,4646,50ms,UNKNOWN,response198,10ms,worker ready. Snapshot nguồn riêng ngoài nhóm rest/motion, giữ mãT0001 gốc và hash nguồn. Tổng11ca âm hợp lệ,0gợi ý sai trong nhóm,0dương/0cuối,p95gợi ý null. Đây là vẫy chào thông thường của người đang học, không phải tậpVSL OOD được kiểm tra. CANDIDATE.
+
+
+## Kỹ thuật Q-27 hiện tại
+
+Profile mới: `509264a98b707ebdb6c80c1656dcaa075e3ce5e7afd38a7c36fa1ce5e96105dd`.173test backend+96frontend,8runtime,build và18E2E qua; có luồng gợi ý cả câu, patch đồng thời, hỏi bổ sung và xác nhận hai phía. E2E camera mô phỏng không điền vào số người/lượt thật. Model giữ nguyên checkpoint; trạng thái CANDIDATE, metrics mới0live. Baseline4e4ebb giữ nguyên11ca âm cùng provenance, không bị xóa hoặc chuyển thành bằng chứng cho bản mới.

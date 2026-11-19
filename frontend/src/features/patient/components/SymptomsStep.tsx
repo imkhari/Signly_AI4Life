@@ -19,6 +19,8 @@ import { Button } from '../../../ui/Button';
 import { ModalityType, OnsetUnit } from '../../../types';
 import { RecognizedGloss } from '../../../services/vsl/types';
 import { vi } from '../../../i18n/vi';
+import type { IntakeSuggestion } from '../../../types/vsl';
+import { sentencePatch, SENTENCE_REGIONS } from '../sentenceIntake';
 
 export interface SymptomsData {
   chiefComplaintCode: string | null;
@@ -39,6 +41,8 @@ export interface SymptomsStepProps {
   onBack: () => void;
   onNext: () => void;
   onSwitchMode?: (mode: ModalityType) => void;
+  connected?: boolean;
+  frameKey?: string;
 }
 
 interface ComplaintOption {
@@ -112,9 +116,11 @@ export type SymptomTab = 'complaint' | 'pain_body' | 'pain_scale' | 'onset' | 'e
 
 export const SymptomsStep: React.FC<SymptomsStepProps> = ({
   data, initialTab = 'complaint', selectedMode = 'touch', onChange, onBack, onNext, onSwitchMode,
+  connected = true, frameKey,
 }) => {
   const [activeTab, setActiveTab] = useState<SymptomTab>(initialTab);
   const [cameraOpen, setCameraOpen] = useState(selectedMode === 'vsl_gloss');
+  const [sentenceFlow, setSentenceFlow] = useState(false);
   const extras = data.extraSymptoms || [];
   const isPainRelevant = data.hasPain === true || activeTab === 'pain_body';
   const tabs: { id: SymptomTab; label: string }[] = [
@@ -127,7 +133,24 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
   const cameraSupported = !['pain_scale', 'onset'].includes(activeTab);
   const showCamera = cameraSupported && cameraOpen && (activeTab !== 'pain_body' || data.hasPain === true);
   const contextStep = activeTab === 'pain_body' ? 'location' :
-    activeTab === 'pain_scale' || activeTab === 'onset' ? 'severity' : 'symptom';
+    activeTab === 'pain_scale' || activeTab === 'onset' ? 'severity' :
+    activeTab === 'complaint' ? 'intake' : 'symptom';
+  const intakeCamera = showCamera && contextStep === 'intake';
+  const applySentence = (suggestion: IntakeSuggestion) => {
+    if (!connected) return;
+    onChange(sentencePatch(data, suggestion));
+    setCameraOpen(false); setSentenceFlow(true);
+    setActiveTab(suggestion.pain_present === true && suggestion.body_regions.length ? 'pain_scale' : 'pain_body');
+  };
+  const continueDetails = () => {
+    if (!sentenceFlow) { onNext(); return; }
+    const next: Record<SymptomTab, SymptomTab | null> = {
+      complaint: 'pain_body', pain_body: data.hasPain === true ? 'pain_scale' : 'extras',
+      pain_scale: 'onset', onset: 'extras', extras: null,
+    };
+    const tab = next[activeTab];
+    if (tab) { setCameraOpen(false); setActiveTab(tab); } else onNext();
+  };
 
   const applyGlosses = (glosses: RecognizedGloss[]) => {
     if (activeTab === 'complaint' || activeTab === 'extras') {
@@ -158,14 +181,15 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
   return (
     <div className="w-full max-w-5xl mx-auto space-y-5">
       <h2 className="text-2xl font-bold text-ink">{vi.wizard.step2}</h2>
-      <div role="tablist" aria-label="Các phần triệu chứng" className="flex flex-wrap gap-3">
+      {sentenceFlow && <p role="status" className="text-lg bg-canvas rounded-xl p-4">Đã đưa gợi ý vào bản nháp. Hãy bổ sung phần còn thiếu bằng Chạm; chọn Chưa rõ nếu chưa trả lời được. Bạn sẽ kiểm tra toàn phiếu trước khi xác nhận.</p>}
+      {!intakeCamera && <div role="tablist" aria-label="Các phần triệu chứng" className="flex flex-wrap gap-3">
         {tabs.filter(tab => !['pain_scale', 'onset'].includes(tab.id) || data.hasPain === true)
           .map(tab => <button key={tab.id} type="button" role="tab"
             aria-selected={activeTab === tab.id} onClick={() => { setActiveTab(tab.id); setCameraOpen(false); }}
             className={`min-h-[64px] px-4 rounded-xl border-2 font-bold ${activeTab === tab.id ? 'bg-action text-white' : 'bg-paper text-ink'}`}>
             {tab.label}
           </button>)}
-      </div>
+      </div>}
 
       <section aria-label={tabs.find(tab => tab.id === activeTab)?.label} className="bg-paper border rounded-2xl p-5 space-y-5">
         <h3 className="text-2xl font-bold">{tabs.find(tab => tab.id === activeTab)?.label}</h3>
@@ -180,7 +204,7 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
           </button>)}
         </div>}
 
-        {((activeTab === 'complaint' && data.chiefComplaintCode && data.chiefComplaintCode !== 'PAIN') || activeTab === 'pain_body') &&
+        {!intakeCamera && ((activeTab === 'complaint' && data.chiefComplaintCode && data.chiefComplaintCode !== 'PAIN') || activeTab === 'pain_body') &&
           <div className="space-y-3">
             <p className="text-xl font-bold">{vi.wizard.painQuestion}</p>
             <div className="flex flex-wrap gap-3">
@@ -190,13 +214,19 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
             </div>
           </div>}
 
-        {!showCamera && activeTab === 'pain_body' && isPainRelevant && data.hasPain === true && <BodyMap selectedRegions={data.bodyRegions}
-          onToggleRegion={code => onChange({ bodyRegions: data.bodyRegions.includes(code) ? data.bodyRegions.filter(c => c !== code) : [...data.bodyRegions, code] })} />}
+        {!showCamera && activeTab === 'pain_body' && isPainRelevant && data.hasPain === true && <>
+          <BodyMap selectedRegions={data.bodyRegions}
+            onToggleRegion={code => onChange({ bodyRegions: data.bodyRegions.includes(code) ? data.bodyRegions.filter(c => c !== code) : [...data.bodyRegions, code] })} />
+          <Button variant="secondary" onClick={() => onChange({ bodyRegions: [] })}>Vị trí chưa rõ</Button>
+        </>}
 
         {activeTab === 'pain_scale' && data.hasPain === true && <div className="space-y-4">
           <p>{data.severity === null ? vi.intake.unknown : `${data.severity}/10`}</p>
-          <PainSlider value={data.severity ?? 5} onChange={severity => onChange({ severity })} />
-          <Button onClick={() => onChange({ severity: data.severity ?? 5 })}>{vi.intake.accept}</Button>
+          {sentenceFlow && data.severity === null ? <div className="grid grid-cols-3 sm:grid-cols-6 gap-3" aria-label="Chọn mức đau">
+            {Array.from({length:11},(_,value) => <Button key={value} variant="secondary" aria-label={`Mức đau ${value}`}
+              onClick={() => onChange({severity:value})}>{value}/10</Button>)}
+          </div> : <PainSlider value={data.severity ?? 5} onChange={severity => onChange({ severity })} />}
+          <Button disabled={sentenceFlow && data.severity===null} onClick={() => onChange({ severity: data.severity ?? 5 })}>{vi.intake.accept}</Button>
           <Button variant="secondary" onClick={() => onChange({ severity: null })}>{vi.intake.unknown}</Button>
         </div>}
 
@@ -226,16 +256,20 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
 
         {cameraSupported && (showCamera ?
           <VSLCameraView key={activeTab} contextStep={contextStep} onApplyGlosses={applyGlosses}
+            onApplyIntakeSuggestion={applySentence} connected={connected}
+            draftKey={JSON.stringify([data, frameKey])}
+            replacementNotice={intakeCamera && data.chiefComplaintCode ?
+              `Bản nháp hiện có: ${data.chiefComplaintLabel || data.chiefComplaintCode}${data.bodyRegions.length ? ' — ' + data.bodyRegions.map(code => SENTENCE_REGIONS[code as keyof typeof SENTENCE_REGIONS] || code).join(', ') : ''}. Dùng câu mới sẽ thay lý do khám, tình trạng đau và vị trí; mức đau/thời gian cũ được xóa nếu các thông tin này thay đổi.` : undefined}
             onSwitchToTouchMode={() => { setCameraOpen(false); onSwitchMode?.('touch'); }} /> :
           <Button variant="secondary" disabled={['pain_body', 'pain_scale', 'onset'].includes(activeTab) && data.hasPain !== true}
             onClick={() => setCameraOpen(true)}>{vi.intake.cameraButton}</Button>)}
-        <p className="text-sm text-mute">{vi.intake.contextHint}</p>
+        <p className="text-sm text-mute">{intakeCamera ? 'Một câu → một gợi ý đầy đủ → bạn kiểm tra và dùng hoặc sửa. Chưa xác nhận toàn phiếu ở bước này.' : vi.intake.contextHint}</p>
       </section>
 
       <p className="text-lg font-bold">{vi.intake.main} — {data.chiefComplaintLabel || vi.intake.unknown}</p>
       <div className="flex flex-wrap justify-between gap-3">
         <Button variant="secondary" onClick={onBack}>{vi.common.back}</Button>
-        <Button variant="primary" disabled={!data.chiefComplaintCode} onClick={onNext}>{vi.common.next}</Button>
+        <Button variant="primary" disabled={!data.chiefComplaintCode || intakeCamera} onClick={continueDetails}>{vi.common.next}</Button>
       </div>
     </div>
   );

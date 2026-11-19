@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field, model_validator
 
 from app.ai.vsl_v2 import map_candidate, v2_runtime
+from app.domain.vsl import IntakeSuggestion
 
 # Thêm thư mục gốc của project vào sys.path để nạp module AI_model
 _PROJECT_ROOT = Path(__file__).resolve().parents[4]
@@ -49,13 +50,16 @@ class VSLPredictRequest(BaseModel):
     hands: list[HandInput] | None = Field(default=None, max_length=2)
     frames: list[HolisticFrame] | None = Field(default=None, min_length=8, max_length=300)
     context_step: str | None = Field(
-        default=None, description="Bước ngữ cảnh: location, symptom, pain_level, onset, general"
+        default=None,
+        description="Bước ngữ cảnh: intake, location, symptom, pain_level, onset, general",
     )
 
     @model_validator(mode="after")
     def validate_input(self) -> "VSLPredictRequest":
         if (self.hands is None) == (self.frames is None):
             raise ValueError("Provide hands or holistic frames, never both")
+        if self.context_step == "intake" and self.frames is None:
+            raise ValueError("Sentence intake requires holistic frames")
         if self.frames:
             times = [frame.timestamp_ms for frame in self.frames]
             if any(b <= a for a, b in zip(times, times[1:])) or times[-1] - times[0] > 10000:
@@ -84,6 +88,7 @@ class VSLPredictResponse(BaseModel):
     top_k: list[TopKPrediction] = Field(default_factory=list)
     latency_ms: float = 0.0
     model_source: str = "AI_model (VTN & 3D Spatial Geometry)"
+    intake_suggestion: IntakeSuggestion | None = None
 
 
 # --- Endpoints ---
@@ -215,7 +220,7 @@ async def get_vsl_status() -> dict[str, Any]:
         "v2_runtime_available": v2_runtime.available,
         "v2_status": "available" if v2_runtime.available else "unavailable",
         "v2_worker_ready": v2_runtime.process is not None and v2_runtime.process.returncode is None,
-        "v2_supported_contexts": ["symptom", "location"],
+        "v2_supported_contexts": ["intake", "symptom", "location"],
         "v2_probability_calibrated": False,
         "vocabulary_count_is_recognition_accuracy": False,
         "legacy_fields_describe": "hands request only; camera uses holistic V2",

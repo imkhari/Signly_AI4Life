@@ -35,3 +35,4 @@
 | D-026 | 2026-11-19 | Tiêu chí thử nội bộ Q-25; cohort nội bộ chưa biết VSL, không coi là kiểm chứng VSL | Chủ dự án duyệt Q-25 và trả lời Q-26. Phân P01/P02 phát triển và P03 cuối; sốt giữ ca lỗi bắt buộc; tiêu chí là mục tiêu engineering mẫu nhỏ | FINAL |
 
 | D-027 | 2026-11-19 | Hoàn thiện UI P9 và tạo bộ slide theo template AI4Life +3facefont đã tải; giữ model/contract/safety, dùng Chạm và LLM mock, Q-11 vẫn3phút+2phútQ&A | Chủ dự án yêu cầu thực hiện prompt UI+slide. Thêm bản7phút và phụ lục là phương án chuẩn bị, không thay thời lượng đã chốt | FINAL |
+| D-028 | 2026-11-19 | Tiếp tục V2 theo câu; camera mở đầu tạo một phiếu gợi ý nhiều trường, người bệnh đồng ý trước khi ghi; giữ SemFrame1.0, model/guard và xác nhận toàn phiếu | Chủ dự án chọn V2 theo hướng phù hợp model (Q-27); phạm vi kế hoạch14, chưa train isolated hoặc sửa phân luồng lâm sàng | FINAL |

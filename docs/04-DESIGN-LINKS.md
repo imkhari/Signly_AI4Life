@@ -60,3 +60,10 @@ Trang đầu chỉ chọn vai trò, hướng dẫn ghép và công cụ nội b�
 Vùng duyệt điều dưỡng nằm sau bảng dữ liệu/cảnh báo; không dùng sticky đè nội dung. Modal có focus trap/restore, Escape và cuộn nội dung dài. Mã vùng/đơn vị trong phiếu điều dưỡng hiển thị tiếng Việt. Kết quả và ảnh đã kiểm xem `docs/PLANS/13-UI-AND-PITCH-REVIEW.md` và `artifacts/ai4life/screenshots/`.
 
 Wireframe cũ ở trên giữ mô tả phạm vi dự kiến; các phần tùy chọn chưa triển khai không được trình bày thành tính năng đã có. Camera câu V2 theo contract hiện tại và Q-24; không dùng flow cửa sổ gloss cũ để mô tả bản hiện hành.
+
+
+## Camera theo câu được chọn — Q-27
+
+Màn chọn phương thức → camera ở lý do khám, không bắt chọn trước loại triệu chứng/vị trí → Bắt đầu ký → Xong câu → một thẻ gợi ý gồm lý do, tình trạng đau và vị trí nếu câu có → Dùng thông tin này / Sửa bằng Chạm / Bỏ gợi ý-Ký lại. Không có giỏ ghép từ trong ngữ cảnh intake. Gợi ý thay thế bản nháp có thông báo ảnh hưởng dữ liệu cũ.
+
+Nhận gợi ý → Chạm để bổ sung: vị trí nếu thiếu, mức đau và thời gian khi có đau, triệu chứng đi kèm → dị ứng → kiểm toàn phiếu → điều dưỡng duyệt. Không có dữ liệu vẫn cho Chưa rõ; chưa hiển thị mức đau mặc định như kết quả AI. Trang validation giữ nhãn symptom/location phục vụ protocol cũ, không đại diện phép thử nhận cả phiếu mới.

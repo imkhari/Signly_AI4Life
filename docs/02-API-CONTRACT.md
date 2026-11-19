@@ -216,13 +216,32 @@ created → paired → collecting → summary_ready → patient_confirmed → nu
 
 - `frames`: 8–300 frame, mỗi frame đúng 411 số hữu hạn trong [-10,10], không ép boolean/string thành số. Timestamp hữu hạn ≥ 0, tăng nghiêm ngặt, toàn cửa sổ ≤ 10 giây. Layout: pose25×3 + face70×3 + tay trái21×3 + tay phải21×3; nhóm thiếu điền 0, vai tại subset 9/10. Chỉ số theo `HolisticDetector.ts` và nguồn VSL-GH trong README V2.
 - `hands`: 0–2 bàn tay như client cũ; hai trường đều có hoặc đều thiếu trả 422. Không tự chuyển lỗi V2 sang heuristic.
-- UI mới dùng `symptom` cho lý do/triệu chứng đi kèm, `location` cho vị trí. **Mức đau và thời gian chỉ dùng Chạm**; context khác ở V2 trả UNKNOWN.
+- Theo Q-27, camera mở đầu lý do khám dùng `intake` cho cả câu; `symptom`/`location` giữ cho câu hỏi đích và trang thử lịch sử. **Mức đau và thời gian chỉ dùng Chạm**; context khác ở V2 trả UNKNOWN. `intake` với `hands` trả422.
 - V2 chạy PyTorch/NumPy trong tiến trình riêng. Theo Q-24, client chỉ gửi sau Bắt đầu ký → Xong câu, một inference/câu, không lặp cửa sổ. Tối đa6giây/180frame, ít nhất24frame và800ms; quá dài/gap>500ms/mất vai thì từ chối cả lượt. Chỉ một HTTP đang chờ, hủy khi đổi bước; worker nội suy gần30FPS, không xếp hàng. Mỗi frame phải có hai điểm vai hợp lệ, width>1e-5; không đổi norm2 cho đầu vào hợp lệ. Timeout 15 giây/mất runtime/lỗi/không đủ chuyển động → `success:false, gloss:"UNKNOWN", confidence:0`.
 - Response giữ `VSLPredictionResponse`: `success`, `gloss`, `label_vi`, `tokens`, `confidence`, `latency_ms`, `model_source` và các trường tương thích có mặc định. `model_source="vsl_v2_learned_translation"`. Confidence là điểm token chưa hiệu chỉnh, **không phải accuracy**. Không gửi câu decoder tự do về UI.
-- Chỉ ánh xạ toàn câu nằm trong allowlist ở `backend/app/ai/vsl_v2.py`; câu phủ định/đa ý/ngoài danh mục bị từ chối. Gợi ý của một câu hoàn chỉnh phải qua **Nhận → Áp dụng → xác nhận toàn phiếu**. Bộ ổn định cửa sổ rời rạc cũ không quyết định nhãn camera câu V2. Không thay `PATIENT_CONFIRMED` hoặc `NURSE_VERIFIED`.
+- Chỉ ánh xạ toàn câu nằm trong allowlist ở `backend/app/ai/vsl_v2.py`; câu phủ định/đa ý/ngoài danh mục bị từ chối. Ngữ cảnh cũ giữ **Nhận → Áp dụng → xác nhận toàn phiếu**; `intake` dùng **Dùng thông tin này → bổ sung bằng Chạm → xác nhận toàn phiếu**. Bộ ổn định cửa sổ rời rạc cũ không quyết định nhãn camera câu V2. Không thay `PATIENT_CONFIRMED` hoặc `NURSE_VERIFIED`.
 
 `GET /api/vsl/status`: `primary_camera_engine`, `v2_runtime_available`, `v2_status`, `v2_worker_ready`, `v2_supported_contexts`, `v2_probability_calibrated:false`. Các field cũ `model_source/is_model_loaded/supported_gestures_count/...` chỉ mô tả nhánh `hands`, được ghi rõ ở `legacy_fields_describe`; 60 mục ontology không phải số ký hiệu V2 nhận đúng. `GET /vocab` tiếp tục trả danh mục chung.
 
 `SESSION_RESET` xóa bộ đệm client, hủy HTTP, giải phóng camera/detector và kết thúc worker. Worker cũng được dọn khi backend shutdown; không lưu tọa độ/câu nhận diện vào file hay log.
 
 Trang `/vsl-validation` là công cụ nội bộ riêng, dùng cùng component camera và request trên; không tạo phiếu/session y tế. Đáp án/mã người chỉ đi vào bộ chấm sau response, không có trong request model. CSV do người thử tự tải chỉ chứa trường rời rạc/timing theo protocol, không thêm endpoint lưu dữ liệu backend.
+
+
+### Bổ sung nhận cả câu — Q-27 / D-028
+
+Response thêm `intake_suggestion?: IntakeSuggestion | null`. Chỉ `context_step="intake"` với câu thuộc allowlist và điểm hợp lệ mới có giá trị; các nhánh cũ và UNKNOWN trả null. Đây là gợi ý, chưa phải lời khai đã xác nhận.
+
+```typescript
+interface IntakeSuggestion {
+  chief_complaint_code: 'PAIN' | 'COUGH' | 'FEVER' | 'BREATH_DIFFICULTY';
+  pain_present: true | null;
+  body_regions: ('HEAD' | 'CHEST' | 'ABDOMEN_UPPER' | 'ABDOMEN_LOWER' | 'NECK' | 'LOWER_BACK')[];
+}
+// “tôi bị đau ngực” → PAIN, true, ['CHEST']
+// “tôi bị ho” → COUGH, null, [] (không phủ định đau)
+```
+
+Danh sách vùng tối đa1. PAIN bắt buộc true; các lý do còn lại bắt buộc pain_present=null và vùng rỗng. Không có severity/onset/free_text trong gợi ý. Câu bụng/lưng không cụ thể chỉ cho PAIN/true/[], không chọn vùng trên/dưới. UI kiểm code/gloss và quan hệ giữa trường, hiển thị nhãn từ danh mục cố định, không dùng câu decoder hoặc label tự do.
+
+Trước khi bấm Dùng thông tin này không gửi INPUT_UPDATED cho gợi ý. Khi bấm, một patch chứa đủ chief_complaint + pain; không đổi schema_version1.0, event hay cơ chế duyệt. Giữ dị ứng và triệu chứng không liên quan; loại lý do chính mới khỏi extra_symptoms. Nếu lý do/đau/vùng đổi, severity và onset cũ về null. Có thông báo thay thế trước khi nhận; giữ giá trị cũ nếu cùng thông tin. Kết quả đang chờ/đang hiện bị hủy khi draft/frame thay đổi, ngắt kết nối, đổi context, reset/unmount; không tự nhận lại khi kết nối phục hồi.

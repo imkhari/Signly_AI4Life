@@ -107,7 +107,7 @@ Pydantic (`backend/app/domain/models.py`) ⇄ TypeScript (`frontend/src/types/fr
 
 ## 7. Quy ước B1 được duyệt ngày 19/11/2026
 
-Giữ schema_version 1.0. chief_complaint giữ lý do chính, extra_symptoms giữ mã các triệu chứng đi kèm hiện diện. Xóa mã khỏi extra_symptoms nghĩa là bỏ lựa chọn, chưa biểu diễn một câu trả lời phủ định có cấu trúc. Chạm hoặc camera chỉ tác động mục đang hỏi. Chọn vị trí giữ nguyên pain.present, chỉ câu trả lời rõ về đau mới đặt true/false.
+Giữ schema_version 1.0. chief_complaint giữ lý do chính, extra_symptoms giữ mã các triệu chứng đi kèm hiện diện. Xóa mã khỏi extra_symptoms nghĩa là bỏ lựa chọn, chưa biểu diễn một câu trả lời phủ định có cấu trúc. Chạm hoặc camera theo context symptom/location chỉ tác động mục đang hỏi; ngoại lệ intake theo Q-27 được mô tả bên dưới. Chọn vị trí giữ nguyên pain.present, chỉ câu trả lời rõ về đau mới đặt true/false.
 
 Phiếu trực quan cho sửa lý do chính, tình trạng/vị trí đau, mức đau, thời gian, triệu chứng đi kèm và dị ứng. Nhận ứng viên là chọn giá trị. PATIENT_CONFIRMED tiếp tục xác nhận toàn phiếu. Sửa trước duyệt hủy xác nhận toàn phiếu, tạo summary mới. Sau duyệt giữ phiếu chỉ xem và cần phiên mới để sửa.
 
@@ -122,3 +122,12 @@ Schema SemanticFrame vẫn **1.0**. `HolisticFrame` chỉ là đầu vào tạm 
 Ví dụ “tôi bị đau đầu” → symptom ĐAU hoặc location ĐẦU; “tôi bị đau bụng” chỉ gợi ý ĐAU, **không tự chọn ABDOMEN_UPPER** vì chưa biết bụng trên/dưới. “tôi bị đau lưng” không tự chọn LOWER_BACK. Câu phủ định hoặc đa ý chưa biểu diễn an toàn → UNKNOWN, dùng Chạm/hỏi nhân viên. Không lấy số từ câu dịch để điền mức đau/thời gian. Chọn Nhận vẫn chưa xác nhận toàn phiếu.
 
 Q-24: một câu có Bắt đầu ký/Xong câu tạo tối đa một gợi ý; không tự áp dụng kết quả. Shape SemanticFrame vẫn1.0. Kết quả thử camera được giữ riêng dưới schema trial của công cụ nội bộ, không ghi vào SemanticFrame hay gửi tới LLM.
+
+
+## 8. Gợi ý theo cả câu V2 — Q-27
+
+`IntakeSuggestion` là dữ liệu chuyển tiếp của REST camera (`backend/app/domain/vsl.py`, `frontend/src/types/vsl.ts`), không phải field mới của SemanticFrame1.0. Một câu hợp lệ ánh xạ đồng thời lý do và thông tin đau được khẳng định rõ. PAIN/true/CHEST chỉ được ghi cùng nhau khi người bệnh bấm Dùng thông tin này; chưa đặt dấu PATIENT_CONFIRMED.
+
+Câu ho/sốt/khó thở không chứa phủ định đau: pain_present=null, không false. Bụng/lưng chung chung chưa có mã vùng tương ứng trong ontology: danh sách rỗng, hỏi tiếp bằng hình. Mức đau/thời gian vẫn null cho đến khi người dùng chọn; không trích số tự do hoặc ghép nhãn từ các câu. Nếu thay thông tin liên quan, xóa mức đau/thời gian cũ để hỏi lại, giữ dị ứng và triệu chứng khác. Một câu nhiều ý hoặc phủ định chưa được hỗ trợ vẫn UNKNOWN.
+
+Sau gợi ý: vị trí/tình trạng đau nếu thiếu → mức đau khi có đau → thời gian → triệu chứng đi kèm → dị ứng → toàn phiếu → điều dưỡng. Có Chưa rõ; dữ liệu thiếu tiếp tục do parser đánh dấu uncertain/missing, không tự hoàn thành.

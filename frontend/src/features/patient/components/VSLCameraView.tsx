@@ -20,13 +20,19 @@ import { SentenceCapture, SENTENCE_LIMITS, hasValidShoulders, CameraTrialResult,
 import { RecognizedGloss } from '../../../services/vsl/types';
 import { Button } from '../../../ui/Button';
 import { vi } from '../../../i18n/vi';
+import type { IntakeSuggestion } from '../../../types/vsl';
+import { readIntakeSuggestion, SENTENCE_COMPLAINTS, SENTENCE_REGIONS } from '../sentenceIntake';
 
 interface VSLCameraViewProps {
-  contextStep?: 'symptom' | 'location' | 'severity';
+  contextStep?: 'symptom' | 'location' | 'severity' | 'intake';
   onApplyGlosses: (glosses: RecognizedGloss[]) => void;
   onSwitchToTouchMode?: () => void;
   onTrialResult?: (result:CameraTrialResult) => void;
   captureDisabled?: boolean;
+  onApplyIntakeSuggestion?: (suggestion: IntakeSuggestion) => void;
+  draftKey?: string;
+  connected?: boolean;
+  replacementNotice?: string;
 }
 
 const GLOSS_METADATA: Record<
@@ -109,6 +115,10 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   onSwitchToTouchMode,
   onTrialResult,
   captureDisabled = false,
+  onApplyIntakeSuggestion,
+  draftKey,
+  connected = true,
+  replacementNotice,
 }) => {
   const { status, errorMessage, isActive, start, stop, bindVideoRef } = useCamera();
 
@@ -127,6 +137,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const [livePrediction,setLivePrediction] = useState<VSLPredictionResponse|null>(null);
   const [candidates, setCandidates] = useState<RecognizedGloss[]>([]);
   const [confirmedGlosses, setConfirmedGlosses] = useState<RecognizedGloss[]>([]);
+  const [intakeSuggestion, setIntakeSuggestion] = useState<IntakeSuggestion | null>(null);
+  const candidateKeyRef = useRef<string | undefined>();
   const [isAiLoading, setIsAiLoading] = useState<boolean>(true);
   const [aiError, setAiError] = useState<string | null>(null);
 
@@ -150,7 +162,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
     if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
     captureTimerRef.current=null;
     setCaptureState('idle'); setCaptureFailure(failure); setCaptureMessage(vi.camera.reasons[failure.reason]);
-    setLivePrediction(null); setCandidates([]);
+    setLivePrediction(null); setCandidates([]); setIntakeSuggestion(null);
     observerRef.current?.({...failure,gloss:'UNKNOWN',candidate_latency_ms:null,
       response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
   }, []);
@@ -167,13 +179,14 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   }, [showFailure]);
 
   const beginSentence = () => {
+    if (!connected || captureDisabled) return;
     const observation=lastObservationRef.current;
     if (!observation || performance.now()-observation.frame.timestamp_ms>SENTENCE_LIMITS.maxGapMs ||
       !observation.hands.length || !hasValidShoulders(observation.frame)) {
       setReadyToSign(false);setCaptureMessage(vi.camera.waitForTracking);return;
     }
     setCaptureFailure(null);
-    clearSequence(); setCandidates([]); setLivePrediction(null);
+    clearSequence(); setCandidates([]); setLivePrediction(null); setIntakeSuggestion(null);
     recordingStartedRef.current=performance.now();setRemainingSeconds(6);
     captureRef.current.begin(recordingStartedRef.current);
     setCaptureState('recording'); setCaptureMessage(vi.camera.signNow);
@@ -197,7 +210,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       const response=await restApi.predictVSLSequence(captured.frames,contextStep,controller.signal);
       if (generation!==generationRef.current || controller.signal.aborted) return;
       const meta=GLOSS_METADATA[response.gloss];
-      const valid=response.success && response.model_source==='vsl_v2_learned_translation' &&
+      const suggestion=contextStep==='intake' ? readIntakeSuggestion(response) : null;
+      const valid=contextStep==='intake' ? suggestion!==null : response.success && response.model_source==='vsl_v2_learned_translation' &&
         Number.isFinite(response.confidence) && response.confidence>=0.7 && response.confidence<=1 &&
         meta && (contextStep==='location' ? meta.category==='region' : meta.category==='symptom');
       pendingResultRef.current={...captured.summary,gloss:valid ? response.gloss : 'UNKNOWN',
@@ -205,15 +219,16 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         response_latency_ms:performance.now()-finishedAt,
         model_source:response.model_source,finishedAt};
       setLivePrediction(valid ? response : null);
+      setIntakeSuggestion(suggestion); candidateKeyRef.current=draftKey;
       setCandidates(valid ? [{gloss:response.gloss,label_vi:response.label_vi || response.gloss,
         category:meta.category,maps_to:meta.maps_to,confidence:response.confidence,timestamp:Date.now()}] : []);
-      setCaptureMessage(valid ? vi.camera.checkSuggestion : vi.camera.reasons.unknown);
+      setCaptureMessage(valid ? (contextStep==='intake' ? 'Kiểm tra cả gợi ý. Chỉ bấm Dùng thông tin này khi đúng ý bạn.' : vi.camera.checkSuggestion) : vi.camera.reasons.unknown);
     } catch {
       if (generation!==generationRef.current) return;
       const reason=controller.signal.aborted ? 'inference_timeout' : 'network_error';
       pendingResultRef.current={...captured.summary,gloss:'UNKNOWN',reason,candidate_latency_ms:null,
         response_latency_ms:performance.now()-finishedAt,model_source:'vsl_v2_learned_translation',finishedAt};
-      setCandidates([]);setLivePrediction(null);setCaptureMessage(vi.camera.reasons[reason]);
+      setCandidates([]);setLivePrediction(null);setIntakeSuggestion(null);setCaptureMessage(vi.camera.reasons[reason]);
     } finally {
       clearTimeout(timeout);
       if (requestRef.current===controller) {requestRef.current=null;setCaptureState('idle');}
@@ -265,17 +280,18 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
     lastObservationRef.current=null;setCaptureFailure(null);
     clearSequence();
     setCandidates([]);
+    setIntakeSuggestion(null);
     setConfirmedGlosses([]);
     setLivePrediction(null);
     setCaptureState('idle'); setCaptureMessage(vi.camera.ready);
     return () => { unsubscribe?.(); clearSequence(); };
-  }, [handleObservation, clearSequence, contextStep]);
+  }, [handleObservation, clearSequence, contextStep, draftKey, connected]);
 
   useEffect(() => { start(); return stop; }, [start, stop]);
   useEffect(() => {
     if (!isActive) {
       clearSequence();setCaptureState('idle');setLivePrediction(null);setCandidates([]);
-      setConfirmedGlosses([]);setReadyToSign(false);
+      setConfirmedGlosses([]);setIntakeSuggestion(null);setReadyToSign(false);
     }
   },[isActive,clearSequence]);
 
@@ -340,7 +356,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
           </div>
           <div>
             <h3 className="text-xl font-black text-ink flex flex-wrap items-center gap-2">
-              Gợi ý cử chỉ qua camera
+              {contextStep==='intake' ? 'Nhận một câu ký hiệu' : 'Gợi ý cử chỉ qua camera'}
               <span className="text-base font-bold px-2 py-0.5 rounded-full bg-ok-bg text-ok flex items-center gap-1">
                 <IconBolt className="w-3 h-3" stroke={2.5} /> {vi.camera.experimental}
               </span>
@@ -363,9 +379,12 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         )}
       </div>
 
+      {!connected && <p role="alert" className="text-lg text-warn mb-4">Đang mất kết nối. Gợi ý cũ đã hủy; chờ kết nối lại trước khi ký.</p>}
+
+      <div style={{top:'var(--patient-header-height, 0px)'}} className="sticky z-20 bg-paper py-2">
       <div className="flex flex-wrap gap-3 mb-4">
         <Button onClick={beginSentence} disabled={!isActive || isAiLoading || !!aiError ||
-          !readyToSign || captureDisabled || captureState!=='idle'}>{vi.camera.begin}</Button>
+          !readyToSign || captureDisabled || !connected || captureState!=='idle'}>{vi.camera.begin}</Button>
         <Button onClick={finishSentence} disabled={captureState!=='recording'}>{vi.camera.finish}</Button>
         {captureState==='recording' && <Button variant="secondary" onClick={() => {
           showFailure(captureRef.current.fail('cancelled',performance.now()));
@@ -378,6 +397,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       {captureState==='recording' && <p role="timer" aria-live="off" className="text-2xl font-bold text-action mb-4">
         {vi.camera.remaining(remainingSeconds)}
       </p>}
+      </div>
 
       {/* Layout 2 cột: BÊN TRÁI LÀ CAMERA TO RỘNG (8/12), BÊN PHẢI LÀ KẾT QUẢ & XÁC NHẬN (4/12) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
@@ -426,7 +446,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             </div>
 
             {/* Banner hiển thị từ đang nhận diện ngay tại chân màn Camera */}
-            {livePrediction && livePrediction.gloss !== 'UNKNOWN' && (
+            {contextStep!=='intake' && livePrediction && livePrediction.gloss !== 'UNKNOWN' && (
               <div className="absolute bottom-3 left-3 right-3 bg-black/85 backdrop-blur-md border border-brand/50 px-3.5 py-2.5 rounded-xl flex flex-col gap-2 text-white animate-fade-in pointer-events-none z-10 shadow-xl">
                 <div className="flex flex-wrap gap-2 items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -484,10 +504,38 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             {vi.camera.privacy}
           </p>
           <p className="text-lg text-mute">{vi.camera.touchHint}</p>
+          {contextStep==='intake' && <p className="text-base text-mute">
+            Thử nghiệm chỉ hỗ trợ một số câu ngắn về đau, ho, sốt và khó thở. Ký một câu, bấm Xong câu rồi kiểm tra cả gợi ý.
+          </p>}
         </div>
 
         {/* CỘT PHẢI (4 / 12 CỘT): TỪ CHỜ XÁC NHẬN & DANH SÁCH TRIỆU CHỨNG ĐÃ CHỌN */}
-        <div className="lg:col-span-5 flex flex-col justify-between gap-3 ">
+        {contextStep==='intake' ? <div className="lg:col-span-5 bg-canvas rounded-xl p-4 space-y-4" aria-label="Gợi ý cả câu">
+          <h4 className="text-xl font-bold">Thông tin camera đề xuất</h4>
+          {intakeSuggestion ? <>
+            <dl className="space-y-3 text-xl">
+              <div><dt className="text-mute">Lý do khám</dt><dd className="font-bold">{SENTENCE_COMPLAINTS[intakeSuggestion.chief_complaint_code].label}</dd></div>
+              <div><dt className="text-mute">Tình trạng đau</dt><dd className="font-bold">{intakeSuggestion.pain_present===true ? 'Có đau' : 'Chưa hỏi'}</dd></div>
+              {intakeSuggestion.pain_present===true && <div><dt className="text-mute">Vị trí đau</dt><dd className="font-bold">{intakeSuggestion.body_regions.map(code => SENTENCE_REGIONS[code]).join(', ') || 'Chưa rõ — cần chọn thêm'}</dd></div>}
+            </dl>
+            <p>Chưa ghi vào phiếu. Mức đau và thời gian cần trả lời thêm bằng Chạm.</p>
+            {replacementNotice && <p role="note" className="text-warn font-semibold">{replacementNotice}</p>}
+            <div className="flex flex-wrap gap-3">
+              <Button disabled={!connected || captureDisabled || candidateKeyRef.current!==draftKey || captureState!=='idle'}
+                onClick={() => {
+                  if (!connected || candidateKeyRef.current!==draftKey) return;
+                  const value=intakeSuggestion;
+                  clearSequence();setIntakeSuggestion(null);setCandidates([]);setLivePrediction(null);
+                  onApplyIntakeSuggestion?.(value);
+                }}>Dùng thông tin này</Button>
+              <Button variant="secondary" onClick={handleSwitchToTouch}>Sửa bằng Chạm</Button>
+              <Button variant="secondary" onClick={() => {
+                clearSequence();setIntakeSuggestion(null);setCandidates([]);setLivePrediction(null);
+                setCaptureMessage(vi.camera.ready);
+              }}>Bỏ gợi ý / Ký lại</Button>
+            </div>
+          </> : <p>Chưa có gợi ý. Bấm Bắt đầu ký khi đã nhìn rõ thân trên và bàn tay.</p>}
+        </div> : <div className="lg:col-span-5 flex flex-col justify-between gap-3 ">
           {/* Box 1: Từ AI vừa nhận diện được (Awaiting Confirmation) */}
           <div className="bg-canvas p-3 rounded-xl border border-gray-200 flex flex-col gap-2 shadow-2xs">
             <div className="flex flex-wrap gap-2 items-center justify-between">
@@ -606,7 +654,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
               ? `Lưu ${confirmedGlosses.length} triệu chứng & Tiếp tục ➔`
               : 'Hãy nhận ít nhất 1 triệu chứng'}
           </Button>
-        </div>
+        </div>}
       </div>
     </div>
   );

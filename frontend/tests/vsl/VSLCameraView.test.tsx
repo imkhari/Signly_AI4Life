@@ -25,6 +25,8 @@ vi.mock('../../src/services/api/rest', () => ({restApi: {predictVSLSequence: vi.
 const prediction = {success:true, gloss:'ĐAU', label_vi:'Đau / Nhức', confidence:.95,
   hand_count:2, total_fingers:0, is_transitioning:false, motion_type:'steady', top_k:[],
   latency_ms:25, model_source:'vsl_v2_learned_translation'};
+const sentencePrediction = {...prediction, intake_suggestion:{chief_complaint_code:'PAIN' as const,
+  pain_present:true as const, body_regions:['CHEST' as const]}};
 let clock = 10000;
 async function emit(from: number, to: number) {
   for (let i = from; i <= to; i++) {
@@ -105,5 +107,40 @@ it('does not begin a new sentence using stale tracking readiness',async () => {
   expect(screen.getByText(/Chờ hình theo dõi mới/)).toBeVisible();
   expect(restApi.predictVSLSequence).not.toHaveBeenCalled();
 });
+
+  it('offers the complete sentence only after finishing and writes only on explicit acceptance', async () => {
+    const apply=vi.fn(), legacy=vi.fn();
+    vi.mocked(restApi.predictVSLSequence).mockResolvedValue(sentencePrediction);
+    render(<VSLCameraView contextStep="intake" onApplyGlosses={legacy} onApplyIntakeSuggestion={apply} draftKey="A" />, {wrapper:SessionProvider});
+    await emit(0,0);fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));await emit(1,30);
+    await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Xong câu'}));});
+    expect(restApi.predictVSLSequence).toHaveBeenCalledWith(expect.any(Array),'intake',expect.any(AbortSignal));
+    expect(screen.getByText('Ngực')).toBeVisible();expect(screen.getByText('Có đau')).toBeVisible();
+    expect(screen.queryByText(/Triệu chứng đã chốt/)).not.toBeInTheDocument();
+    expect(apply).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button',{name:'Dùng thông tin này'}));
+    expect(apply).toHaveBeenCalledOnce();expect(apply).toHaveBeenCalledWith(sentencePrediction.intake_suggestion);
+    expect(legacy).not.toHaveBeenCalled();
+  });
+
+  it.each(['draft','disconnect'])('invalidates a displayed sentence on %s change', async variant => {
+    const apply=vi.fn();vi.mocked(restApi.predictVSLSequence).mockResolvedValue(sentencePrediction);
+    const props={contextStep:'intake' as const,onApplyGlosses:vi.fn(),onApplyIntakeSuggestion:apply};
+    const rendered=render(<VSLCameraView {...props} draftKey="A" connected />, {wrapper:SessionProvider});
+    await emit(0,0);fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));await emit(1,30);
+    await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Xong câu'}));});
+    expect(screen.getByRole('button',{name:'Dùng thông tin này'})).toBeEnabled();
+    rendered.rerender(<VSLCameraView {...props} draftKey={variant==='draft' ? 'B' : 'A'} connected={variant!=='disconnect'} />);
+    expect(screen.queryByRole('button',{name:'Dùng thông tin này'})).not.toBeInTheDocument();
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it('does not fall back to a single gloss when an intake bundle is absent', async () => {
+    const apply=vi.fn();render(<VSLCameraView contextStep="intake" onApplyGlosses={apply} onApplyIntakeSuggestion={apply} />, {wrapper:SessionProvider});
+    await emit(0,0);fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));await emit(1,30);
+    await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Xong câu'}));});
+    expect(screen.queryByRole('button',{name:'Dùng thông tin này'})).not.toBeInTheDocument();
+    expect(screen.getByText(/Chưa nhận rõ/)).toBeVisible();expect(apply).not.toHaveBeenCalled();
+  });
 
 });

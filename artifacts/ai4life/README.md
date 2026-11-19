@@ -28,3 +28,8 @@ File nguồn template và font trong Downloads không bị sửa. Bộ mới gi�
 - Mở `/nurse` trước, lấy mã, nhập ở `/patient`. Hai thiết bị LAN cần cấu hình và HTTPS cho camera; localhost hai tab đã được kiểm tra phần mềm.
 
 Không có video dự phòng trong bộ này; ảnh slide là phương án dự phòng được ghi rõ. Chưa kiểm tra file trong Microsoft PowerPoint hoặc diễn tập trên máy chiếu thật; cần nhóm mở một lượt để kiểm môi trường trình chiếu.
+
+
+## Cập nhật camera sau bản slide — Q-27
+
+App đã có luồng V2 theo câu: Bắt đầu ký → Xong câu → kiểm gợi ý cả lý do và thông tin đau → Dùng thông tin này/Sửa → bổ sung Chạm → xác nhận toàn phiếu → điều dưỡng duyệt. Slide và ảnh trong bộ này giữ snapshot lúc xuất; chưa cập nhật ảnh camera theo luồng mới. Kịch bản Chạm chính vẫn dùng được. Checkpoint và số liệu replay không đổi;11ca âm cũ giữ baseline4e4ebb, bản mới chưa có lượt live. Không dùng video/ảnh mô phỏng của kiểm tra tự động để quảng bá độ chính xác VSL. Xem kế hoạch14 và docs/validation/vsl-v2 để diễn tập camera mới.
