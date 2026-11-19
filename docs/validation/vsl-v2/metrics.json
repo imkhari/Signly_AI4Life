@@ -3,9 +3,9 @@
   "protocol": "vsl-v2-internal-1",
   "status": "CANDIDATE",
   "live": {
-    "trials": 1,
+    "trials": 5,
     "outcomes": {
-      "correct": 1
+      "correct": 5
     },
     "positive_trials": 0,
     "aborted_trials": 0,
@@ -14,25 +14,25 @@
     "positive_rejected": 0,
     "positive_correct_rate": null,
     "per_trial_suggestion_precision": null,
-    "negative_trials": 1,
-    "valid_tracking_negative_attempts": 1,
-    "valid_tracking_negative_submitted": 1,
+    "negative_trials": 5,
+    "valid_tracking_negative_attempts": 5,
+    "valid_tracking_negative_submitted": 5,
     "valid_tracking_negative_false_rate": 0.0,
     "negative_false_suggestions": 0,
     "negative_false_suggestion_rate": 0.0,
     "candidate_latency_samples": 0,
     "candidate_latency_p95_ms": null,
     "candidate_latency_median_ms": null,
-    "response_samples": 1,
+    "response_samples": 5,
     "timeouts": 0
   },
   "synthetic_records": 0,
   "groups": {
     "split": {
       "development": {
-        "trials": 1,
+        "trials": 5,
         "outcomes": {
-          "correct": 1
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -41,24 +41,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 1,
-        "valid_tracking_negative_attempts": 1,
-        "valid_tracking_negative_submitted": 1,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 1,
+        "response_samples": 5,
         "timeouts": 0
       }
     },
     "participant_code": {
       "P01": {
-        "trials": 1,
+        "trials": 5,
         "outcomes": {
-          "correct": 1
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -67,24 +67,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 1,
-        "valid_tracking_negative_attempts": 1,
-        "valid_tracking_negative_submitted": 1,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 1,
+        "response_samples": 5,
         "timeouts": 0
       }
     },
     "intent_id": {
       "NEG_REST": {
-        "trials": 1,
+        "trials": 5,
         "outcomes": {
-          "correct": 1
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -93,24 +93,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 1,
-        "valid_tracking_negative_attempts": 1,
-        "valid_tracking_negative_submitted": 1,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 1,
+        "response_samples": 5,
         "timeouts": 0
       }
     },
     "condition": {
       "normal": {
-        "trials": 1,
+        "trials": 5,
         "outcomes": {
-          "correct": 1
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -119,24 +119,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 1,
-        "valid_tracking_negative_attempts": 1,
-        "valid_tracking_negative_submitted": 1,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 1,
+        "response_samples": 5,
         "timeouts": 0
       }
     },
     "device_code": {
       "D01": {
-        "trials": 1,
+        "trials": 5,
         "outcomes": {
-          "correct": 1
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -145,24 +145,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 1,
-        "valid_tracking_negative_attempts": 1,
-        "valid_tracking_negative_submitted": 1,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 1,
+        "response_samples": 5,
         "timeouts": 0
       }
     },
     "worker_state": {
       "ready": {
-        "trials": 1,
+        "trials": 5,
         "outcomes": {
-          "correct": 1
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -171,24 +171,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 1,
-        "valid_tracking_negative_attempts": 1,
-        "valid_tracking_negative_submitted": 1,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 1,
+        "response_samples": 5,
         "timeouts": 0
       }
     },
     "kind": {
       "negative_valid": {
-        "trials": 1,
+        "trials": 5,
         "outcomes": {
-          "correct": 1
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -197,16 +197,16 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 1,
-        "valid_tracking_negative_attempts": 1,
-        "valid_tracking_negative_submitted": 1,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 1,
+        "response_samples": 5,
         "timeouts": 0
       }
     }
@@ -215,7 +215,7 @@
     {
       "expected": "UNKNOWN",
       "displayed": "UNKNOWN",
-      "trials": 1
+      "trials": 5
     }
   ],
   "final_normal": {

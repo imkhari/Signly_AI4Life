@@ -1,6 +1,6 @@
 # Bản AI cho buổi thi — CANDIDATE
 
-**Chưa đóng băng chất lượng.** Profile hiện tại đã có1lượt tay nghỉ nội bộ hợp lệ được đối chiếu CSV (P01/phát triển,103frame,5219,90ms,UNKNOWN,response107,60ms). Chưa có lượt dương VSL hoặc thử cuối; không coi một ca âm là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
+**Chưa đóng băng chất lượng.** Profile hiện tại đã có5lượt tay nghỉ nội bộ hợp lệ được đối chiếu CSV (T0001–T0005,P01/phát triển,cả5UNKNOWN,không có gợi ý sai; response103,90–215,90ms). Chưa có lượt dương VSL hoặc thử cuối; không coi nhóm tay nghỉ của1người là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
 
 ## Phiên bản kỹ thuật
 
@@ -19,7 +19,7 @@ Chỉ xem xét đau đầu (symptom), đau ngực (location), khó thở (sympto
 
 ## Điều kiện đổi trạng thái
 
-`metrics.json` của bản mới đang n=1 ca âm phát triển; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
+`metrics.json` của bản mới đang n=5 ca âm tay nghỉ phát triển; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
 
 Đạt số học không tự thành kiểm chứng VSL/người dùng mục tiêu. Nếu sửa cấu hình sau lượt cuối, giữ snapshot cũ và thử cuối mới; không ghi đè kết quả thất bại. Ghi rõ cohort nội bộ đang học theo Q-26.
 
@@ -53,3 +53,7 @@ Profile 4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f thêm k
 ## Bổ sung CSV tay nghỉ hợp lệ
 
 Đã kiểm1lượt P01/NEG_REST của profile4e4ebb từ nội dung người dùng sao chép, không từ ảnh. Đủ điều kiện ca âm theo protocol:103frame,5219,90ms,response107,60ms,UNKNOWN,worker ready. `metrics.json` mới có1live_internal và0positive, không có gợi ý sai trong lượt đó; p95candidate vẫnnull. CSV cá nhân Git ignore, không lưu ảnh camera. Nội dung0lượt trong các mục lịch sử phía trên là snapshot trước khi nhận CSV này. Weights/threshold không đổi, CANDIDATE.
+
+## Snapshot tích lũy5lượt
+
+Người dùng gửi đầy đủT0001–T0005 cùng profile4e4ebb. Kiểm T0001 khớp bản1lượt trước, dùng snapshot5lượt thay cho snapshot1lượt khi tổng hợp, không cộng thành6. Cả5đủ điều kiện ca âm theo protocol vàUNKNOWN;0dương/0lượt cuối, p95gợi ý vẫnnull. Các đoạn n=1 phía trên là lịch sử. Tiếp theo thử NEG_MOTION nội bộ; không đổi policy/weights.

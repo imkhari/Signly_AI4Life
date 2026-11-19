@@ -1,19 +1,19 @@
 # Kết quả camera V2
 
-## Cập nhật mới nhất — lượt tay nghỉ hợp lệ đầu tiên
+## Cập nhật mới nhất — nhóm5lượt tay nghỉ hợp lệ
 
-Đã nhận nội dung CSV trực tiếp qua chat, giữ nguyên giá trị và kiểm bằng `read_trials`/`summarize` cho profile `4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f`. Bản xuất cá nhân ở `local/P01-rest-valid-4e4ebb.csv` (Git ignore), không lưu ảnh/video hoặc landmark. Không ghi lại ảnh camera người dùng đính kèm.
+Đã nhận nội dung CSV trực tiếp qua chat, giữ nguyên giá trị và kiểm bằng `read_trials`/`summarize` cho profile `4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f`. Bản tích lũy mới nhất ở `local/P01-rest-five-4e4ebb.csv` (Git ignore); bản1lượt ban đầu vẫn giữ riêng, không cộng lặp T0001, không lưu ảnh/video hoặc landmark. Không ghi lại ảnh camera người dùng đính kèm.
 
 | Mục | Kết quả |
 |---|---|
-| Lượt / nhóm | T0001, P01, internal/development, đang học VSL, D01, bình thường |
-| Ca thử | NEG_REST / tay nghỉ, worker báo ready |
-| Đầu vào | 103frame, thời gian ghi5219,90ms |
-| Phản hồi | UNKNOWN, reason=unknown,107,60ms từ Xong câu tới response |
-| Gợi ý sai | Không có trong lượt này |
-| Phân loại theo protocol | 1ca âm tracking hợp lệ đã gửi,0lượt dương |
+| Lượt / nhóm | T0001–T0005, P01, internal/development, đang học VSL, D01, bình thường |
+| Ca thử | NEG_REST / tay nghỉ, cả5lượt worker báo ready |
+| Đầu vào | Lần lượt103/92/95/99/100frame; thời gian ghi4,642–5,220giây |
+| Phản hồi | Cả5UNKNOWN, reason=unknown;103,90–215,90ms, trung vị197,90ms |
+| Gợi ý sai |0trong5lượt này |
+| Phân loại theo protocol |5ca âm tracking hợp lệ đã gửi,0lượt dương |
 
-Đây là bằng chứng pipeline không gợi ý triệu chứng trong một lượt tay nghỉ nội bộ. Không chứng minh decoder đã chạy (guard có thể từ chối trước decode), không phải phép đo tốc độ model đơn lẻ, không có mẫu độ trễ gợi ý và không kết luận accuracy VSL. Không gộp với ảnh lỗi tracking trước đó hoặc CSV profileC52. Model vẫn CANDIDATE, chưa đạt tiêu chí thử cuối.
+Đây là bằng chứng pipeline không gợi ý triệu chứng trong5lượt tay nghỉ nội bộ của1người, một thiết bị. Không chứng minh decoder đã chạy (guard có thể từ chối trước decode), không phải phép đo tốc độ model đơn lẻ, không có mẫu độ trễ gợi ý và không kết luận accuracy VSL. Không gộp với ảnh lỗi tracking trước đó hoặc CSV profileC52. T0001 trùng snapshot1lượt chỉ tính một lần; dùng bản tích lũy5lượt mới nhất. Model vẫn CANDIDATE, chưa đạt tiêu chí thử cuối.
 
 ## Lịch sử trước lượt hợp lệ của profile4e4ebb
 
