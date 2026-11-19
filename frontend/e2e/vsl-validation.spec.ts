@@ -15,7 +15,8 @@ async function syntheticCamera(page:import('@playwright/test').Page) {
       start(){this.timer=setInterval(()=>{
         const points=Array(411).fill(.5);points[27]=.4;points[30]=.6;
         if(window.testMissingShoulders) points.fill(0,27,33);
-        const observation={frame:{timestamp_ms:performance.now(),landmarks:points},hands:[Array.from({length:21},()=>({x:.5,y:.5,z:0}))]};
+        if(window.testMissingHands) points.fill(0,285);
+        const observation={frame:{timestamp_ms:performance.now(),landmarks:points},hands:window.testMissingHands ? [] : [Array.from({length:21},()=>({x:.5,y:.5,z:0}))]};
         window.testObservedFrames=(window.testObservedFrames||0)+1;
         for(const fn of this.callbacks)fn(observation);
       },40);}
@@ -76,4 +77,31 @@ test('missing shoulders reject a synthetic trial before HTTP and show a result a
   await expect(page.getByRole('button',{name:'Lượt tiếp theo',exact:true})).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:'test-results/vsl-validation-720.png',fullPage:true});
+});
+
+
+test('tracking rejection stays at the camera and CSV has a manual copy path',async ({page}) => {
+  await page.setViewportSize({width:1024,height:768});await syntheticCamera(page);
+  let requests=0;await page.route('**/api/vsl/predict',route => {requests++;return route.abort();});
+  await page.goto('/vsl-validation?evidence=synthetic');await page.getByRole('checkbox').check();
+  await page.getByRole('button',{name:'Bắt đầu lượt thử',exact:true}).click();
+  const begin=page.getByRole('button',{name:'Bắt đầu ký',exact:true});await expect(begin).toBeEnabled();
+  await begin.click();const y=await page.evaluate(() => scrollY);
+  await page.evaluate(() => {Object.assign(window,{testMissingHands:true});});
+  const stopped=page.getByTestId('vsl-capture-stopped');
+  await expect(stopped).toBeInViewport();await expect(stopped).toContainText('chưa gửi nhận diện');
+  expect(Math.abs(await page.evaluate(() => scrollY)-y)).toBeLessThan(100);
+  expect(requests).toBe(0);
+  await page.screenshot({path:'test-results/vsl-validation-gap-fixed.png'});
+  await page.getByRole('link',{name:'Xem kết quả lượt vừa thử'}).click();
+  await expect(page.getByText(/T0001.*NEG_REST: UNKNOWN.*Chưa đủ điều kiện đo/)).toBeInViewport();
+  await page.evaluate(() => {
+    Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async () => {throw new Error('Unavailable in this browser');}}});
+  });
+  await page.getByRole('button',{name:'Tải kết quả CSV'}).click();
+  const csv=page.getByRole('textbox',{name:'Nội dung CSV để sao chép'});
+  await expect(csv).toHaveValue(/tracking_gap/);await expect(csv).toHaveValue(/synthetic/);
+  expect(await csv.inputValue()).not.toContain('landmarks');
+  await page.getByRole('button',{name:'Sao chép CSV',exact:true}).click();
+  await expect(page.getByText('Chưa sao chép tự động được. Chọn nội dung trong ô rồi dùng Sao chép.')).toBeVisible();
 });

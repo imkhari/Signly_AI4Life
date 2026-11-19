@@ -97,4 +97,13 @@ describe('V2 camera lifecycle and confirmation', () => {
     rendered.unmount();
     expect(detector.close).toHaveBeenCalled();
   });
+it('does not begin a new sentence using stale tracking readiness',async () => {
+  render(view());await emit(0,0);
+  clock=10600;
+  fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));
+  expect(screen.queryByRole('timer')).not.toBeInTheDocument();
+  expect(screen.getByText(/Chờ hình theo dõi mới/)).toBeVisible();
+  expect(restApi.predictVSLSequence).not.toHaveBeenCalled();
+});
+
 });

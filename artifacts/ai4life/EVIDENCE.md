@@ -31,7 +31,7 @@ Tất cả ảnh UI trong `screenshots/` được chụp từ app chạy thật 
 
 Checkpoint runtime SHA256: `d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246`. Không đổi weights trong lần làm UI/slide này.
 
-Profile trang thử mới: `695918d46c5e8cc1d00597558f12562b5fab1d711990609ecfcb7162603e929a`. Profile thay do chia bố cục trang thử; không thay capture, pipeline hoặc tiêu chí. Snapshot cũ vẫn giữ trong `docs/validation/vsl-v2/profiles/`; không trộn kết quả. Số lượt trực tiếp mới vẫn bằng 0.
+Profile tại thời điểm xuất bộ slide (trước bản sửa cuộn/kênh xuất CSV): `695918d46c5e8cc1d00597558f12562b5fab1d711990609ecfcb7162603e929a`. Profile thay do chia bố cục trang thử; không thay capture, pipeline hoặc tiêu chí. Snapshot cũ vẫn giữ trong `docs/validation/vsl-v2/profiles/`; không trộn kết quả. Số lượt trực tiếp mới vẫn bằng 0.
 
 Weights do nhóm cung cấp; metadata train gốc chưa đủ để tuyên bố đã xác minh đầy đủ nguồn/quyền cho triển khai rộng. Không coi license mã nguồn VSL-GH là license cho toàn bộ weights và dữ liệu train.
 

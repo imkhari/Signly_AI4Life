@@ -21,7 +21,6 @@ export function VSLValidationPage() {
   const [condition,setCondition]=useState('normal');
   const [intentId,setIntentId]=useState('NEG_REST');
   const cameraAreaRef=useRef<HTMLDivElement|null>(null);
-  const resultAreaRef=useRef<HTMLDivElement|null>(null);
   const [needsReload,setNeedsReload]=useState(false);
   const [preparing,setPreparing]=useState(false);
   const [workerState,setWorkerState]=useState('unknown');
@@ -29,6 +28,8 @@ export function VSLValidationPage() {
   const [locked,setLocked]=useState(false);
   const [rows,setRows]=useState<Row[]>([]);
   const [applied,setApplied]=useState(false);
+  const [exportText,setExportText]=useState('');
+  const [exportMessage,setExportMessage]=useState('');
   const recordedRef=useRef(false);
   const reference=policy.intents.find(intent => intent.id===intentId)!;
   const split=policy.participants[participant as keyof typeof policy.participants];
@@ -46,9 +47,6 @@ export function VSLValidationPage() {
     if(active) cameraAreaRef.current?.scrollIntoView?.({block:'start',behavior:'auto'});
   },[active]);
 
-  useEffect(() => {
-    if(locked) resultAreaRef.current?.scrollIntoView?.({block:'center',behavior:'auto'});
-  },[locked]);
 
   const record=useCallback((result:CameraTrialResult) => {
     if(recordedRef.current || !profile) return;
@@ -71,6 +69,7 @@ export function VSLValidationPage() {
 
   const download=() => {
     const text=[fields.join(','),...rows.map(row => fields.map(key => csvCell(row[key])).join(','))].join('\n')+'\n';
+    setExportText(text);setExportMessage(vi.validation.exportPrepared);
     const url=URL.createObjectURL(new Blob(['\uFEFF',text],{type:'text/csv;charset=utf-8'}));
     const anchor=document.createElement('a');anchor.href=url;anchor.download='vsl-v2-trials.csv';anchor.click();
     setTimeout(() => URL.revokeObjectURL(url),1000);
@@ -129,14 +128,15 @@ export function VSLValidationPage() {
       <div ref={cameraAreaRef}><VSLCameraView contextStep={reference.context as 'symptom'|'location'} captureDisabled={locked}
         onApplyGlosses={() => setApplied(true)} onTrialResult={record} /></div>
       {applied && <p>{vi.validation.applied}</p>}
-      <div ref={resultAreaRef}>{locked ? <Button onClick={() => setActive(false)}>{vi.validation.nextTrial}</Button> :
+      {locked && <a href="#vsl-validation-results" className="inline-flex min-h-[64px] items-center text-action underline">{vi.validation.viewResults}</a>}
+      <div>{locked ? <Button onClick={() => setActive(false)}>{vi.validation.nextTrial}</Button> :
         <Button variant="secondary" onClick={() => {
           record({gloss:'UNKNOWN',reason:'cancelled',frame_count:0,capture_duration_ms:0,
             candidate_latency_ms:null,response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
           setActive(false);
         }}>{vi.validation.cancelTrial}</Button>}</div>
     </>}
-    <section aria-live="polite" className="space-y-3">
+    <section id="vsl-validation-results" aria-live="polite" className="space-y-3">
       <h2 className="text-2xl font-bold">{vi.validation.results} ({rows.length})</h2>
       {rows.map(row => <p key={row.trial_id} className="p-3 border rounded-xl text-lg">
         {row.trial_id} · {row.participant_code} · {row.intent_id}: {row.displayed_candidate} · {policy.intents.find(item => item.id===row.intent_id)?.kind==='negative_valid' && row.response_latency_ms==='' ? vi.validation.ineligibleShort : vi.validation.outcomes[row.outcome as keyof typeof vi.validation.outcomes]}
@@ -146,6 +146,17 @@ export function VSLValidationPage() {
           row.response_latency_ms==='' && <span className="block font-semibold">{vi.validation.ineligibleNegative}</span>}
       </p>)}
       <Button onClick={download} disabled={rows.length===0 || (active && !locked)}>{vi.validation.export}</Button>
+      {exportText && <div className="space-y-3">
+        <p role="status">{exportMessage}</p>
+        <label className="block font-bold">{vi.validation.csvText}
+          <textarea readOnly value={exportText} onFocus={event => event.currentTarget.select()}
+            className="block w-full h-40 p-3 border-2 rounded-xl font-mono text-sm" />
+        </label>
+        <Button variant="secondary" onClick={async () => {
+          try { await navigator.clipboard.writeText(exportText);setExportMessage(vi.validation.csvCopied); }
+          catch {setExportMessage(vi.validation.copyManually);}
+        }}>{vi.validation.copyCsv}</Button>
+      </div>}
     </section>
   </main>;
 }

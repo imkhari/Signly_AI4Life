@@ -21,6 +21,11 @@ export const vi = {
     vslLabel: 'Ký hiệu VSL', vslDescription: 'Thử gợi ý cử chỉ qua camera',
   },
   validation: {
+    viewResults: 'Xem kết quả lượt vừa thử',
+    exportPrepared: 'Đã chuẩn bị CSV. Nếu trình duyệt không tải tệp, hãy sao chép nội dung bên dưới.',
+    csvText: 'Nội dung CSV để sao chép', copyCsv: 'Sao chép CSV',
+    csvCopied: 'Đã sao chép CSV. Dán vào tệp văn bản và lưu với đuôi .csv.',
+    copyManually: 'Chưa sao chép tự động được. Chọn nội dung trong ô rồi dùng Sao chép.',
     synthetic: 'Lượt mô phỏng tự động; không được tính là người thử thật.',
     title: 'Thử kỹ thuật camera V2',
     scope: 'Chỉ dùng ca giả lập. Đây là thử nội bộ, chưa xác minh ký hiệu VSL.',
@@ -45,6 +50,8 @@ export const vi = {
     results: 'Kết quả các lượt',export: 'Tải kết quả CSV',
   },
   camera: {
+    waitForTracking: 'Chờ hình theo dõi mới. Giữ rõ thân trên và hai tay trước khi bắt đầu.',
+    stopped: (seconds: string) => `Lượt đã dừng sau ${seconds} giây; chưa gửi nhận diện.`,
     instruction: 'Giữ rõ mặt và hai tay. Bấm Bắt đầu ký rồi ký một câu.',
     remaining:(seconds:number) => `Còn ${seconds} giây. Ký xong, bấm Xong câu.`,
     begin: 'Bắt đầu ký', finish: 'Xong câu',

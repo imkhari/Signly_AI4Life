@@ -1,0 +1,20 @@
+{
+  "evidence_kind": "user_screenshot",
+  "source_attachment": "codex-clipboard-4af40633-2d01-4210-9622-6fc70c2282cf.png",
+  "observed": {
+    "trial_id": "T0001",
+    "participant_code": "P01",
+    "intent_id": "NEG_REST",
+    "displayed_candidate": "UNKNOWN",
+    "ui_reason": "tracking_gap",
+    "ui_eligibility": "ineligible"
+  },
+  "frame_count": null,
+  "capture_duration_ms": null,
+  "response_latency_ms": null,
+  "profile_id": null,
+  "csv_imported": false,
+  "model_correctness": null,
+  "retention_authorized": "User allowed update while retaining screenshot evidence; unexported frame/timing details unavailable.",
+  "interpretation": "A capture stopped with tracking interruption. Not a valid negative recognition trial; no inference about model accuracy or request count."
+}

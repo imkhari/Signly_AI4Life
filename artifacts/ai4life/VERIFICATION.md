@@ -26,3 +26,7 @@
 Không đổi backend/contract, validator/LLM prompt, model/checkpoint, tiền xử lý, ngưỡng, capture hoặc policy. Profile đổi vì bố cục trang thử nội bộ có hash nguồn; không có lượt trực tiếp mới được nhập. Model vẫn CANDIDATE.
 
 Cần điền nhóm/thành viên/GVHD, cài font trên máy PowerPoint và diễn tập. Chưa có video dự phòng, thử ký thật, thử người dùng/điều dưỡng, LAN hai thiết bị/HTTPS hoặc ngắt Internet ngoài trên thiết bị thật. Những việc này không được tính vào kết quả lần bàn giao.
+
+## Cập nhật thao tác camera sau bộ slide
+
+Bản sửa cuộn và xuất CSV đã qua make check160backend+88frontend,build và16E2E. Có thêm kiểm bắt đầu với tracking cũ, lỗi mất tay không tự cuộn và sao chép CSV khi clipboard bị chặn. Đây là kiểm phần mềm; không có lượt camera người thật mới đủ điều kiện. Bộ slide và ảnh bàn giao phía trên là snapshot tại lần xuất, không tái xuất vì lần này không đổi nội dung/số liệu model.

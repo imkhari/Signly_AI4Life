@@ -67,3 +67,10 @@ Kết quả gồm đúng/sai/từ chối trên toàn bộ lượt dương; preci
 Latency là **Xong câu → DOM đã cập nhật gợi ý**, không phải thời gian bệnh nhân ký hay xác nhận. Không có ứng viên thì `candidate_latency_ms` để trống. `response_latency_ms` báo riêng, không biến lượt không gọi API thành latency0. P95 dùng nearest-rank, median dùng định nghĩa thông thường; luôn báo n nhỏ. `worker_state` là quan sát GET status trước lượt (ready/not_ready/unknown), không phải bảo đảm không có thay đổi đồng thời; dùng để tách chi phí khởi động.
 
 Tham số `?evidence=synthetic` chỉ dùng trong E2E, có nhãn mô phỏng và không được tính vào số người/lượt thật. CLI không tự đóng băng dù đạt số học; vẫn cần regression và xác nhận kỷ luật lượt cuối. `FREEZE.md` ghi trạng thái cuối cùng.
+
+
+## Khi lượt dừng hoặc không tải được CSV
+
+Lỗi capture giữ nguyên màn camera, hiện lý do và “Lượt đã dừng sau … giây; chưa gửi nhận diện.” Đây là dừng trước suy luận, không phải đồng hồ tiếp tục chạy ngầm. Bấm Xem kết quả khi muốn tới bảng. Giữ ít nhất một bàn tay trong khung khi dùng tay còn lại bấm chuột/nút; hai vai vẫn phải được nhìn rõ. Không tự quy một lỗi tracking thành model nhận sai ký hiệu.
+
+Bấm Tải kết quả CSV để hiện thêm ô Nội dung CSV để sao chép. Nếu không có tệp tải xuống, bấm Sao chép CSV hoặc chọn toàn bộ trong ô và sao chép thủ công, dán vào tệp văn bản `.csv`. Không đóng/tải lại trang cho tới khi giữ được bản xuất, trừ khi chủ dự án chấp nhận mất phần chi tiết chưa xuất. Không suy từ ảnh kết quả thành số frame/timing chưa biết.

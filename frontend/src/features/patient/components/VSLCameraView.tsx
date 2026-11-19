@@ -120,6 +120,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const [readyToSign,setReadyToSign] = useState(false);
   const recordingStartedRef=useRef(0);
   const [remainingSeconds,setRemainingSeconds]=useState(6);
+  const [captureFailure,setCaptureFailure]=useState<CaptureFailure|null>(null);
+  const lastObservationRef=useRef<HolisticObservation|null>(null);
   const [captureState,setCaptureState] = useState<'idle'|'recording'|'processing'>('idle');
   const [captureMessage,setCaptureMessage] = useState<string>(vi.camera.ready);
   const [livePrediction,setLivePrediction] = useState<VSLPredictionResponse|null>(null);
@@ -138,6 +140,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
 
   const clearSequence = useCallback(() => {
     generationRef.current += 1;
+    lastObservationRef.current=null;
     requestRef.current?.abort(); requestRef.current=null;
     if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
     captureTimerRef.current=null; captureRef.current.cancel(); pendingResultRef.current=null;
@@ -146,7 +149,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const showFailure = useCallback((failure:CaptureFailure) => {
     if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
     captureTimerRef.current=null;
-    setCaptureState('idle'); setCaptureMessage(vi.camera.reasons[failure.reason]);
+    setCaptureState('idle'); setCaptureFailure(failure); setCaptureMessage(vi.camera.reasons[failure.reason]);
     setLivePrediction(null); setCandidates([]);
     observerRef.current?.({...failure,gloss:'UNKNOWN',candidate_latency_ms:null,
       response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
@@ -155,13 +158,21 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const handleObservation = useCallback(({frame,hands}:HolisticObservation) => {
     const canvas=canvasRef.current, context=canvas?.getContext('2d');
     if (canvas && context) drawHandLandmarks(context,hands,canvas.width,canvas.height);
+    lastObservationRef.current={frame,hands};
     setHandCount(hands.length);
-    setReadyToSign(hands.length>0 && hasValidShoulders(frame));
+    setReadyToSign(hands.length>0 && hasValidShoulders(frame) &&
+      performance.now()-frame.timestamp_ms<=SENTENCE_LIMITS.maxGapMs);
     const failure=captureRef.current.push(frame);
     if (failure) showFailure(failure);
   }, [showFailure]);
 
   const beginSentence = () => {
+    const observation=lastObservationRef.current;
+    if (!observation || performance.now()-observation.frame.timestamp_ms>SENTENCE_LIMITS.maxGapMs ||
+      !observation.hands.length || !hasValidShoulders(observation.frame)) {
+      setReadyToSign(false);setCaptureMessage(vi.camera.waitForTracking);return;
+    }
+    setCaptureFailure(null);
     clearSequence(); setCandidates([]); setLivePrediction(null);
     recordingStartedRef.current=performance.now();setRemainingSeconds(6);
     captureRef.current.begin(recordingStartedRef.current);
@@ -251,6 +262,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   useEffect(() => {
     const detector = detectorRef.current;
     const unsubscribe = detector?.onResults(handleObservation);
+    lastObservationRef.current=null;setCaptureFailure(null);
     clearSequence();
     setCandidates([]);
     setConfirmedGlosses([]);
@@ -360,6 +372,9 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         }}>{vi.common.cancel}</Button>}
       </div>
       <p role="status" className="text-lg mb-4">{captureMessage}</p>
+      {captureFailure && <p data-testid="vsl-capture-stopped" className="text-xl font-bold text-warn mb-4">
+        {vi.camera.stopped((captureFailure.capture_duration_ms/1000).toFixed(1))}
+      </p>}
       {captureState==='recording' && <p role="timer" aria-live="off" className="text-2xl font-bold text-action mb-4">
         {vi.camera.remaining(remainingSeconds)}
       </p>}

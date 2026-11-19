@@ -34,3 +34,12 @@ Báo cáo: `AI_model/vsl_v2/reports/greedy-replay.json`, `post-guard-replay.json
 ## Trạng thái bàn giao
 
 Sau khi được hướng dẫn thử lại1lượt, chủ dự án cho biết chưa có thời gian. Chưa nhận thêm CSV mới. Bản camera/tool commit1375640 đã sẵn sàng, kết quả bản mới giữ0lượt nhập; pilot cũ1lượt hết giờ được giữ riêng. Không tổng hợp5lượt từ lời báo thành5bản ghi hoặc đánh giá model khi chưa có response API.
+
+
+## Lượt báo lỗi qua ảnh sau khi hoàn thiện UI
+
+Người dùng gửi ảnh T0001/P01/NEG_REST/UNKNOWN với thông báo hình theo dõi bị gián đoạn và “Chưa đủ điều kiện đo”. Chưa tải được CSV trong trình duyệt tích hợp. Người dùng cho phép cập nhật trang và giữ bằng chứng từ ảnh; không thể khôi phục số frame, thời gian hay profile từ ảnh. Báo cáo rời rạc: `AI_model/vsl_v2/reports/tracking-gap-pilot-summary.json`. Không tự tạo dòng CSV, không gán timing/request count và không tính là ca âm model nhận đúng.
+
+Code xác định auto-scroll xuống kết quả được gọi khi `locked` bật sau mọi kết quả, gồm lỗi capture; vì vậy timer đang ghi bị thay bằng trạng thái dừng và nằm ngoài tầm nhìn. Đã bỏ cuộn tự động khi kết thúc/lỗi, giữ lý do và thời gian dừng cạnh camera, thêm liên kết Xem kết quả do người dùng bấm. Trước bắt đầu kiểm ảnh theo dõi còn mới theo cùng giới hạn500ms; không đổi giới hạn capture hoặc bỏ qua lỗi tay/vai. Nguyên nhân cụ thể gây mất tracking trên thiết bị người dùng vẫn cần thử lại; không khẳng định đã sửa chất lượng nhận diện.
+
+Nút tải CSV vẫn giữ, có thêm ô CSV và sao chép thủ công khi trình duyệt không tải được. Dữ liệu chỉ hiện sau thao tác xuất, không thêm lưu trữ/backend/telemetry. Profile mới tách phiên bản, bản mới vẫn0lượt trực tiếp nhập từ CSV.

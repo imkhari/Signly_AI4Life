@@ -4,7 +4,7 @@
 
 ## Phiên bản kỹ thuật
 
-Profile kỹ thuật hiện tại: `695918d46c5e8cc1d00597558f12562b5fab1d711990609ecfcb7162603e929a`. PilotC52 cũ được giữ riêng với commit232333d; không trộn kết quả giữa hai cấu hình. Code camera/tool hiện tại: `1375640`; pilot ban đầu: `232333d`. Base commit trước M0–M5: `b4432d775052a72ea9ed5fb973b04ca5a2020378`. Fingerprint ràng buộc từng file code và policy; quyết định đóng băng chưa được đưa ra.
+Profile kỹ thuật hiện tại: `4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f`. PilotC52 cũ được giữ riêng với commit232333d; không trộn kết quả giữa hai cấu hình. Code camera/tool hiện tại: `1375640`; pilot ban đầu: `232333d`. Base commit trước M0–M5: `b4432d775052a72ea9ed5fb973b04ca5a2020378`. Fingerprint ràng buộc từng file code và policy; quyết định đóng băng chưa được đưa ra.
 
 - Checkpoint: `AI_model/checkpoints/vsl_v2.pt`, SHA256 `d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246`, không đổi weights.
 - Decoder tiếng Việt442 token, greedy; CTC374 không xuất gloss. Norm2 vai9/10; mọi frame phải có hai điểm vai hợp lệ, không dùng width gần0.
@@ -45,3 +45,7 @@ Chủ dự án cho biết chưa có thời gian thử lại. Phần thử trực
 ## Cập nhật giao diện và slide 19/11/2026
 
 Profile đổi do bố cục trang thử nội bộ được chia bước; weights, tiền xử lý, ngưỡng và capture giữ nguyên. Snapshot cd9f061656b9fdda84fe71dd2b162e66b8efd35972aded51df1dd1332c6d87a4 giữ tại profiles/, không trộn kết quả. Bản mới vẫn0lượt trực tiếp và CANDIDATE. Ảnh app trong artifacts/ai4life là dữ liệu giả lập từ kiểm thử phần mềm, không phải người dùng thật.
+
+## Sửa gián đoạn thao tác thử camera
+
+Profile 4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f thêm kiểm độ mới của tracking trước bắt đầu theo maxGap500ms đã duyệt, giữ lỗi tại camera và xuất CSV thủ công. Snapshot 695918d46c5e8cc1d00597558f12562b5fab1d711990609ecfcb7162603e929a giữ riêng. Weights,500ms,6giây,180frame,24frame/800ms,ngưỡng0,7 và mọi guard giữ nguyên. Có1ảnh báo lượt gián đoạn được chủ dự án cho giữ; không có CSV/timing/profile xác minh và không tính vào gate. Bản mới0lượt trực tiếp; CANDIDATE.
