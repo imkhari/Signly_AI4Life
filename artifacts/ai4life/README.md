@@ -1,35 +1,38 @@
-# Bộ demo và slide AI4Care
+# Bộ slide học thuật AI4Care — AI4Life
 
-## Mở file
+Bản cập nhật 19/11/2026 theo yêu cầu đặt demo cuối, trình bày học thuật, chi tiết và chuyên nghiệp. File chính `AI4Care_AI4Life.pptx`: **16 slide chính + 5 phụ lục ẩn**, demo ở slide 16. Giữ nhận diện template và ba face font UTM đã tải.
 
-- [PowerPoint chỉnh sửa được](AI4Care_AI4Life.pptx): 12 slide chính + 3 slide phụ lục ẩn khi trình chiếu, có speaker notes.
-- [PDF xem và dự phòng](AI4Care_AI4Life.pdf): đủ 15 trang, giữ hình thức bản đã render.
-- [Kịch bản 3 phút và bản 7 phút](THUYET-TRINH.md).
-- [Câu hỏi phản biện](QA.md).
-- [Nguồn số liệu và giới hạn](EVIDENCE.md).
-- [Kiểm tra và phạm vi bàn giao](VERIFICATION.md).
-- `screenshots/`: ảnh app thật từ ca giả lập, gồm bản đầy đủ và vùng trọng tâm đưa lên slide.
+## Mở và sử dụng
 
-## Font và chỉnh sửa
+- `AI4Care_AI4Life.pptx`: chữ, bảng và sơ đồ sửa được; có ghi chú thuyết trình và nguồn từng trang.
+- `AI4Care_AI4Life.pdf`:21 trang xem cố định, gồm phụ lục; là ảnh render, không phải PDF để tìm kiếm hoặc sửa chữ.
+- `THUYET-TRINH.md`: bản đầy đủ 7 phút, đường rút gọn 3 phút và thao tác demo; Q-11 vẫn 3 phút + 2 phút hỏi đáp.
+- `NOI-DUNG-CHI-TIET.md`: nội dung giải thích và nguồn cho 21 slide.
+- `QA.md`, `EVIDENCE.md`, `VERIFICATION.md`: phản biện, bảng bằng chứng và phạm vi kiểm tra.
+- `screenshots/`: ảnh app với ca giả lập. Các ảnh `sentence-*-synthetic.png` dùng detector/response mô phỏng, không phải kết quả VSL thật; có provenance riêng.
 
-Máy trình chiếu PowerPoint cần cài ba font đã tải bằng Font Book: UTM Swiss Condensed, bản Bold và UTM Swiss 721 Black Condensed. Trong PowerPoint, family Condensed Regular/Bold dùng cùng tên family. Font được tham chiếu trong PPTX, không phân phối trong bộ bàn giao.
+## Cấu trúc phần chính
 
-Các tiêu đề, nội dung, sơ đồ luồng và notes trong PPTX sửa được. Logo/nền cuộc thi và ảnh UI là ảnh gốc/chụp màn hình. PDF là bản xem cố định tạo từ các trang đã render, không phải bản để sửa chữ hoặc tìm kiếm nội dung. Cách xuất này giữ đúng font/hình thức khi công cụ xuất PDF trực tiếp gặp lỗi thư viện. Cần bản PDF có chữ tìm kiếm: mở PPTX với font đã cài và xuất PDF từ PowerPoint.
+1. Mở đầu: 1.
+2. Vấn đề, mục tiêu và phạm vi: 2–3.
+3. Giải pháp và điểm khác biệt: 4–5.
+4. Kiến trúc và phương pháp V2: 6–7.
+5. Dữ liệu và đánh giá: 8–10.
+6. Hiệu năng trên điện thoại thật: 11, hiện ghi “Chưa đo”.
+7. An toàn, quyền riêng tư và đạo đức: 12.
+8. Giới hạn, kế hoạch kiểm chứng và đóng góp: 13–15.
+9. Demo trực tiếp: 16, cuối phần chính.
 
-File nguồn template và font trong Downloads không bị sửa. Bộ mới giữ bố cục/nhận diện mẫu, không thay bằng template khác. Không có file font hoặc dữ liệu camera cá nhân trong bộ này.
+Phụ lục A1–A5: giao diện theo câu, công thức/nguồn dữ liệu, biểu mẫu đo điện thoại, tài liệu tham khảo và câu hỏi phản biện.
 
-## Cần nhóm điền và diễn tập
+## Font, tên nhóm và trình chiếu
 
-- Slide 2 có chỗ đánh dấu tên nhóm, thành viên và giảng viên nếu có; điền trước khi nộp. AI4Care là tên làm việc, tên đề tài cuối do nhóm chốt.
-- Ngày 21–22/11/2026 trên slide mở đầu nằm trong nền mẫu của ban tổ chức; đối chiếu với lịch và hội đồng của nhóm, không coi bộ slide là xác nhận lịch.
-- Q-11 hiện là 3 phút demo + 2 phút hỏi đáp. Bản 7 phút chỉ là phương án bổ sung. Dùng kịch bản ngắn, không đọc đủ 12 slide trong 3 phút.
-- Model vẫn CANDIDATE. Không có kết quả thử người dùng/điều dưỡng hoặc camera người ký thật mới. Luồng Chạm là chính, camera tùy chọn sau diễn tập đúng ký hiệu.
-- Máy chủ hiện demo với LLM mock; yêu cầu phiên dịch là mô phỏng. Không trình bày thành dịch vụ live.
-- Mở `/nurse` trước, lấy mã, nhập ở `/patient`. Hai thiết bị LAN cần cấu hình và HTTPS cho camera; localhost hai tab đã được kiểm tra phần mềm.
+Cài bằng Font Book ba file đã tải: UTM Swiss Condensed, CondensedBold và UTM Swiss 721 Black Condensed. Hai tên family trong PowerPoint là `UTM Swiss Condensed` (Regular/Bold) và `UTM Swiss 721 Black Condensed`. File chỉ tham chiếu font; không phân phối TTF. Giữ nền gốc/template, không sửa file nguồn trong Downloads.
 
-Không có video dự phòng trong bộ này; ảnh slide là phương án dự phòng được ghi rõ. Chưa kiểm tra file trong Microsoft PowerPoint hoặc diễn tập trên máy chiếu thật; cần nhóm mở một lượt để kiểm môi trường trình chiếu.
+Đã dùng tên nhóm IDK theo thông tin được cung cấp. Tên làm việc AI4Care có thể đổi; nhóm bổ sung tên thành viên/GVHD khi nộp. Ngày trên slide 1 thuộc nền template, cần đối chiếu lịch thi thật. Cần mở trong PowerPoint trên máy thi để kiểm font, liên kết mở localhost và máy chiếu; chưa có phép thử trong PowerPoint thật được ghi nhận.
 
+## Trạng thái bằng chứng
 
-## Cập nhật camera sau bản slide — Q-27
+Replay: 255/300 khớp câu, WER 9,50%, một mẫu mất vai bị từ chối; dữ liệu 300 NPY/S06, chưa là accuracy webcam. Baseline 4e4ebb có 11 ca âm nội bộ, bản 509264a9 mới 0 live và chưa có ca dương VSL xác minh. Điện thoại thật, người dùng mục tiêu, điều dưỡng và hiệu quả bệnh viện chưa đo. Model giữ CANDIDATE; không đổi weights khi làm slide.
 
-App đã có luồng V2 theo câu: Bắt đầu ký → Xong câu → kiểm gợi ý cả lý do và thông tin đau → Dùng thông tin này/Sửa → bổ sung Chạm → xác nhận toàn phiếu → điều dưỡng duyệt. Slide và ảnh trong bộ này giữ snapshot lúc xuất; chưa cập nhật ảnh camera theo luồng mới. Kịch bản Chạm chính vẫn dùng được. Checkpoint và số liệu replay không đổi;11ca âm cũ giữ baseline4e4ebb, bản mới chưa có lượt live. Không dùng video/ảnh mô phỏng của kiểm tra tự động để quảng bá độ chính xác VSL. Xem kế hoạch14 và docs/validation/vsl-v2 để diễn tập camera mới.
+Demo mặc định dùng Chạm, LLM mock và ca giả lập. Camera chỉ thêm sau khi ký đúng được xác minh và diễn tập. Chưa có video dự phòng, diễn tập hai thiết bị HTTPS LAN hoặc ngắt Internet ngoài trên thiết bị thật. Các ô Chưa đo cần cập nhật bằng số liệu thực, không điền số ước lượng.

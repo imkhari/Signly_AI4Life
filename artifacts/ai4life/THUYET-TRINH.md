@@ -1,62 +1,67 @@
-# Kịch bản trình bày AI4Care
+# Kịch bản trình bày AI4Care — bản học thuật
 
-Ngày chuẩn bị: 19/11/2026. AI4Care là tên làm việc, có thể sửa trên slide 2. Điền tên nhóm, ba thành viên và giảng viên nếu có trước khi nộp. Slide 1 giữ nhận diện và ngày có sẵn trong mẫu; nhóm cần đối chiếu lịch thực tế của mình.
+Cập nhật 19/11/2026. Bộ slide có 16 trang chính và 5 phụ lục ẩn. **Demo ở slide 16, cuối phần chính.** Tên làm việc AI4Care, nhóm IDK; tên thành viên và GVHD do nhóm bổ sung khi nộp.
 
-## Bản ưu tiên: 3 phút demo + 2 phút hỏi đáp
+## Thời lượng
 
-Đây là thời lượng đã chốt tại Q-11, chưa có xác nhận mới từ ban tổ chức. Không cố đọc toàn bộ 12 slide trong 3 phút. Phụ lục 13–15 được ẩn trong trình chiếu và vẫn có trong PDF.
+Q-11 vẫn chốt 3 phút demo + 2 phút hỏi đáp. Bản đầy đủ dưới đây là phương án 7 phút để tập hoặc dùng khi ban tổ chức xác nhận thời lượng phù hợp; không thay thể lệ. Không đọc đủ 16 slide trong3 phút. Thời gian là phân bổ dự kiến, chưa phải kết quả bấm giờ diễn tập.
 
-| Mốc | Nội dung và thao tác |
-|---|---|
-| 0:00–0:20 | Mở slide 1–2, giới thiệu vấn đề và đầu ra. |
-| 0:20–0:35 | Chuyển app: điều dưỡng có mã, bệnh nhân nhập mã, chọn Chạm. |
-| 0:35–1:10 | Chọn Đau / Nhức → vị trí Đầu → mức 6/10 → 2 giờ → dị ứng Không chắc chắn. |
-| 1:10–1:35 | Kiểm tra phiếu. Minh họa nút sửa một mục nếu thao tác kịp. Bệnh nhân xác nhận. |
-| 1:35–2:00 | Điều dưỡng thấy cảnh báo, nút duyệt đang khóa; ghi nhận cảnh báo rồi duyệt. Chỉ rõ số thứ tự bên bệnh nhân. |
-| 2:00–2:15 | Mở phiếu bàn giao, đóng; kết thúc và xóa phiên. |
-| 2:15–2:40 | Quay slide 8–9: AI ở đâu, replay offline và giới hạn camera. |
-| 2:40–3:00 | Slide 10 và 12: ranh giới an toàn, bước kiểm chứng tiếp theo, kết thúc. |
+## Bản đầy đủ 7 phút
 
-### Lời nói gợi ý
+| Slide | Nội dung | Thời gian dự kiến |
+|---|---|---|
+| 1 | AI4Care — Hỗ trợ giao tiếp trong tiếp nhận y tế | 5 giây |
+| 2 | Bài toán giao tiếp tại quầy tiếp nhận | 15 giây |
+| 3 | Mục tiêu và phạm vi nghiên cứu | 15 giây |
+| 4 | Giải pháp: một câu tạo một gợi ý có cấu trúc | 20 giây |
+| 5 | Điểm khác biệt nằm ở quy trình tiếp nhận | 20 giây |
+| 6 | Kiến trúc: xử lý trong trình duyệt và máy chủ LAN | 25 giây |
+| 7 | Phương pháp nhận diện câu với V2 | 25 giây |
+| 8 | Dữ liệu và thiết kế đánh giá | 25 giây |
+| 9 | Kết quả replay model trên 300 mẫu | 35 giây |
+| 10 | Kiểm tra phần mềm và bằng chứng camera | 20 giây |
+| 11 | Hiệu năng trên điện thoại thật | 15 giây |
+| 12 | An toàn, quyền riêng tư và đạo đức | 25 giây |
+| 13 | Giới hạn và nguy cơ sai lệch kết luận | 20 giây |
+| 14 | Kế hoạch kiểm chứng theo từng điều kiện | 20 giây |
+| 15 | Đóng góp hiện tại và tiêu chí trình diễn | 15 giây |
+| 16 | Demo trực tiếp: một phiên tiếp nhận | 120 giây |
 
-“AI4Care hỗ trợ người Điếc và người khó khăn về lời nói khai thông tin tại quầy tiếp nhận. Đầu ra là phiếu lời khai được bệnh nhân và điều dưỡng kiểm tra.
+Tổng 420 giây, gồm 300 giây trình bày và 120 giây demo. Sau demo kết thúc phần trình chiếu chính; chỉ mở A1–A5 khi được hỏi. Các nguồn đầy đủ nằm trong speaker notes và EVIDENCE.md.
 
-Trong ca giả lập này, người bệnh chọn chỗ đau, mức đau, thời gian và chưa chắc về dị ứng. Thông tin cập nhật sang màn điều dưỡng. Trước khi xác nhận, người bệnh có thể sửa từng mục.
+## Bản rút gọn 3 phút, giữ demo cuối
 
-Ở đây nút duyệt vẫn khóa. Sau khi bệnh nhân xác nhận và điều dưỡng ghi nhận cảnh báo, hệ thống mới cho duyệt và cấp số thứ tự. Kết thúc phiên sẽ xóa dữ liệu phiên; phiếu đã in là bản do người vận hành quản lý.
+| Mốc | Slide / thao tác | Lời dẫn |
+|---|---|---|
+| 0: 00–0: 05 | 1 | AI4Care hỗ trợ giao tiếp ban đầu tại quầy tiếp nhận. |
+| 0: 05–0: 15 | 2 | Người bệnh cần diễn đạt; điều dưỡng cần thông tin để hỏi lại. |
+| 0: 15–0: 30 | 4 | Một câu có thể gợi ý cả lý do và vị trí; người bệnh kiểm trước khi dùng. |
+| 0: 30–0: 45 | 9 | 255/300 là replay landmark offline; chưa là kết quả webcam. |
+| 0: 45–1: 00 | 12 | Xác nhận hai phía, validator/fallback và dữ liệu theo phiên. |
+| 1: 00–1: 10 | 13 | Camera VSL, điện thoại và hiệu quả người dùng cần kiểm chứng tiếp. |
+| 1: 10–3: 00 | 16 + app | Demo ca giả lập dưới đây. |
 
-Camera V2 dùng model đã học để gợi ý nhãn, nhưng còn ở trạng thái thử nghiệm. Kết quả 255 trên 300 là replay dữ liệu landmark offline, không phải độ chính xác webcam. Bản demo này dùng LLM mock; phần diễn đạt vẫn có validator và mẫu dự phòng.
+Đây là kịch bản cần tập trước để chốt số thao tác. Nếu không đủ thời gian, bỏ thao tác mở phiếu bàn giao; giữ kiểm phiếu, xác nhận, điều kiện duyệt và xóa phiên.
 
-Nhóm đã có nguyên mẫu quy trình hai màn hình. Bước tiếp theo là kiểm tra khả năng sử dụng với đúng người dùng và đánh giá camera trực tiếp. Hệ thống không chẩn đoán, kê đơn hay thay phiên dịch viên.”
+## Demo ca giả lập khoảng 2 phút
 
-## Bản đầy đủ: 7 phút
+Chuẩn bị hai cửa sổ `/nurse` và `/patient`, phiên mới, màn hình không có dữ liệu cá nhân. Chạy localhost trên máy demo; điện thoại cần HTTPS/cấu hình LAN đã kiểm riêng. LLM của bản này là mock. Yêu cầu phiên dịch là mô phỏng.
 
-Thời lượng dưới đây là phương án bổ sung do nhóm chuẩn bị, không thay thế Q-11.
+1. Điều dưỡng lấy mã, người bệnh ghép mã và chọn Chạm.
+2. Chọn Đau/Nhức. Mở tab Vị trí đau, chọn Ngực.
+3. Mở tab Mức đau, chọn 5/10 và Nhận câu trả lời. Mở Bắt đầu từ khi nào, chọn 2giờ.
+4. Tiếp tục, chọn Không chắc chắn về dị ứng; yêu cầu tóm tắt.
+5. Kiểm từng mục trên phiếu và sửa nếu cần. Nói rõ nội dung là lời khai, chưa phải chẩn đoán.
+6. Chỉ nút duyệt đang khóa bên điều dưỡng. Người bệnh bấm Đúng, xác nhận; điều dưỡng vẫn phải ghi nhận cảnh báo cần hỏi lại trước khi duyệt.
+7. Điều dưỡng duyệt; kiểm số thứ tự trên màn bệnh nhân. Ghi nhận cảnh báo không có nghĩa đã xử lý y khoa.
+8. Nếu còn thời gian mở phiếu bàn giao. Kết thúc phiên, xác nhận xóa và kiểm màn bệnh nhân về ghép mã.
 
-| Slide | Thời gian | Lời dẫn / ý chính |
-|---|---:|---|
-| 1 | 3 giây | Trang nhận diện cuộc thi; chuyển ngay sang sản phẩm. |
-| 2 | 17 giây | AI4Care hỗ trợ giao tiếp ở bước tiếp nhận. Người bệnh xác nhận lời khai, điều dưỡng kiểm tra phiếu. |
-| 3 | 20 giây | Bài toán thiết kế là diễn đạt và hỏi lại triệu chứng, dị ứng. Nhóm chưa có khảo sát bệnh viện nên chưa kết luận tác động. |
-| 4 | 20 giây | Hai màn hình cùng một phiên, hai lượt kiểm tra; điểm thiết kế nằm ở luồng tiếp nhận có cấu trúc. |
-| 5 | 20 giây | Nêu ca giả lập và chuyển sang app. Camera không phải điều kiện để hoàn tất luồng này. |
-| 6 | 70 giây | Demo người bệnh chọn Đau, vùng Đầu, mức 6/10, 2 giờ, Không chắc dị ứng; kiểm tra và sửa phiếu rồi xác nhận. Ảnh slide là dự phòng. |
-| 7 | 80 giây | Demo điều dưỡng đọc dữ liệu, chỉ ra khóa duyệt, ghi nhận cảnh báo và duyệt; xem số thứ tự, mở phiếu và reset. Ảnh slide phóng cảnh báo, ảnh đầy đủ trong screenshots. |
-| 8 | 40 giây | Phân biệt model camera, parser theo luật và adapter LLM. LLM hiện mock, camera V2 thật nhưng chưa hoàn tất đánh giá. |
-| 9 | 40 giây | 255/300 khớp câu trên replay; WER 9,50%; chưa có kết luận webcam, lỗi sốt còn tồn tại. |
-| 10 | 35 giây | Guardrails, validator/fallback, tọa độ qua LAN và xóa phiên. Phiên dịch hiện mô phỏng. |
-| 11 | 40 giây | Kế hoạch thử với người dùng và điều dưỡng; chỉ số cần đo, chưa tuyên bố cải thiện hiệu suất. |
-| 12 | 35 giây | Chốt giá trị nguyên mẫu và điều kiện để tiến tới triển khai; mời trao đổi. |
+**Nhánh camera tùy chọn:** chỉ dùng khi cách ký đã được người biết VSL xác minh và diễn tập trên đúng thiết bị. Luồng mới là Bắt đầu ký / Xong câu / kiểm cả gợi ý / Dùng thông tin này hoặc Sửa / bổ sung Chạm / xác nhận toàn phiếu. Hiện chưa có ca dương được xác minh, không tự tạo động tác hoặc cam kết camera ổn định. Ảnh A1 dùng detector và response mô phỏng, phải giới thiệu đúng là ảnh minh họa cơ chế.
 
-Tổng: 420 giây. Speaker notes có nội dung bổ sung và nguồn. Phụ lục không nằm trong 7 phút.
+## Khi có sự cố
 
-## Chuẩn bị và dự phòng
+Camera không rõ: chuyển Chạm và nói đúng trạng thái. Mất kết nối: chờ phục hồi rồi kiểm dữ liệu; không duyệt phiếu cũ. App chưa khôi phục: mở ảnh A1 để giải thích cơ chế, nói rõ đang dùng ảnh minh họa và đây là ca giả lập khác. Chưa có video dự phòng đã quay/kiểm trên máy thi. Không gọi ảnh mô phỏng là camera thật hoặc LLM mock là LLM live.
 
-- Mở `/nurse` và `/patient` ở hai tab/cửa sổ. Tạo phiên demo mới trước lượt thi. Dữ liệu dùng cho trình diễn là giả lập.
-- Kiểm tra backend và frontend trước khi trình bày. Màn hình chiếu không lộ terminal, token hoặc cấu hình bí mật.
-- Camera chỉ bổ sung khi đã có người biết ký, câu đã tập đúng và thiết bị đã thử. Hiện chưa có bằng chứng để cam kết kết quả camera trực tiếp. Không tự đặt động tác làm VSL.
-- Nếu camera không ra gợi ý, nói “chưa nhận rõ” và chuyển Chạm. Không chạy lại nhiều lần rồi chỉ trình bày lần đúng như kết quả ổn định.
-- Mất kết nối: chờ trạng thái kết nối lại; nếu chưa phục hồi thì dùng ảnh slide và nói rõ đang xem ảnh dự phòng.
-- Lỗi LLM: mẫu cố định là đường dự phòng. Không giả vờ đang gọi LLM live.
-- Yêu cầu phiên dịch là mô phỏng, chưa nối dịch vụ thật.
-- Nếu không có thời gian, bỏ phần camera trực tiếp và mở phụ lục khi được hỏi.
+## Ghi chú chi tiết
+
+Speaker notes của 21 trang có giải thích phương pháp, giới hạn và nguồn. Bản văn bản nằm trong NOI-DUNG-CHI-TIET.md. Tập nói theo ý chính, không đọc toàn bộ notes.

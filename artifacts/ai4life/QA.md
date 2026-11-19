@@ -19,13 +19,13 @@ Weights V2 do nhóm cung cấp; pipeline hiện dùng greedy decoder tiếng Vi�
 Runtime đã tích hợp và kiểm tra kỹ thuật; chất lượng camera người thật chưa được xác minh theo tiêu chí nội bộ. Trạng thái CANDIDATE. Hai mẫu sốt còn nhận HO/ĐAU. Vì vậy luồng chính dùng Chạm, camera chỉ bổ sung sau diễn tập phù hợp.
 
 **Đã có người thử chưa?**
-Chưa có thử với người Điếc/người dùng mục tiêu hoặc điều dưỡng được ghi nhận. Một CSV camera cũ có một lượt quá giới hạn, không có response API; không tính là nhận đúng. Các ảnh và bài kiểm tra mới là thao tác phần mềm tự động với dữ liệu giả lập.
+Chưa có thử với người Điếc/người dùng mục tiêu hoặc điều dưỡng được ghi nhận. Baseline 4e4ebb có 11 ca âm nội bộ hợp lệ, tất cảUNKNOWN; chưa có ca dương VSL được xác minh. Bản 509264a9 mới 0 live. Các ảnh và E2E nhận cả câu dùng đầu vào mô phỏng, không phải phép đo VSL thật.
 
 **Chưa kiểm chứng người dùng thì đã chứng minh được gì?**
 Chứng minh được nguyên mẫu thực hiện luồng ghép nối, đồng bộ, sửa, xác nhận, xử lý điều kiện duyệt và reset trong môi trường kiểm tra. Chưa chứng minh người dùng hiểu icon, ký hiệu được nhận ổn định, giảm thời gian hay giảm sai sót tại bệnh viện.
 
 **Nhận diện sai thì sao?**
-Gợi ý phải qua Nhận và Áp dụng, rồi xác nhận toàn phiếu. Người bệnh có thể bỏ gợi ý, sửa bằng Chạm hoặc nhờ nhân viên. Những chặn kỹ thuật này không chứng minh mọi người dùng sẽ phát hiện mọi lỗi; cần thử tác vụ.
+Ở context intake, kiểm cả gợi ý rồi bấm Dùng thông tin này hoặc Sửa; bổ sung Chạm và xác nhận toàn phiếu. Nhánh validation symptom/location cũ giữ Nhận/Áp dụng. Người bệnh có thể bỏ gợi ý, sửa bằng Chạm hoặc nhờ nhân viên. Những chặn kỹ thuật này không chứng minh mọi người dùng sẽ phát hiện mọi lỗi; cần thử tác vụ.
 
 **LLM sinh thêm thông tin hoặc chẩn đoán thì sao?**
 LLM chỉ nhận khung thông tin ẩn danh. Văn bản phải qua validator; lỗi, timeout hoặc bị chặn dùng mẫu cố định. Demo chính hiện dùng mock. Các guardrails kỹ thuật không thay thế thẩm định y tế.
@@ -50,3 +50,16 @@ Chưa có cơ sở kết luận. Cần phối hợp xác minh quy trình, khả 
 
 **Giảm được bao nhiêu thời gian và chi phí?**
 Chưa có số đo tác vụ hoặc chi phí vận hành. Cần so sánh cùng ca giả lập với cách làm hiện tại, ghi thời gian, lỗi chưa phát hiện và mức cần hỗ trợ. Độ trễ phần mềm hoặc số test xanh không trả lời được câu hỏi này.
+
+
+**Vì sao demo đặt cuối?**
+Người nghe được giới thiệu bài toán, thiết kế, phương pháp và giới hạn bằng chứng trước khi xem quy trình chạy. Slide 16 là cuối phần chính; phụ lục 17–21ẩn chỉ dùng phản biện. Đây là lựa chọn trình bày, không thay thời lượng Q-11.
+
+**Model nhận từ hay câu?**
+V2 giải mã chuỗi thành một câu tiếng Việt. App chỉ ánh xạ toàn câu trong allowlist thành gợi ý có cấu trúc; không dùngCTC374khi chưa xác minh class mapping. Chưa hỗ trợ hội thoại tự do hoặc ghép nhiều nhãn từ các lượt thành nghĩa mới.
+
+**Có kết quả điện thoại thật chưa?**
+Chưa. Slide 11 vàA3 ghi “Chưa đo”. MediaPipe trích tọa độ tại trình duyệt; V2 chạy ở máy chủLAN. Cần đo FPS, lạnh/nóng, p50/p95 từ Xong câu đến DOM, lỗi, RAM/nhiệt trên thiết bị được ghi rõ. Không dùng forward offline để trả lời latency điện thoại.
+
+**WER 9,50% được tính thế nào?**
+205 lỗi chỉnh sửa gồm 144 thay thế+31 xóa+30 thêm, chia 2.157 token tham chiếu; giữ dấu câu.255/300 khớp toàn câu=85,00% là chỉ số khác. Giữ mẫu bị từ chối trong mẫu số300. Bộreplay chỉ cóS06 và reference còn lệch metadata ở65 mẫu.

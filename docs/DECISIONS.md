@@ -36,3 +36,5 @@
 
 | D-027 | 2026-11-19 | Hoàn thiện UI P9 và tạo bộ slide theo template AI4Life +3facefont đã tải; giữ model/contract/safety, dùng Chạm và LLM mock, Q-11 vẫn3phút+2phútQ&A | Chủ dự án yêu cầu thực hiện prompt UI+slide. Thêm bản7phút và phụ lục là phương án chuẩn bị, không thay thời lượng đã chốt | FINAL |
 | D-028 | 2026-11-19 | Tiếp tục V2 theo câu; camera mở đầu tạo một phiếu gợi ý nhiều trường, người bệnh đồng ý trước khi ghi; giữ SemFrame1.0, model/guard và xác nhận toàn phiếu | Chủ dự án chọn V2 theo hướng phù hợp model (Q-27); phạm vi kế hoạch14, chưa train isolated hoặc sửa phân luồng lâm sàng | FINAL |
+
+| D-029 | 2026-11-19 | Tái cấu trúc slide theo hướng học thuật, 16 slide chính và 5 phụ lục ẩn; demo ở cuối phần chính; giữ template/font, ghi rõ mức bằng chứng và phần điện thoại chưa đo | Chủ dự án yêu cầu “demo để cuối … làm lại slide cho học thuật, chi tiết, chuyên nghiệp”, sau đó yêu cầu tiếp tục. Q-11 vẫn 3 phút + 2 phút hỏi đáp; bản 7 phút là phương án chuẩn bị, không đổi thời lượng đã chốt | FINAL |

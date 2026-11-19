@@ -1,32 +1,28 @@
-# Kiểm tra bàn giao — 19/11/2026
+# Kiểm tra bộ slide học thuật
 
-## Web app
+Cập nhật 19/11/2026. Bản trình bày 16 slide chính + 5 phụ lục ẩn, demo ở slide 16. Giữ template và font nguồn; chuyển nội dung kỹ thuật ra phần chính và bổ sung dữ liệu/protocol/giới hạn.
 
-- `make check`: ruff + mypy + ESLint + TypeScript, 160 test backend và 87 test frontend qua.
-- Build frontend qua.
-- Playwright: 15 E2E qua, gồm luồng hai màn hình, sửa thông tin, câu hỏi dị ứng, xác nhận, critical ack, duyệt/cấp số, reset, reconnect, fallback khi LLM mock độc hại, camera synthetic và giải phóng stream.
-- Bài kiểm tra bàn giao đi từng bước qua 1280×800, 1024×800, 720×800 và 390×800, chụp ảnh app, kiểm không tràn ngang. Bộ E2E cũ kiểm thêm 1024×768 và 720×768.
-- Chữ lớn + tương phản cao kiểm ở màn chọn phương thức, màu nút được kiểm từ computed style. Modal có test vòng Tab, Escape, khôi phục focus và cuộn nền.
-- Có lượt mô phỏng camera bị từ chối quyền, hiển thị lỗi và chuyển Chạm; không truy cập camera thật.
-- Ảnh và test đều dùng dữ liệu giả lập. Không đo người dùng, hiểu biết VSL, hiệu quả lâm sàng hoặc độ chính xác webcam.
+## Phần mềm được kiểm
 
-## PowerPoint và PDF
+`make check` chạy trong đợt làm slide: 173 test backend + 96 frontend qua, lint/type qua. App/model không đổi trong đợt này. Kết quả8 runtime,build,18 E2E tại code 0094d98 lấy từ nhật ký kỹ thuật đã có; không tuyên bố đã chạy lại toàn bộ E2E chỉ để sửa slide.
 
-- 15 trang: 12 trang chính và 3 phụ lục được đánh dấu ẩn trong PPTX; PDF có đủ15trang.
-- Có15phần speaker notes; tiêu đề/nội dung/sơ đồ là đối tượng text chỉnh sửa được; ảnh và nền giữ dạng ảnh.
-- Kiểm cấu trúc gói PPTX, quan hệ tài nguyên, kích thước 12192000×6858000EMU, font đã chỉ định và geometry qua công cụ finalization.
-- Đã import lại đúng file cuối và render đủ15trang; đã xem từng trang, đối chiếu mẫu và sửa lỗi chữ/font/ảnh không hiển thị từ bản dựng đầu.
-- Ba ảnh nền nguồn được giữ nguyên byte trong package đầu ra; master/layout và nhận diện mẫu được giữ. Dòng tên AI4Care thêm tại vùng trống slide mở đầu.
-- Kiểm metadata ba TTF và chuỗi glyph tiếng Việt, dùng đúng family Regular/Bold/Black khi render; không đóng gói TTF.
-- PDF dự phòng tạo từ render slide. Đã kiểm số trang/kích thước và render PDF để đối chiếu; bản tìm kiếm/chỉnh chữ là PPTX, không phải PDF này.
-- Chưa mở trong Microsoft PowerPoint, chưa thử máy chiếu, chưa xác nhận thời lượng bằng diễn tập thật.
+Hai ảnh cận cảnh mới được chụp qua trình duyệt với app backend thật/LLM mock nhưng camera, detector và response model mô phỏng, dữ liệu sức khỏe giả lập. Không bật webcam, không ghi kết quả người thật, không đổi profile hoặc nhập thêm trial.
 
-## Phạm vi giữ nguyên và phần cần nhóm làm
+## Kiểm tra file trình bày
 
-Không đổi backend/contract, validator/LLM prompt, model/checkpoint, tiền xử lý, ngưỡng, capture hoặc policy. Profile đổi vì bố cục trang thử nội bộ có hash nguồn; không có lượt trực tiếp mới được nhập. Model vẫn CANDIDATE.
+- Package/relationship hợp lệ;21 slide,16hiện và 5ẩn; ghi chú thuyết trình cho từng trang.
+- Kích thước1280×720; kiểm tọa độ ngoài trang, bullet geometry và heading fit theo bộ kiểm chuẩn.
+- Có12bảng PowerPoint native sửa được ở slide 3,4,5,8,9,10,11,12,14,18,19,21. Hai sơ đồ slide 6–7 là đối tượng và connector native.
+- Bảng kết quả slide 9 có 255 + 44 + 1=300, kiểm contract số học rõ. WER/85,00% đối chiếu trực tiếp báo cáo nguồn; không dùng kiểm số học để thay xác minh dữ liệu.
+- Font policy đối chiếu deck nguồn: UTM Swiss Condensed và UTM Swiss 721 Black Condensed, dùngRegular/Bold/Black theo face đã cung cấp; không đóng góiTTF.
+- Đã nhập lại chính file cuối, render đủ 21 trang và xem từng trang. Đối chiếu trước/sau với template, sửa chữ tràn/nhãn đường nối và phóng cận cảnh ảnh để đọc được.
+- PDF đồng bộ21 trang là ảnh render cố định, gồm phụ lục; không có lớp chữ để tìm kiếm. Bản sửa nội dung và notes làPPTX.
+- Chưa mở trong Microsoft PowerPoint, thử máy chiếu hoặc diễn tập bấm giờ trên máy thi. Tài nguyên font, hyperlinklocalhost và chế độ phụ lục ẩn cần kiểm tại đó.
 
-Cần điền nhóm/thành viên/GVHD, cài font trên máy PowerPoint và diễn tập. Chưa có video dự phòng, thử ký thật, thử người dùng/điều dưỡng, LAN hai thiết bị/HTTPS hoặc ngắt Internet ngoài trên thiết bị thật. Những việc này không được tính vào kết quả lần bàn giao.
+## Kiểm chứng nội dung
 
-## Cập nhật thao tác camera sau bộ slide
+Nguồn/bằng chứng được đối chiếu trongEVIDENCE.md vànotes. Replay, ca âm nội bộ, E2Emôphỏng, điện thoại chưa đo và người dùng chưa thử được ghi riêng. Không thêm số liệu hiệu quả bệnh viện, accuracy webcam hoặc tốc độ điện thoại. Model giữ CANDIDATE; code/profile/checkpoint và guard không đổi.
 
-Bản sửa cuộn và xuất CSV đã qua make check160backend+88frontend,build và16E2E. Có thêm kiểm bắt đầu với tracking cũ, lỗi mất tay không tự cuộn và sao chép CSV khi clipboard bị chặn. Đây là kiểm phần mềm; không có lượt camera người thật mới đủ điều kiện. Bộ slide và ảnh bàn giao phía trên là snapshot tại lần xuất, không tái xuất vì lần này không đổi nội dung/số liệu model.
+## Nhóm cần hoàn thành
+
+Mở file vớifont đã cài; bổ sung thông tin thành viên nếu cần; đối chiếu lịch thi trong nền mẫu. Diễn tập luồngChạm trong3 phút hoặc thời lượngBTC xác nhận. Điện thoại/HTTPS LAN, kýVSL đúng, người dùng/điều dưỡng và video dự phòng còn chờ; không tính thành phần đã kiểm chứng.

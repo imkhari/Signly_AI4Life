@@ -1,30 +1,38 @@
 {
   "AI4Care_AI4Life.pptx": {
-    "bytes": 1634403,
-    "sha256": "ebe79ad0ef7d71ad70075be627122655bad8302359c502cb79f1595bfdcacf51"
+    "bytes": 1650461,
+    "sha256": "b1695b2aba5b739cb3c521b4c30403f4c7fe644765cea0113abfa849760bc9fa"
   },
   "AI4Care_AI4Life.pdf": {
-    "bytes": 1271391,
-    "sha256": "6e4ea129e104936ec61baf8ed4c921321fce0ad17181af12fc84f7c63088e14a"
+    "bytes": 2061385,
+    "sha256": "7f555657c7d9461e84917840bcb589118655216790aacb24093c14d89ec840c7"
   },
   "THUYET-TRINH.md": {
-    "bytes": 6159,
-    "sha256": "2d407c63830d9b91521b947b3a3f5da0503f4a08308feaf73fd6f6b1768fe4c5"
+    "bytes": 5585,
+    "sha256": "f8acf24d879737be5d22f63f8cda309e4e0618e628c74e63eb78733401e9e93b"
+  },
+  "NOI-DUNG-CHI-TIET.md": {
+    "bytes": 20634,
+    "sha256": "0ae2f32919737035a1d6d92a8fae257c67df2b3dd0b0f978f9648b80015f6e8e"
   },
   "QA.md": {
-    "bytes": 6054,
-    "sha256": "bc8ced9b25d65a2f1f1535c8d0db31e36aa0af6036e6786740f1e81fb91c250e"
+    "bytes": 7565,
+    "sha256": "46eb2fff2a227b994cb9894815e60e962ed4d55e0c48c3b84ff4155a01085a80"
   },
   "EVIDENCE.md": {
-    "bytes": 5702,
-    "sha256": "5be0755a1de09e6711fd15290126d43753d36f163c498236fa5966c36acf0d17"
+    "bytes": 6594,
+    "sha256": "a020b59d18ed26f03eb6ee698d1c96b2c7d0f508ea10d1e960368af89fa385f0"
   },
   "README.md": {
-    "bytes": 3075,
-    "sha256": "ec5ba752fba1fbe621fd802e873a880c58c32d3032db939b52941c043564310d"
+    "bytes": 3412,
+    "sha256": "bd83ebd6584f39c03d30f432ef6d3d806c170690dd440483c273cefad9d89485"
   },
   "VERIFICATION.md": {
-    "bytes": 3541,
-    "sha256": "1ab97fd9b93d61eca2ee5955c792363d92d83ae9e9bc9ac9afe1d983fbd841f2"
+    "bytes": 3091,
+    "sha256": "e0b73c43570ce35124c96ba3e7cd74a4ba6eaac6aabe887d7d847333f81ed015"
+  },
+  "screenshots/PROVENANCE-SENTENCE.json": {
+    "bytes": 869,
+    "sha256": "d418450e587ca6c1f4a49c01160369952534c1f198f551e1e6a3ebd8bd42bda8"
   }
 }
