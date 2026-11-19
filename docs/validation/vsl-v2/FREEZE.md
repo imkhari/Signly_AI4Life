@@ -1,6 +1,6 @@
 # Bản AI cho buổi thi — CANDIDATE
 
-**Chưa đóng băng chất lượng.** Profile hiện tại đã có5lượt tay nghỉ nội bộ hợp lệ được đối chiếu CSV (T0001–T0005,P01/phát triển,cả5UNKNOWN,không có gợi ý sai; response103,90–215,90ms). Chưa có lượt dương VSL hoặc thử cuối; không coi nhóm tay nghỉ của1người là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
+**Chưa đóng băng chất lượng.** Profile hiện tại đã có7ca âm nội bộ hợp lệ:5tay nghỉ và2cử động thông thường. Nhóm tay nghỉ đã được đối chiếu CSV (T0001–T0005,P01/phát triển,cả5UNKNOWN,không có gợi ý sai; response103,90–215,90ms). Chưa có lượt dương VSL hoặc thử cuối; không coi nhóm tay nghỉ của1người là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
 
 ## Phiên bản kỹ thuật
 
@@ -57,3 +57,7 @@ Profile 4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f thêm k
 ## Snapshot tích lũy5lượt
 
 Người dùng gửi đầy đủT0001–T0005 cùng profile4e4ebb. Kiểm T0001 khớp bản1lượt trước, dùng snapshot5lượt thay cho snapshot1lượt khi tổng hợp, không cộng thành6. Cả5đủ điều kiện ca âm theo protocol vàUNKNOWN;0dương/0lượt cuối, p95gợi ý vẫnnull. Các đoạn n=1 phía trên là lịch sử. Tiếp theo thử NEG_MOTION nội bộ; không đổi policy/weights.
+
+## Hai lượt cử động thông thường
+
+Đã kiểm2NEG_MOTION củaP01:65/79frame,3248,50/3938,40ms,UNKNOWN,response198,50/105,50ms. Tổng7ca âm hợp lệ (5tay nghỉ+2motion),0dương/0cuối,không gợi ý sai trong các lượt này. Hai CSV có mãTtrùng nhưng thuộc nhóm khác; kiểm từng bộ riêng, giữ mã gốc, tổng hợp theo(batch_id,trial_id) và ghi SHA nguồn ở batch_provenance. Không cộng snapshot cũ lặp. CANDIDATE; chưa hoàn thành kiểm nhận diệnVSL.
