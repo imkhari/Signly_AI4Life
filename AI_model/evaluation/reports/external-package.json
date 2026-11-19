@@ -1,0 +1,77 @@
+{
+  "manifest_sha256": "45e3457268d4e864564a3f6bce41bb72ded7ff4aa2225952b1d038bfd23caa54",
+  "model_name": "",
+  "artifacts": [
+    {
+      "role": "checkpoint",
+      "path": "model/checkpoint_best.pt",
+      "required": true,
+      "bytes": 0,
+      "sha256": null,
+      "status": "missing"
+    },
+    {
+      "role": "model_source",
+      "path": "AI/source/models/slt_model.py",
+      "required": true,
+      "bytes": 0,
+      "sha256": null,
+      "status": "missing"
+    },
+    {
+      "role": "vocab_source",
+      "path": "AI/source/utils/vocab.py",
+      "required": true,
+      "bytes": 0,
+      "sha256": null,
+      "status": "missing"
+    },
+    {
+      "role": "config",
+      "path": "AI/source/config/config_phase2.yaml",
+      "required": true,
+      "bytes": 0,
+      "sha256": null,
+      "status": "missing"
+    },
+    {
+      "role": "gloss_vocab",
+      "path": "AI/data/gloss_vocab.txt",
+      "required": true,
+      "bytes": 0,
+      "sha256": null,
+      "status": "missing"
+    },
+    {
+      "role": "trans_vocab",
+      "path": "AI/data/trans_vocab.txt",
+      "required": true,
+      "bytes": 0,
+      "sha256": null,
+      "status": "missing"
+    },
+    {
+      "role": "ood_bank",
+      "path": "model/ood_reference_bank.pt",
+      "required": false,
+      "bytes": 0,
+      "sha256": null,
+      "status": "missing"
+    }
+  ],
+  "missing_required_roles": [],
+  "missing_declarations": [
+    "model_name",
+    "provenance",
+    "license_or_permission",
+    "preprocessing"
+  ],
+  "declared_integrity_verified": false,
+  "runtime_status": "not_tested",
+  "recognition_quality": "not_evaluated",
+  "limitations": [
+    "Checks bytes against supplied hashes, not model authenticity or permission validity.",
+    "Does not import source, load weights, parse config or verify vocabulary compatibility.",
+    "OOD and runtime dependencies require a separate runtime smoke test."
+  ]
+}

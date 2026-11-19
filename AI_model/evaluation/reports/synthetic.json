@@ -302,8 +302,8 @@
       ]
     },
     "offline_frame_latency_ms": {
-      "median": 0.027958012651652098,
-      "max": 0.14533399371430278
+      "median": 0.026374997105449438,
+      "max": 0.0694170012138784
     },
     "accepted_candidate_delays_ms": [
       540,

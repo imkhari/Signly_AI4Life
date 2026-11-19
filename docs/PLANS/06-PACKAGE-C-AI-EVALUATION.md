@@ -128,3 +128,7 @@ Phải có đúng một dự đoán mỗi test clip, dùng UNKNOWN khi từ ch�
 6. Đo riêng camera → ứng viên hiển thị → bệnh nhân xác nhận trên thiết bị demo. Thời gian hoàn thành phiên và chất lượng bàn giao thuộc Gói D; không suy từ latency offline.
 
 Phần có thể bàn giao ngay là bộ kiểm kê, runner, kiểm tra rò rỉ, fixture, báo cáo và quy trình trên. Độ tin cậy VSL thực tế và lựa chọn model học từ dữ liệu còn chờ những bằng chứng này.
+
+## 7. Bổ sung sau khi review model ngoài
+
+Đã thêm bộ kiểm kê package theo manifest/hash, kiểm tra khai báo nguồn dự đoán, WER chuỗi gloss và 12 ca replay thời gian. Hướng dẫn, giới hạn và kết quả tại `AI_model/evaluation/README.md`. Bộ kiểm tra ghi nhận 11/12 ca khớp; ca gián đoạn 10 giây vẫn phát ứng viên, chưa sửa hành vi production. Các công cụ chỉ chuẩn bị đánh giá/tích hợp, không chứng minh model mới đã chạy hoặc tốt hơn. make check qua 112 backend + 73 frontend.
