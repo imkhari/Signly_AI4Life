@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-19",
+  "make_check": {
+    "backend_tests": 138,
+    "frontend_tests": 76,
+    "lint": "passed",
+    "typecheck": "passed"
+  },
+  "make_check_v2": 5,
+  "frontend_build": "passed",
+  "playwright_e2e": 11,
+  "ui_review_widths": [
+    720,
+    1024
+  ],
+  "real_api_smoke": {
+    "input": "public SENT101_S06_R01_F landmarks",
+    "expected_gloss": "ĐẦU",
+    "actual_gloss": "ĐẦU",
+    "source": "vsl_v2_learned_translation"
+  },
+  "real_camera_signer_test": "pending",
+  "clinical_validation": "pending",
+  "notes": [
+    "E2E stream is synthetic; no user camera was accessed.",
+    "Existing bundle-size and library deprecation warnings remain."
+  ]
+}

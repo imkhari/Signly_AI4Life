@@ -1,6 +1,6 @@
 # Công cụ Gói C: đánh giá và tiếp nhận model
 
-Các công cụ ở đây chạy offline. Chưa có checkpoint/source/vocab hợp lệ của model mới để chạy suy luận hoặc đánh giá người ký độc lập. Kiểm tra file, test phần mềm và kiểm tra khai báo nguồn dự đoán không thay thế đánh giá nhận diện thực.
+Cập nhật V2: đã có runtime tương thích và replay 300 NPY công khai, xem `AI_model/vsl_v2/README.md` và `docs/PLANS/11-VSL-V2-REVIEW-AND-ADOPTION.md`. Báo cáo hình học/fixture bên dưới là lịch sử baseline. Kiểm tra phần mềm/replay chưa thay thế đánh giá camera trên người ký mới. TinyCTC đã dừng: giữ báo cáo `reports/tiny-ctc-baseline.json`, nguồn train có thể khôi phục từ Git `4e71f8d`.
 
 ## Lệnh dùng ngay
 

@@ -1,5 +1,7 @@
 # TinyTemporalCTC — Huấn luyện riêng, chưa tích hợp vào demo
 
+> Bản lưu lịch sử. TinyCTC đã dừng; đường dẫn/lệnh training dưới đây đã dọn, khôi phục mã tại Git `4e71f8d` nếu cần tái lập. Runtime đang dùng V2 tại `AI_model/vsl_v2/`.
+
 Phạm vi được duyệt ở Q-22/D-023: PyTorch/NumPy trong venv riêng, landmark công khai VSL-GH, smoke train rồi train và đánh giá. Model này được khởi tạo mới; không dùng checkpoint của bạn trong nhóm hoặc checkpoint VTN 199 lớp cũ.
 
 ## Đầu vào và nguồn

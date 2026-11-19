@@ -50,8 +50,8 @@ wheels/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
-AI_model/training/data/
-AI_model/training/runs/
+# Owner-supplied original model bundle is retained locally.
+VSL_Checkpoints_v2/
 .coverage
 .coverage.*
 htmlcov/

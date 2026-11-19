@@ -1,0 +1,13 @@
+{
+  "removed": [
+    "AI_model/training/ (own training code, temporary dataset/cache, runs and old venv)"
+  ],
+  "removed_bytes": 2213251643,
+  "preserved": [
+    "AI_model/evaluation/reports/tiny-ctc-baseline.json",
+    "AI_model/evaluation/reports/tiny-ctc-evidence/",
+    "AI_model/checkpoints/archive/tiny_ctc_baseline.pt",
+    "VSL_Checkpoints_v2/ (owner bundle unchanged)"
+  ],
+  "training_source_recovery_commit": "4e71f8d"
+}
