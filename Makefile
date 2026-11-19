@@ -78,3 +78,12 @@ clean:
 .PHONY: evaluate-vsl
 evaluate-vsl:
 	$(PYTHON) -m AI_model.evaluation.evaluate --synthetic --output AI_model/evaluation/reports/synthetic.json
+
+.PHONY: evaluate-vsl-stability inspect-vsl-package
+MODEL_MANIFEST ?= AI_model/evaluation/model-package.template.json
+evaluate-vsl-stability:
+	$(PYTHON) -m AI_model.evaluation.stability_suite --output AI_model/evaluation/reports/stability.json
+
+inspect-vsl-package:
+	@test -n "$(MODEL_PACKAGE)" || (echo "Cần MODEL_PACKAGE=/đường/dẫn/bộ-model"; exit 2)
+	$(PYTHON) -m AI_model.evaluation.model_package --package "$(MODEL_PACKAGE)" --manifest "$(MODEL_MANIFEST)" --output AI_model/evaluation/reports/model-package.json

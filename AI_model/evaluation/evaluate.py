@@ -16,6 +16,10 @@ from unittest.mock import patch
 
 from AI_model import inference
 from AI_model.evaluation.checkpoint_audit import audit_checkpoint
+from AI_model.evaluation.sequence_metrics import (
+    sequence_metrics,
+    validate_prediction_sources,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -227,7 +231,9 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def score_candidate(data: dict[str, Any], candidate: dict[str, Any]) -> dict[str, Any]:
+def score_candidate(
+    data: dict[str, Any], candidate: dict[str, Any], expected_checkpoint_sha256: str | None = None
+) -> dict[str, Any]:
     validate_dataset(data)
     if (
         not candidate.get("model_name")
@@ -247,6 +253,8 @@ def score_candidate(data: dict[str, Any], candidate: dict[str, Any]) -> dict[str
     identifiers = [prediction["clip_id"] for prediction in predictions]
     if len(set(identifiers)) != len(identifiers) or set(identifiers) != set(tests):
         raise ValueError("Candidate predictions must match every test clip exactly once")
+    if expected_checkpoint_sha256 is not None:
+        validate_prediction_sources(candidate, expected_checkpoint_sha256)
     rows = []
     for prediction in predictions:
         if not isinstance(prediction.get("predicted"), str) or not prediction["predicted"]:
@@ -259,12 +267,28 @@ def score_candidate(data: dict[str, Any], candidate: dict[str, Any]) -> dict[str
             }
         )
     labels = sorted({clip["expected"] for clip in tests.values()} - {"UNKNOWN"})
-    return {
+    result = {
         "model_name": candidate["model_name"],
         "provenance": "user-supplied predictions and training metadata; not independently verified",
         "decision_policy": candidate["decision_policy"],
         "metrics": metrics(rows, labels),
+        "source_declarations_checked": expected_checkpoint_sha256 is not None,
+        "runtime_independently_verified": False,
     }
+    if any("expected_glosses" in clip for clip in tests.values()):
+        if any("expected_glosses" not in clip for clip in tests.values()) or any(
+            "predicted_glosses" not in prediction for prediction in predictions
+        ):
+            raise ValueError("Sequence scoring requires gloss sequences for every test clip")
+        result["sequences"] = sequence_metrics([
+            {
+                "clip_id": prediction["clip_id"],
+                "expected_glosses": tests[prediction["clip_id"]]["expected_glosses"],
+                "predicted_glosses": prediction["predicted_glosses"],
+            }
+            for prediction in predictions
+        ])
+    return result
 
 
 def audit() -> dict[str, Any]:
@@ -292,10 +316,13 @@ def main() -> None:
     inputs.add_argument("--dataset", type=Path)
     inputs.add_argument("--synthetic", action="store_true")
     parser.add_argument("--candidate", type=Path)
+    parser.add_argument("--checkpoint-sha256")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.candidate and not (args.dataset or args.synthetic):
         parser.error("--candidate requires --dataset or --synthetic")
+    if args.checkpoint_sha256 and not args.candidate:
+        parser.error("--checkpoint-sha256 requires --candidate")
     report: dict[str, Any] = {"audit": audit()}
     if args.dataset or args.synthetic:
         if args.synthetic:
@@ -311,7 +338,7 @@ def main() -> None:
         if args.candidate:
             try:
                 report["candidate"] = score_candidate(
-                    json.loads(raw), json.loads(args.candidate.read_bytes())
+                    json.loads(raw), json.loads(args.candidate.read_bytes()), args.checkpoint_sha256
                 )
             except (ValueError, KeyError, TypeError) as exc:
                 parser.error(str(exc))
