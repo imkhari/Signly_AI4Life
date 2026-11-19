@@ -65,13 +65,15 @@ AI4Care sử dụng kiến trúc Adapter (`LLMClient` Protocol). Mặc định h
 
 ## Camera tùy chọn
 
-Camera hiện dùng V2 learned translation trong môi trường riêng. MediaPipe lấy 411 tọa độ thân/mặt/hai tay tại trình duyệt rồi gửi qua LAN theo Q-23, không gửi video/lưu tọa độ phiên. Chỉ gợi ý nhãn trong danh mục theo câu hỏi, bắt buộc Nhận → Áp dụng → xác nhận toàn phiếu; mức đau/thời gian dùng Chạm.
+Camera hiện dùng V2 learned translation trong môi trường riêng. MediaPipe lấy 411 tọa độ thân/mặt/hai tay tại trình duyệt rồi gửi qua LAN theo Q-23, không gửi video/lưu tọa độ phiên. Bắt đầu ký → Xong câu để nhận một gợi ý, bắt buộc Nhận → Áp dụng → xác nhận toàn phiếu; mức đau/thời gian dùng Chạm.
 
 Máy hiện tại đã có runtime và checkpoint. Trên máy mới cần `make setup-v2`, đóng gói checkpoint do nhóm cung cấp theo [README V2](AI_model/vsl_v2/README.md), rồi `make check-v2`. Không cài torch vào backend. `GET /api/vsl/status` cho biết trạng thái V2; thiếu runtime trả UNKNOWN, không âm thầm dùng hình học.
 
-Replay 300 mẫu tái hiện 300/300 output kèm model; 256/300 câu đúng reference, WER từ 9,27%. Đây là tập câu đóng của người cung cấp, không phải accuracy webcam/bệnh viện. Có hai mẫu sốt nhận nhầm. Camera vẫn thử nghiệm; danh mục 60 gloss không phải cam kết nhận đúng 60 ký hiệu.
+Replay baseline300mẫu có256câu đúng,WER9,27%; sau guard mất vai có255/300câu đúng,WER9,50%,từ chối1clip. Đây là tập câu đóng của người cung cấp, không phải accuracy webcam/bệnh viện. Có hai mẫu sốt nhận nhầm. Camera vẫn thử nghiệm; danh mục 60 gloss không phải cam kết nhận đúng 60 ký hiệu.
 
 Bản thi dùng Chạm + LLM mock. Xem [kịch bản](docs/PLANS/01-DEMO-SCRIPT.md) và [checklist](docs/DEPLOYMENT_GUIDE.md).
+
+Thử kỹ thuật tại `/vsl-validation` sau `make prepare-vsl-validation`; hướng dẫn ở [protocol](docs/validation/vsl-v2/README.md). Pilot nhận1lượt vượt giới hạn chưa gọi API; bản mới có đếm ngược chờ thử lại, AI giữ CANDIDATE; không dùng test mô phỏng thành bằng chứng người thật.
 
 ### Kiểm thử
 

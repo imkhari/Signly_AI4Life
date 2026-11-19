@@ -1,0 +1,49 @@
+{
+  "kind": "M0-M5 technical checks, not live validation",
+  "profile_id": "cd9f061656b9fdda84fe71dd2b162e66b8efd35972aded51df1dd1332c6d87a4",
+  "checks": {
+    "backend_tests": 160,
+    "frontend_tests": 86,
+    "runtime_tests": 8,
+    "e2e_tests": 13,
+    "build": "passed"
+  },
+  "csv_roundtrip": {
+    "records": 1,
+    "evidence_kind": "synthetic",
+    "live_counted": 0
+  },
+  "real_local_api_smoke": {
+    "source": "public_fixture_api_smoke_not_live",
+    "backend_port": 8000,
+    "results": [
+      {
+        "success": true,
+        "gloss": "ĐẦU",
+        "model_source": "vsl_v2_learned_translation"
+      },
+      {
+        "success": false,
+        "gloss": "UNKNOWN",
+        "model_source": "vsl_v2_learned_translation"
+      }
+    ],
+    "profile_id": "c52feba0f7a7b2c247b191389e6ab8f1148ee2538da9d09823b42b135028eab0",
+    "validation_page_status": 200
+  },
+  "status": "CANDIDATE",
+  "pending": [
+    "Human camera measurements",
+    "VSL reference validation",
+    "Final holdout and any calibration",
+    "Human approval to freeze after numerical and regression checks",
+    "User has no time for the next camera trial; retain pending."
+  ],
+  "machine_readable_baseline_trials": 1,
+  "baseline_eligible_valid_negative_trials": 0,
+  "current_profile_trials": 0,
+  "user_reported_attempts": 5,
+  "limits_pilot": "Received CSV has one expired capture; do not infer absent attempts.",
+  "code_commit": "1375640",
+  "baseline_code_commit": "232333d"
+}

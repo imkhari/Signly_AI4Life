@@ -1,0 +1,76 @@
+{
+  "kind": "public_fixture_pipeline_diagnostic_not_live_camera",
+  "baseline_code": "b4432d775052a72ea9ed5fb973b04ca5a2020378",
+  "checkpoint_sha256": "d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246",
+  "fixtures": {
+    "SENT101.npz": "34add325de2cb1cc2dbc4076122624d78bd8804e0eb9b959d3319701e2580731",
+    "SENT105.npz": "131478e6e1237777116665dea6a54cc991a1b01e3578806ff868d61640dcfa13"
+  },
+  "prefix_probes": [
+    {
+      "fixture": "SENT101",
+      "input_frames": 24,
+      "resampled_frames": 23,
+      "translation": "tôi là nữ .",
+      "candidate": "UNKNOWN"
+    },
+    {
+      "fixture": "SENT101",
+      "input_frames": 36,
+      "resampled_frames": 36,
+      "translation": "tôi bị đau đầu .",
+      "candidate": "ĐAU"
+    },
+    {
+      "fixture": "SENT101",
+      "input_frames": 48,
+      "resampled_frames": 48,
+      "translation": "tôi bị đau đầu .",
+      "candidate": "ĐAU"
+    },
+    {
+      "fixture": "SENT101",
+      "input_frames": 70,
+      "resampled_frames": 70,
+      "translation": "tôi bị đau đầu .",
+      "candidate": "ĐAU"
+    },
+    {
+      "fixture": "SENT105",
+      "input_frames": 24,
+      "resampled_frames": 23,
+      "translation": "tôi có 2 đứa con .",
+      "candidate": "UNKNOWN"
+    },
+    {
+      "fixture": "SENT105",
+      "input_frames": 36,
+      "resampled_frames": 36,
+      "translation": "tôi bị ho .",
+      "candidate": "HO"
+    },
+    {
+      "fixture": "SENT105",
+      "input_frames": 48,
+      "resampled_frames": 48,
+      "translation": "tôi bị ho .",
+      "candidate": "HO"
+    },
+    {
+      "fixture": "SENT105",
+      "input_frames": 69,
+      "resampled_frames": 69,
+      "translation": "tôi bị ho .",
+      "candidate": "HO"
+    }
+  ],
+  "partial_pose_probe": {
+    "modification": "SENT101: set pose coordinates to zero in frames1..9; other original frames unchanged",
+    "max_absolute_feature": 1025839.0,
+    "accepted_by_baseline": true
+  },
+  "limitations": [
+    "Already seen public fixtures; diagnostic, not independent validation.",
+    "No camera or human trial has taken place."
+  ]
+}

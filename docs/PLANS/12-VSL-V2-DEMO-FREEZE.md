@@ -74,3 +74,5 @@ M0/M1 và phần kỹ thuật M2 hoàn tất; M3 có protocol/trang thử/CSV/CL
 ## Pilot đầu tiên trước cập nhật UI
 
 Người dùng báo5lượt không gợi ý. CSV xuất thực có1lượt P01/NEG_REST,121frame,reason sequence_limit,không có response API. Lượt này chưa đủ điều kiện ca âm tracking hợp lệ; không tính5lượt qua và không tạo4dòng còn thiếu. Bản xuất đã sao lưu ở local Git ignore, gắn profilec52feba0f7a7b2c247b191389e6ab8f1148ee2538da9d09823b42b135028eab0. Cần hướng dẫn/đếm ngược trước khi đo tiếp.
+
+F07 (source review): trước sửa, chưa có frame đầu vẫn có thể chấp nhận frame tới trễ hơn500ms và làm mất đầu câu. Bản mới chặn khoảng trễ đầu bằng cùng maxGap500ms; có regression. Pilot hết6giây cũng dẫn đến thêm đếm ngược/scroll camera và chặn tiếp tục khi profile đổi. Không đổi model/allowlist/điểm0,7. CSV C52 đã sao lưu trước cập nhật.

@@ -1,0 +1,14 @@
+{
+  "source_commit": "6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a",
+  "public_landmarks_verified": 300,
+  "verified_bytes": 53059044,
+  "sha256_manifest": "AI_model/evaluation/reports/tiny-ctc-evidence/landmark-manifest.json",
+  "manifest_sha256": "dd99222278714ea8000ee64b32850487e814a49c92abfef12eb1eac3dcd86a4d",
+  "replay_report": "AI_model/vsl_v2/reports/post-guard-replay.json",
+  "cache_retained": false,
+  "original_owner_bundle_preserved": true,
+  "limits": [
+    "Same previously opened test split; not new independent data.",
+    "Only numeric public landmarks fetched; no patient/participant camera data downloaded."
+  ]
+}

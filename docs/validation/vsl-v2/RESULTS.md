@@ -1,0 +1,36 @@
+# Kết quả camera V2
+
+Ngày19/11/2026. Người dùng báo5lượt không có gợi ý; CSV nhận thực có **1lượt P01/NEG_REST**, thuộc phát triển, bị `sequence_limit`, không có response API. Chưa đủ điều kiện ca âm tracking hợp lệ. Không suy ra4lượt còn thiếu hoặc tính5/5 đúng.
+
+| Nguồn | Lượt | Kết quả | Phạm vi |
+|---|---:|---|---|
+| Lời báo qua chat |5|Không có gợi ý theo người báo|Chưa đối chiếu đủ CSV/timing |
+| CSV profileC52 đã nhập |1|UNKNOWN, sequence_limit;0request phản hồi|0ca âm hợp lệ được gửi API; không phải model xử lý đúng tay nghỉ |
+| Cấu hình mới có đếm ngược |0|Chờ thử lại|Chưa có latency/accuracy trực tiếp |
+| Người biết VSL/người dùng mục tiêu |0|Chưa có|Không có kết luận VSL/bệnh viện |
+
+Bản xuất cá nhân giữ ở `local/` Git ignore; báo cáo tổng hợp cũ trong `baselines/<profile-id>.json`. `metrics.json` theo profile mới chưa có lượt, giữ riêng để không trộn các phiên bản. Qua pilot đã thêm đếm ngược và cuộn đến camera; người dùng cần bấm Xong câu sau khoảng3giây, trước giới hạn6giây. Không tự gửi khi hết giờ.
+
+## Replay offline, không trộn với camera
+
+| Phiên bản | Mẫu | Khớp câu | WER từ cộng gộp | Từ chối chất lượng |
+|---|---:|---:|---:|---:|
+| V2 baseline trước M2 | 300 |256/300 (85,33%)|200/2157 =9,27%|0|
+| Sau guard mất vai M2 |300|255/300 (85,00%)|205/2157 =9,50%|1|
+
+Weights không đổi. Sau guard, SENT280 bị từ chối vì đầu vào mất vai;299output còn lại tái hiện file người cung cấp. Ba clip dài hơn180frame của cửa sổ camera; replay decoder vẫn dùng giới hạn300frame như model. Đây là replay NPY đã biết của một người ký test, không có capture web, framing mới hoặc người ký độc lập.
+
+Ở8reference thuộc exact allowlist triệu chứng của baseline:5đúng,1từ chối,2sai; hai sai là sốt→HO/ĐAU. Không coi các reference ngoài exact allowlist là tập âm OOD. Có65reference khác annotation công khai, chưa đủ căn cứ train lại.
+
+Báo cáo: `AI_model/vsl_v2/reports/greedy-replay.json`, `post-guard-replay.json`, `freeze-baseline-audit.json`. Probe prefix/mất pose tại `pipeline-probes.json` là chẩn đoán trên dữ liệu công khai/sửa đổi có chủ đích, không phải webcam.
+
+## Kết luận M4
+
+- Đã xác định/sửa lỗi crop khác extractor nguồn, roundoff làm mất frame, normalization chấp nhận chuỗi mất vai và ranh giới câu chưa rõ.
+- Chuyển sang câu có bắt đầu/kết thúc theo Q-24; giữ điểm0,7, allowlist, weights và norm2 trên đầu vào hợp lệ. Chưa hiệu chỉnh ngưỡng từ dữ liệu người thật.
+- Lỗi sốt còn tồn tại trong decoder. Chưa chứng minh sửa camera đã khắc phục lỗi model; chưa đề xuất train ngay.
+- Cần dữ liệu phát triển trực tiếp trước khi chỉnh tiếp; phần đánh giá cuối phải giữ riêng. Trạng thái CANDIDATE, chưa đạt mốc đóng băng theo Q-25.
+
+## Trạng thái bàn giao
+
+Sau khi được hướng dẫn thử lại1lượt, chủ dự án cho biết chưa có thời gian. Chưa nhận thêm CSV mới. Bản camera/tool commit1375640 đã sẵn sàng, kết quả bản mới giữ0lượt nhập; pilot cũ1lượt hết giờ được giữ riêng. Không tổng hợp5lượt từ lời báo thành5bản ghi hoặc đánh giá model khi chưa có response API.

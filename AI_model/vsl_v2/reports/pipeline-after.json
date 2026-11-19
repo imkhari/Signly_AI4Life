@@ -1,0 +1,62 @@
+{
+  "kind": "public_landmark_worker_diagnostic_not_live",
+  "checkpoint_sha256": "d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246",
+  "worker_sha256": "bde5312a8b5135508b6d74c85485b18fe0ef8f51468ea7b7ec6bb4f8ba63f245",
+  "records": [
+    {
+      "clip_id": "SENT101_S06_R01_F",
+      "expected": "ĐAU",
+      "actual": "ĐAU",
+      "translation": "tôi bị đau đầu ."
+    },
+    {
+      "clip_id": "SENT102_S06_R01_F",
+      "expected": "ĐAU",
+      "actual": "ĐAU",
+      "translation": "tôi bị đau bụng ."
+    },
+    {
+      "clip_id": "SENT103_S06_R01_F",
+      "expected": "ĐAU",
+      "actual": "ĐAU",
+      "translation": "tôi bị đau ngực ."
+    },
+    {
+      "clip_id": "SENT104_S06_R01_F",
+      "expected": "ĐAU",
+      "actual": "UNKNOWN",
+      "translation": "tôi có bị đau mắt đỏ không ?"
+    },
+    {
+      "clip_id": "SENT105_S06_R01_F",
+      "expected": "SỐT",
+      "actual": "HO",
+      "translation": "tôi bị ho ."
+    },
+    {
+      "clip_id": "SENT106_S06_R01_F",
+      "expected": "SỐT",
+      "actual": "ĐAU",
+      "translation": "tôi bị đau đầu ."
+    },
+    {
+      "clip_id": "SENT115_S06_R01_F",
+      "expected": "KHÓ-THỞ",
+      "actual": "KHÓ-THỞ",
+      "translation": "tôi cảm thấy khó thở ."
+    },
+    {
+      "clip_id": "SENT172_S06_R01_F",
+      "expected": "KHÓ-THỞ",
+      "actual": "KHÓ-THỞ",
+      "translation": "tôi thấy khó thở lắm ."
+    }
+  ],
+  "partial_pose_rejected": true,
+  "exact_30fps_24_input_resampled_count": 24,
+  "limitations": [
+    "Timestamps assume30FPS; original video FPS not verified.",
+    "Same already-opened public test references; not independent or camera validation.",
+    "No frontend capture/stability/real participant included."
+  ]
+}

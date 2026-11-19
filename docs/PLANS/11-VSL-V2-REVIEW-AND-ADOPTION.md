@@ -1,5 +1,7 @@
 # VSL_Checkpoints_v2 — Kiểm tra, chọn dùng và dọn thử nghiệm
 
+> Bản M2 mới xem kế hoạch12: capture theo câu, resize toàn khung đúng nguồn, guard mất vai và replay sau sửa255/300. Các số256/300 bên dưới là baseline trước M2.
+
 Ngày 19/11/2026. Chủ dự án cung cấp thư mục V2 và yêu cầu dùng nếu phù hợp hơn, dọn phần thử nghiệm không cần thiết. Chọn **V2 greedy làm ứng viên nhận diện chính**, dừng hướng huấn luyện TinyCTC. Chưa coi đây là mô hình đã được kiểm chứng sử dụng lâm sàng.
 
 ## Bằng chứng đã kiểm tra

@@ -32,7 +32,7 @@ Lock được kiểm trên Python 3.15.2/ARM64. Máy khác cần wheel tương t
 
 Mã kiến trúc và danh mục từ tiếng Việt từ [VSL-GH commit 6c351e6](https://github.com/nguyentheanh822/Vietnamese-Sign-Language-Translation/tree/6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a), MIT, giữ `vendor/LICENSE`. `translation-vocabulary.json` chứa đúng thứ tự 442 token đã xác minh hành vi. **Không dùng CTC374 để xuất gloss** vì chưa có class order tương ứng được xác minh. Vocab gloss232 của nguồn công khai không được tráo vào head374.
 
-Các chỉ số pose25/face70/hands21+21 theo `source/extract_keypoints.py` của cùng nguồn. Crop vuông 360, không lật input; video preview mới lật gương. HolisticLandmarker Tasks trên trình duyệt khác phiên bản extractor legacy của dataset; tác động miền dữ liệu cần kiểm trên camera thật.
+Các chỉ số pose25/face70/hands21+21 theo `source/extract_keypoints.py` của cùng nguồn. Resize toàn bộ khung hình về360×360 theo source extractor đã pin, không center-crop hoặc lật input; preview giữ tỷ lệ video và lật gương. HolisticLandmarker Tasks trên trình duyệt khác phiên bản extractor legacy của dataset; tác động miền dữ liệu cần kiểm trên camera thật.
 
 Asset holistic cục bộ lấy từ [model MediaPipe chính thức](https://storage.googleapis.com/mediapipe-models/holistic_landmarker/holistic_landmarker/float16/1/holistic_landmarker.task), cùng package `@mediapipe/tasks-vision` đã có. Xem [ví dụ chính thức](https://github.com/google-ai-edge/mediapipe-samples-web/blob/main/src/tasks/holistic-landmarker.ts). Nạp WASM và model từ server nội bộ, GPU lỗi thử CPU, không CDN. Hash asset ở `asset-manifest.json`.
 
@@ -42,7 +42,7 @@ Asset holistic cục bộ lấy từ [model MediaPipe chính thức](https://sto
 
 Hai ca sốt bị nhận thành ho/đau đầu. 65/300 reference khác annotation công khai, chưa biết phiên bản annotation train chính xác. Đây là tập câu đóng, một người ký test; chưa có đánh giá webcam, signer mới độc lập, hiệu chỉnh OOD, kiểm VSL/chuyên gia hoặc triển khai bệnh viện. Không quảng bá con số replay thành accuracy camera. Camera thi vẫn tùy chọn theo D-017; Chạm là luồng chính.
 
-Guards chuyển động/tay hiện diện và điểm0,7 chỉ là ngưỡng kỹ thuật sơ bộ. Buffer tối đa6giây/180frame, một HTTP đang chờ; mất tay/gián đoạn>500ms/đổi màn hình xóa buffer và hủy kết quả cũ. Request được nội suy gần30FPS, model không nhận filename/reference. `SESSION_RESET` kill worker, không giữ request cuối khi chờ. Triệu chứng chỉ được chuyển thành nhãn cố định trong `backend/app/ai/vsl_v2.py`.
+Q-24 chuyển camera sang Bắt đầu ký/Xong câu, một inference/câu rồi Nhận/Áp dụng; không nhận prefix hoặc lặp cùng clip. Guards chuyển động/tay hiện diện và điểm0,7 chỉ là ngưỡng kỹ thuật sơ bộ. Buffer tối đa6giây/180frame, ít nhất24frame/800ms, một HTTP đang chờ; mất tay/vai, gián đoạn>500ms, quá giới hạn hoặc đổi màn hình xóa buffer và hủy kết quả cũ. Request được nội suy gần30FPS, model không nhận filename/reference. `SESSION_RESET` kill worker, không giữ request cuối khi chờ. Triệu chứng chỉ được chuyển thành nhãn cố định trong `backend/app/ai/vsl_v2.py`.
 
 ## Tái lập replay
 
@@ -58,3 +58,17 @@ AI_model/runtime/.venv/bin/python -m AI_model.vsl_v2.evaluate \
 Hai fixture NPZ nhỏ trong `tests/fixtures` là landmark nguồn công khai, tệp gốc ghi ở `source.json`, chịu MIT như nguồn. Chúng kiểm đúng một ca và giữ rõ một ca sai; không phải dữ liệu bệnh nhân. `make check-v2` kiểm checksum, normalization, replay, nghỉ tay và resampling. `make check` kiểm contract/mapping/lifecycle/luồng safety mà không cần Torch trong backend. E2E có ca dùng assets thật và khung hình trống tổng hợp, chặn mạng ngoài; không gọi đây là kiểm thử VSL người thật.
 
 TinyTemporalCTC đã dừng. Báo cáo cuối/evidence giữ tại `AI_model/evaluation/reports/tiny-ctc-*`, checkpoint nhỏ `AI_model/checkpoints/archive/tiny_ctc_baseline.pt`. Mã train khôi phục từ Git `4e71f8d`, không dùng trong runtime.
+
+## M0–M5 và thử trực tiếp
+
+Sau guard mất vai, replay300clip có255câu đúng (85,00%),WER từ205/2157=9,50%,từ chối1clip SENT280.299output còn lại giống baseline; lỗi sốt vẫn còn. Xem `reports/post-guard-replay.json`. Đã chỉ tải lại300NPY (~50,6MiB), khớp hash từng file, không tải lại toàn bộ dataset. Đây là dữ liệu đã mở, không độc lập và không có capture web.
+
+`make prepare-vsl-validation`, mở `/vsl-validation` và làm theo `docs/validation/vsl-v2/README.md`. Có CSV rời rạc và CLI `trials.py`, snapshot cấu hình theo hash; không nhận tọa độ trong CSV. Các kết quả tổng hợp và bản candidate tại RESULTS.md/FREEZE.md. Người thử trực tiếp hiệnn=0, chưa hiệu chỉnh ngưỡng hoặc đóng băng chất lượng; không train lại khi chưa có căn cứ và dữ liệu phù hợp.
+
+Tái lấy đúng300NPY test, kiểm hash và không tải video:
+
+```bash
+backend/.venv/bin/python -m AI_model.vsl_v2.fetch_test_subset --output /tmp/vsl-v2-300
+```
+
+`pipeline-after.json` kiểm8câu thuộc allowlist qua worker với timestamp giả định30FPS; không thay thế video có FPS đã xác minh hoặc camera thật.
