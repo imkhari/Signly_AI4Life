@@ -1,0 +1,30 @@
+{
+  "AI4Care_AI4Life.pptx": {
+    "bytes": 1634403,
+    "sha256": "ebe79ad0ef7d71ad70075be627122655bad8302359c502cb79f1595bfdcacf51"
+  },
+  "AI4Care_AI4Life.pdf": {
+    "bytes": 1271391,
+    "sha256": "6e4ea129e104936ec61baf8ed4c921321fce0ad17181af12fc84f7c63088e14a"
+  },
+  "THUYET-TRINH.md": {
+    "bytes": 6159,
+    "sha256": "2d407c63830d9b91521b947b3a3f5da0503f4a08308feaf73fd6f6b1768fe4c5"
+  },
+  "QA.md": {
+    "bytes": 6054,
+    "sha256": "bc8ced9b25d65a2f1f1535c8d0db31e36aa0af6036e6786740f1e81fb91c250e"
+  },
+  "EVIDENCE.md": {
+    "bytes": 5634,
+    "sha256": "261e4c0d8fa2c573f6ec4c036fdb5dea2ee2fc74584a0a55fa409e4e05ee7dcf"
+  },
+  "README.md": {
+    "bytes": 3075,
+    "sha256": "ec5ba752fba1fbe621fd802e873a880c58c32d3032db939b52941c043564310d"
+  },
+  "VERIFICATION.md": {
+    "bytes": 3015,
+    "sha256": "38ecaeba0e5c0bd559f5156ccc531934929340266291d3b8907be96155188ea5"
+  }
+}

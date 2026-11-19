@@ -1,5 +1,7 @@
 # DÀN Ý SLIDE THUYẾT TRÌNH AI4CARE (Cuộc thi AI4Life - 3 phút demo + 2 phút Q&A)
 
+> **BẢN CŨ — chỉ tham khảo.** Không dùng các nhận định về quá tải, tác động y tế, camera theo luật hoặc hiệu quả chưa đo ở dưới làm bằng chứng. Deck hiện tại dùng V2 tùy chọn, LLM mock và nguồn kiểm chứng tại `artifacts/ai4life/EVIDENCE.md`; xem `artifacts/ai4life/README.md` để mở file.
+
 ## Slide 1: Bìa & Khởi động (30 giây)
 - **Tên dự án:** AI4Care — Trợ lý Tiếp nhận Đa phương thức cho Người Điếc và Khó khăn về Lời nói tại Bệnh viện.
 - **Slogan:** *"Xóa bỏ rào cản giao tiếp đầu tiên tại quầy tiếp nhận y tế bằng AI nhân văn & an toàn."*

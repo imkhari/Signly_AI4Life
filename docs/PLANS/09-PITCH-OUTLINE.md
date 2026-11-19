@@ -1,6 +1,8 @@
 # Gói E — Outline hồ sơ, bài nói và Q&A
 
-Cập nhật 19/11/2026. Đây là outline để nhóm đưa vào deck, **chưa tạo PowerPoint hoặc bộ slide đã xuất**. Thời lượng hiện hành theo Q-11 là demo 3 phút + hỏi đáp 2 phút, chưa có xác nhận mới từ Ban tổ chức.
+Cập nhật 19/11/2026. Đây là outline để nhóm đưa vào deck, **đã có bộ PowerPoint/PDF mới tại `artifacts/ai4life/`**. Thời lượng hiện hành theo Q-11 là demo 3 phút + hỏi đáp 2 phút, chưa có xác nhận mới từ Ban tổ chức.
+
+> Bản dùng cho thi hiện tại: `artifacts/ai4life/README.md`, `THUYET-TRINH.md`, `QA.md` và `EVIDENCE.md`. Outline cũ dưới đây giữ tham khảo; khi khác nhau dùng bằng chứng V2 mới và bộ bàn giao mới.
 
 ## Thông điệp
 
