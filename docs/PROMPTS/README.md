@@ -14,6 +14,7 @@ Cách dùng: mở AI agent ở thư mục gốc repo → dán phần **PROMPT** 
 | P7 | `P7-NURSE-UI.md` | Bảng y tá, cảnh báo, câu hỏi, duyệt, xuất hồ sơ | P5 | C |
 | P8 | `P8-VSL-TTS.md` | Camera VSL (mock-first), TTS hoàn thiện | P6 | C |
 | P9 | `P9-INTEGRATION-DEMO.md` | E2E, đóng băng, kiểm toán an toàn/a11y, demo | P4, P6, P7 | cả nhóm |
+| P9 — AI V2 | `P9-VSL-V2-DEMO-FREEZE.md` | Kiểm camera thực tế, đo lỗi/ca âm, hiệu chỉnh và chốt phạm vi AI bản thi | V2 đã tích hợp, Q-23 | A + người thử nội bộ |
 
 ## Khuôn mẫu mỗi file
 `Mục tiêu` → `Đọc trước` → `Việc cần làm` → `Không làm` → `Tiêu chí hoàn thành (DoD)` → `PROMPT` (khối để dán).
