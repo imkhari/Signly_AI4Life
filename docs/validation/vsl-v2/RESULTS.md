@@ -1,12 +1,12 @@
 # Kết quả camera V2
 
-## Cập nhật mới nhất — 5tay nghỉ + 2cử động thông thường
+## Cập nhật mới nhất — 5tay nghỉ + 5cử động thông thường
 
-Đã nhận thêm CSV NEG_MOTION củaP01/phát triển/D01/normal/profile4e4ebb, worker ready. T0001:65frame,3248,50ms,UNKNOWN/unknown,response198,50ms; T0002:79frame,3938,40ms,UNKNOWN/unknown,response105,50ms. Cả2đủ điều kiện ca âm theo protocol, không có gợi ý sai. Bản xuất cá nhân ở `local/P01-motion-batch-01-4e4ebb.csv` (Git ignore).
+Đã nhận snapshot NEG_MOTION đầy đủT0001–T0005 củaP01/phát triển/D01/normal/profile4e4ebb, cả5worker ready. Frame65/79/78/85/90, thời gian ghi3248,50/3938,40/3851,60/4312,70/4509,90ms; cả5UNKNOWN/unknown, response198,50/105,50/204,50/202,30/196,90ms (trung vị198,50ms). Cả5đủ điều kiện ca âm theo protocol, không có gợi ý sai. CSV mới ở `local/P01-motion-five-4e4ebb.csv` (Git ignore), hai dòng đầu đã so khớp bản2lượt cũ; chỉ tính snapshot5lượt, không cộng thành7motion.
 
 Mã T0001/T0002 trùng mã của nhóm tay nghỉ nhưng thuộc bản xuất khác. Đã kiểm từng CSV riêng bằng read_trials; tổng hợp dùng khóa nội bộ(batch_id,trial_id), không đổi mã gốc hoặc nối CSV để né kiểm tra trùng. `batch_provenance` trong metrics lưu nhãn nhóm, số dòng và SHA256 từng bản nguồn. Dùng snapshot tay nghỉ đầy đủ5lượt, không cộng thêm snapshot1lượt cũ.
 
-Tổng hiện tại:7ca âm tracking hợp lệ (5NEG_REST+2NEG_MOTION),0gợi ý sai,0lượt dương và0lượt cuối. Đây là thử phát triển một người nội bộ/một thiết bị; không phải accuracyVSL, không suy decoder đã chạy, không có p95gợi ý. CANDIDATE.
+Tổng hiện tại:10ca âm tracking hợp lệ (5NEG_REST+5NEG_MOTION),0gợi ý sai,0lượt dương và0lượt cuối. Đây là thử phát triển một người nội bộ/một thiết bị; không phải accuracyVSL, không suy decoder đã chạy, không có p95gợi ý. CANDIDATE.
 
 ## Nhóm5lượt tay nghỉ đã đối chiếu
 

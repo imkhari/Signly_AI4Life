@@ -3,9 +3,9 @@
   "protocol": "vsl-v2-internal-1",
   "status": "CANDIDATE",
   "live": {
-    "trials": 7,
+    "trials": 10,
     "outcomes": {
-      "correct": 7
+      "correct": 10
     },
     "positive_trials": 0,
     "aborted_trials": 0,
@@ -14,25 +14,25 @@
     "positive_rejected": 0,
     "positive_correct_rate": null,
     "per_trial_suggestion_precision": null,
-    "negative_trials": 7,
-    "valid_tracking_negative_attempts": 7,
-    "valid_tracking_negative_submitted": 7,
+    "negative_trials": 10,
+    "valid_tracking_negative_attempts": 10,
+    "valid_tracking_negative_submitted": 10,
     "valid_tracking_negative_false_rate": 0.0,
     "negative_false_suggestions": 0,
     "negative_false_suggestion_rate": 0.0,
     "candidate_latency_samples": 0,
     "candidate_latency_p95_ms": null,
     "candidate_latency_median_ms": null,
-    "response_samples": 7,
+    "response_samples": 10,
     "timeouts": 0
   },
   "synthetic_records": 0,
   "groups": {
     "split": {
       "development": {
-        "trials": 7,
+        "trials": 10,
         "outcomes": {
-          "correct": 7
+          "correct": 10
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -41,24 +41,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 7,
-        "valid_tracking_negative_attempts": 7,
-        "valid_tracking_negative_submitted": 7,
+        "negative_trials": 10,
+        "valid_tracking_negative_attempts": 10,
+        "valid_tracking_negative_submitted": 10,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 7,
+        "response_samples": 10,
         "timeouts": 0
       }
     },
     "participant_code": {
       "P01": {
-        "trials": 7,
+        "trials": 10,
         "outcomes": {
-          "correct": 7
+          "correct": 10
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -67,16 +67,16 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 7,
-        "valid_tracking_negative_attempts": 7,
-        "valid_tracking_negative_submitted": 7,
+        "negative_trials": 10,
+        "valid_tracking_negative_attempts": 10,
+        "valid_tracking_negative_submitted": 10,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 7,
+        "response_samples": 10,
         "timeouts": 0
       }
     },
@@ -106,9 +106,9 @@
         "timeouts": 0
       },
       "NEG_MOTION": {
-        "trials": 2,
+        "trials": 5,
         "outcomes": {
-          "correct": 2
+          "correct": 5
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -117,24 +117,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 2,
-        "valid_tracking_negative_attempts": 2,
-        "valid_tracking_negative_submitted": 2,
+        "negative_trials": 5,
+        "valid_tracking_negative_attempts": 5,
+        "valid_tracking_negative_submitted": 5,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 2,
+        "response_samples": 5,
         "timeouts": 0
       }
     },
     "condition": {
       "normal": {
-        "trials": 7,
+        "trials": 10,
         "outcomes": {
-          "correct": 7
+          "correct": 10
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -143,24 +143,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 7,
-        "valid_tracking_negative_attempts": 7,
-        "valid_tracking_negative_submitted": 7,
+        "negative_trials": 10,
+        "valid_tracking_negative_attempts": 10,
+        "valid_tracking_negative_submitted": 10,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 7,
+        "response_samples": 10,
         "timeouts": 0
       }
     },
     "device_code": {
       "D01": {
-        "trials": 7,
+        "trials": 10,
         "outcomes": {
-          "correct": 7
+          "correct": 10
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -169,24 +169,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 7,
-        "valid_tracking_negative_attempts": 7,
-        "valid_tracking_negative_submitted": 7,
+        "negative_trials": 10,
+        "valid_tracking_negative_attempts": 10,
+        "valid_tracking_negative_submitted": 10,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 7,
+        "response_samples": 10,
         "timeouts": 0
       }
     },
     "worker_state": {
       "ready": {
-        "trials": 7,
+        "trials": 10,
         "outcomes": {
-          "correct": 7
+          "correct": 10
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -195,24 +195,24 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 7,
-        "valid_tracking_negative_attempts": 7,
-        "valid_tracking_negative_submitted": 7,
+        "negative_trials": 10,
+        "valid_tracking_negative_attempts": 10,
+        "valid_tracking_negative_submitted": 10,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 7,
+        "response_samples": 10,
         "timeouts": 0
       }
     },
     "kind": {
       "negative_valid": {
-        "trials": 7,
+        "trials": 10,
         "outcomes": {
-          "correct": 7
+          "correct": 10
         },
         "positive_trials": 0,
         "aborted_trials": 0,
@@ -221,16 +221,16 @@
         "positive_rejected": 0,
         "positive_correct_rate": null,
         "per_trial_suggestion_precision": null,
-        "negative_trials": 7,
-        "valid_tracking_negative_attempts": 7,
-        "valid_tracking_negative_submitted": 7,
+        "negative_trials": 10,
+        "valid_tracking_negative_attempts": 10,
+        "valid_tracking_negative_submitted": 10,
         "valid_tracking_negative_false_rate": 0.0,
         "negative_false_suggestions": 0,
         "negative_false_suggestion_rate": 0.0,
         "candidate_latency_samples": 0,
         "candidate_latency_p95_ms": null,
         "candidate_latency_median_ms": null,
-        "response_samples": 7,
+        "response_samples": 10,
         "timeouts": 0
       }
     }
@@ -239,7 +239,7 @@
     {
       "expected": "UNKNOWN",
       "displayed": "UNKNOWN",
-      "trials": 7
+      "trials": 10
     }
   ],
   "final_normal": {
@@ -292,8 +292,8 @@
       },
       {
         "batch_id": "motion-batch-01",
-        "trials": 2,
-        "sha256": "d31c27af8f41fcf3c196f38a77bef2456beb4852c88c818132dccbed810a2582"
+        "trials": 5,
+        "sha256": "de9333b9017d1b17c3c34e539c34199eb299f758a0c023ed4de71f796e371c7f"
       }
     ],
     "raw_data_committed": false
