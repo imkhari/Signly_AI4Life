@@ -25,7 +25,7 @@ def prepare_sequence(request: dict[str, Any]) -> np.ndarray:
     ):
         raise ValueError("Invalid sequence shape/times")
     # Match training's 30 FPS velocity features, never persist a video/frame.
-    target_count = min(300, int((times[-1] - times[0]) * 0.03) + 1)
+    target_count = min(300, int(np.floor((times[-1] - times[0]) * 0.03 + 1e-9)) + 1)
     if target_count < 8:
         raise ValueError("Insufficient sequence duration")
     targets = np.linspace(times[0], times[-1], target_count)

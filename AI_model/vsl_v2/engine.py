@@ -22,8 +22,9 @@ def preprocess(raw: np.ndarray, max_frames: int = 300) -> torch.Tensor:
     kp = raw[:max_frames].astype(np.float32).copy()
     left, right = kp[:, 27:29], kp[:, 30:32]
     width = np.linalg.norm(right - left, axis=-1)
-    if not np.any(width > 1e-5):
-        raise ValueError("No valid shoulder frame")
+    valid_shoulders = np.any(left != 0, axis=-1) & np.any(right != 0, axis=-1) & (width > 1e-5)
+    if not valid_shoulders.all():
+        raise ValueError("Missing or degenerate shoulders in sequence")
     cx = ((left[:, 0] + right[:, 0]) / 2)[:, None]
     cy = ((left[:, 1] + right[:, 1]) / 2)[:, None]
     scale = (width + 1e-6)[:, None]

@@ -120,3 +120,5 @@ Câu trả lời dị ứng có reply_to trỏ tới câu hỏi còn hiệu lự
 Schema SemanticFrame vẫn **1.0**. `HolisticFrame` chỉ là đầu vào tạm cho REST, không phải trường lưu trong frame/phiếu. Decoder V2 có 442 token tiếng Việt; CTC head 374 lớp thiếu class order xác minh nên bị tắt xuất gloss. Chỉ nhãn có sẵn trong ontology được gợi ý theo ngữ cảnh, không thêm slot hoặc suy đoán dữ kiện.
 
 Ví dụ “tôi bị đau đầu” → symptom ĐAU hoặc location ĐẦU; “tôi bị đau bụng” chỉ gợi ý ĐAU, **không tự chọn ABDOMEN_UPPER** vì chưa biết bụng trên/dưới. “tôi bị đau lưng” không tự chọn LOWER_BACK. Câu phủ định hoặc đa ý chưa biểu diễn an toàn → UNKNOWN, dùng Chạm/hỏi nhân viên. Không lấy số từ câu dịch để điền mức đau/thời gian. Chọn Nhận vẫn chưa xác nhận toàn phiếu.
+
+Q-24: một câu có Bắt đầu ký/Xong câu tạo tối đa một gợi ý; không tự áp dụng kết quả. Shape SemanticFrame vẫn1.0. Kết quả thử camera được giữ riêng dưới schema trial của công cụ nội bộ, không ghi vào SemanticFrame hay gửi tới LLM.

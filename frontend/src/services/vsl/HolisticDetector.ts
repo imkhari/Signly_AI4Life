@@ -48,7 +48,10 @@ export class HolisticDetector {
     this.loop();
   }
 
-  start(video: HTMLVideoElement): void { this.video = video; this.loop(); }
+  start(video: HTMLVideoElement): void {
+    if (this.closed) return;
+    this.video = video; this.loop();
+  }
   onResults(callback: (result: HolisticObservation) => void): () => void {
     this.callbacks.add(callback); return () => { this.callbacks.delete(callback); };
   }
@@ -73,9 +76,8 @@ export class HolisticDetector {
         const context = this.canvas.getContext('2d');
         const side = Math.min(video.videoWidth, video.videoHeight);
         if (context && side > 0) {
-          // Same square crop as training, without mirroring the model input.
-          context.drawImage(video, (video.videoWidth-side)/2, (video.videoHeight-side)/2,
-            side, side, 0,0,360,360);
+          // Pinned extractor resizes the full frame; do not center-crop or mirror input.
+          context.drawImage(video, 0,0,360,360);
           try {
             const now = performance.now();
             const result = this.task.detectForVideo(this.canvas, now);

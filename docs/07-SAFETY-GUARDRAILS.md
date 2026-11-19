@@ -87,6 +87,14 @@ File skill `safety-review` mà tài liệu nhắc tới không có tại `.claud
 - Không hiển thị trực tiếp câu decoder. Allowlist toàn câu, kiểm ngữ cảnh và điểm hữu hạn; phủ định/đa ý/chẩn đoán/lời khuyên/không biết vùng cụ thể → từ chối, không suy diễn.
 - V2 không dùng LLM sinh văn bản y tế. Sau khi bệnh nhân nhập/xác nhận, tóm tắt vẫn đi qua validator và fallback hiện có; không bỏ bước xác nhận/duyệt/cảnh báo critical.
 - Các guard chuyển động và điểm ≥ 0,7 là ngưỡng kỹ thuật **chưa hiệu chỉnh**. Tay nghỉ/ngoài danh mục người thật chưa được kiểm chứng. Có lỗi sốt → ho/đau đầu trong replay, vì vậy không công bố đã sẵn sàng lâm sàng.
-- Buffer client tối đa 6 giây/180 frame, xóa khi mất tay/gián đoạn/đổi câu hỏi/unmount. Chỉ một HTTP chờ; abort + generation guard chặn kết quả cũ. Camera được cấp quyền muộn sau đóng màn hình phải dừng track ngay.
+- Theo Q-24, buffer của một câu Bắt đầu ký/Xong câu tối đa6giây/180frame; tối thiểu24frame/800ms. Quá giới hạn, mất tay/vai hoặc gap>500ms thì từ chối cả lượt; không tự gửi prefix/câu ghép. Xóa buffer khi đổi câu hỏi, dừng camera, reset hoặc unmount. Chỉ một HTTP chờ; abort + generation guard chặn kết quả cũ. Camera được cấp quyền muộn sau đóng màn hình phải dừng track ngay.
 - Worker chỉ giữ model lâu dài, không giữ request cuối trong vòng chờ. Reset kết thúc worker và tăng generation chặn kết quả đang chạy. Không ghi raw input, tọa độ, tên file bệnh nhân hoặc câu dịch vào log. Tệp đánh giá công khai và fixture không phải dữ liệu phiên.
 - Review dùng test mapping phủ định/đa ý/chẩn đoán, malformed input, unavailable runtime, reset/cancellation, UI Nhận/Áp dụng và E2E luồng xác nhận/critical/fallback. Các quyền riêng tư LAN/HTTPS và thử người dùng thật vẫn cần diễn tập trên thiết bị mục tiêu.
+
+## 10. Thử nội bộ Q-24/Q-25
+
+Chủ dự án duyệt capture theo câu và trang `/vsl-validation`, dữ liệu thử giả lập. Chỉ mở camera sau khi người tham gia tự nguyện bấm bắt đầu. Hai vai ở mọi frame phải có dữ liệu hợp lệ để tránh chia cho độ rộng gần0; failure vẫn UNKNOWN. Điểm0,7/allowlist/weights không đổi. Nhận/Áp dụng/xác nhận hai chiều và các guard y tế giữ nguyên.
+
+Trang thử không tạo phiên bệnh nhân. Chỉ lưu nhãn kiểm soát, mã P01/P02/P03-D01/D02, split/điều kiện và timing trong RAM; xuất CSV theo yêu cầu người thử, không video/ảnh/landmark/câu decoder/tên/tình trạng sức khỏe thật. Kết quả thử rời rạc tách khỏi dữ liệu phiên y tế và không gửi LLM; bản xuất cá nhân để thư mục local Git ignore. Không tự bật webcam bằng agent hoặc ghi kết quả mô phỏng thành người thật. Q-26 xác nhận nhóm chưa biết VSL; lượt dương chưa có reference ký được kiểm tra giữ pending.
+
+Lượt E2E có `evidence=synthetic` được ghi nhãn và loại khỏi gate người thật. Không công bố đạt tiêu chí chỉ vì test tự động qua. CLI không tự đóng băng; cần kết quả đúng split và xác nhận đánh giá cuối chưa dùng để tune. Từ chối nhiều hơn là trade-off cần ghi, không che lượt lỗi.

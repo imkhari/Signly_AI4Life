@@ -97,3 +97,11 @@ setup-v2:
 check-v2:
 	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/vsl_v2
 	AI_model/runtime/.venv/bin/python -m unittest discover -s AI_model/vsl_v2/tests -v
+
+.PHONY: prepare-vsl-validation summarize-vsl-trials
+prepare-vsl-validation:
+	$(PYTHON) -m AI_model.vsl_v2.trials profile --output frontend/public/vsl-validation-profile.json
+
+VSL_TRIALS ?= docs/validation/vsl-v2/TRIALS.csv
+summarize-vsl-trials:
+	$(PYTHON) -m AI_model.vsl_v2.trials summarize --input "$(VSL_TRIALS)" --output docs/validation/vsl-v2/metrics.json

@@ -8,6 +8,7 @@ import numpy as np
 import torch
 
 from AI_model.vsl_v2.engine import V2Engine, preprocess
+from AI_model.vsl_v2.evaluate import evaluate
 from AI_model.vsl_v2.worker import predict_request, prepare_sequence, respond
 
 FIXTURES = Path(__file__).with_name("fixtures")
@@ -30,6 +31,37 @@ class V2Tests(unittest.TestCase):
             self.assertEqual(result["input_source"], "observed_landmarks")
         self.assertNotEqual(row["reference"], result["translation"])
 
+    def test_evaluation_counts_invalid_pose_rejection_and_does_not_hide_missing_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = np.load(FIXTURES / "SENT101.npz", allow_pickle=False)["frames"]
+            np.save(root / "valid.npy", raw)
+            bad = raw.copy()
+            bad[2, :75] = 0
+            np.save(root / "invalid.npy", bad)
+            supplied = root / "provided.json"
+            supplied.write_text(
+                json.dumps(
+                    {
+                        "predictions": [
+                            {
+                                "video_id": name,
+                                "reference": "tôi bị đau đầu .",
+                                "hypothesis": "tôi bị đau đầu .",
+                            }
+                            for name in ("valid", "invalid")
+                        ]
+                    }
+                )
+            )
+            report = evaluate(root, supplied)
+            self.assertEqual(report["metrics"]["clips"], 2)
+            self.assertEqual(report["metrics"]["exact_matches"], 1)
+            self.assertEqual(report["rejected_clips"], 1)
+            (root / "invalid.npy").unlink()
+            with self.assertRaises(FileNotFoundError):
+                evaluate(root, supplied)
+
     def test_tampered_checkpoint_is_rejected_before_loading(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "fake.pt"
@@ -48,6 +80,16 @@ class V2Tests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 preprocess(bad)
 
+    def test_partial_pose_loss_is_rejected_instead_of_extreme_normalized_features(self):
+        raw = np.load(FIXTURES / "SENT101.npz", allow_pickle=False)["frames"].copy()
+        raw[1:10, :75] = 0
+        with self.assertRaisesRegex(ValueError, "shoulders"):
+            preprocess(raw)
+        raw = np.load(FIXTURES / "SENT101.npz", allow_pickle=False)["frames"].copy()
+        raw[5, 30:32] = 0
+        with self.assertRaisesRegex(ValueError, "shoulders"):
+            preprocess(raw)
+
     def test_resampling_preserves_missing_groups_and_bounds(self):
         raw = np.zeros((30, 411))
         raw[:, :75] = 0.5
@@ -56,6 +98,14 @@ class V2Tests(unittest.TestCase):
         np.testing.assert_array_equal(result[:, 75:], 0)
         with self.assertRaises(ValueError):
             prepare_sequence({"frames": raw.tolist(), "timestamps_ms": [0] * 30})
+
+    def test_exact_30fps_timestamps_do_not_drop_a_frame_due_to_roundoff(self):
+        for count in (8, 24, 69, 70, 180, 300):
+            frames = np.zeros((count, 411))
+            result = prepare_sequence(
+                {"frames": frames, "timestamps_ms": np.arange(count) * 1000 / 30}
+            )
+            self.assertEqual(len(result), count)
 
     def test_rest_and_static_input_do_not_call_the_decoder(self):
         engine = Mock()

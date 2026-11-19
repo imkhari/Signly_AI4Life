@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  IconAlertTriangle,
   IconBolt,
   IconCamera,
   IconCameraOff,
@@ -16,8 +15,8 @@ import {
 import { useCamera } from '../../../hooks/useCamera';
 import { HolisticDetector, HolisticObservation } from '../../../services/vsl/HolisticDetector';
 import { drawHandLandmarks } from '../../../services/vsl/drawHandSkeleton';
-import { HolisticFrame, restApi, VSLPredictionResponse } from '../../../services/api/rest';
-import { GestureStabilizer, StabilizationResult, CAMERA_STABILIZER_OPTIONS } from '../../../services/vsl/GestureStabilizer';
+import { restApi, VSLPredictionResponse } from '../../../services/api/rest';
+import { SentenceCapture, SENTENCE_LIMITS, hasValidShoulders, CameraTrialResult, CaptureFailure } from '../../../services/vsl/SentenceCapture';
 import { RecognizedGloss } from '../../../services/vsl/types';
 import { Button } from '../../../ui/Button';
 import { vi } from '../../../i18n/vi';
@@ -26,6 +25,8 @@ interface VSLCameraViewProps {
   contextStep?: 'symptom' | 'location' | 'severity';
   onApplyGlosses: (glosses: RecognizedGloss[]) => void;
   onSwitchToTouchMode?: () => void;
+  onTrialResult?: (result:CameraTrialResult) => void;
+  captureDisabled?: boolean;
 }
 
 const GLOSS_METADATA: Record<
@@ -106,97 +107,113 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   contextStep,
   onApplyGlosses,
   onSwitchToTouchMode,
+  onTrialResult,
+  captureDisabled = false,
 }) => {
   const { status, errorMessage, isActive, start, stop, bindVideoRef } = useCamera();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const stabilizerRef = useRef<GestureStabilizer>(
-    new GestureStabilizer(CAMERA_STABILIZER_OPTIONS)
-  );
-
-  const [handCount, setHandCount] = useState<number>(0);
-  const [livePrediction, setLivePrediction] = useState<VSLPredictionResponse | null>(null);
-  const [stabilization, setStabilization] = useState<StabilizationResult>({
-    isStable: false,
-    status: 'idle',
-    statusMessage: 'Đang chờ cử chỉ...',
-    candidate: null,
-    currentGloss: null,
-    progressPercent: 0,
-  });
+  const captureRef = useRef(new SentenceCapture());
+  const [previewAspect,setPreviewAspect] = useState(4/3);
+  const [handCount, setHandCount] = useState(0);
+  const [readyToSign,setReadyToSign] = useState(false);
+  const [captureState,setCaptureState] = useState<'idle'|'recording'|'processing'>('idle');
+  const [captureMessage,setCaptureMessage] = useState<string>(vi.camera.ready);
+  const [livePrediction,setLivePrediction] = useState<VSLPredictionResponse|null>(null);
   const [candidates, setCandidates] = useState<RecognizedGloss[]>([]);
   const [confirmedGlosses, setConfirmedGlosses] = useState<RecognizedGloss[]>([]);
   const [isAiLoading, setIsAiLoading] = useState<boolean>(true);
   const [aiError, setAiError] = useState<string | null>(null);
 
   const detectorRef = useRef<HolisticDetector | null>(null);
-  const framesRef = useRef<HolisticFrame[]>([]);
-  const requestRef = useRef<AbortController | null>(null);
+  const requestRef = useRef<AbortController|null>(null);
+  const captureTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
   const generationRef = useRef(0);
-  const lastPredictionTimeRef = useRef(-Infinity);
-  const lastResultTimeRef = useRef(0);
+  const pendingResultRef = useRef<(CameraTrialResult & {finishedAt:number})|null>(null);
+  const observerRef = useRef(onTrialResult);
+  observerRef.current = onTrialResult;
 
   const clearSequence = useCallback(() => {
     generationRef.current += 1;
-    requestRef.current?.abort();
-    requestRef.current = null;
-    framesRef.current = [];
-    stabilizerRef.current.reset();
-    lastResultTimeRef.current = 0;
+    requestRef.current?.abort(); requestRef.current=null;
+    if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
+    captureTimerRef.current=null; captureRef.current.cancel(); pendingResultRef.current=null;
   }, []);
 
-  const handleObservation = useCallback(async ({frame, hands}: HolisticObservation) => {
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-    if (context && canvas) drawHandLandmarks(context, hands, canvas.width, canvas.height);
+  const showFailure = useCallback((failure:CaptureFailure) => {
+    if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
+    captureTimerRef.current=null;
+    setCaptureState('idle'); setCaptureMessage(vi.camera.reasons[failure.reason]);
+    setLivePrediction(null); setCandidates([]);
+    observerRef.current?.({...failure,gloss:'UNKNOWN',candidate_latency_ms:null,
+      response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
+  }, []);
+
+  const handleObservation = useCallback(({frame,hands}:HolisticObservation) => {
+    const canvas=canvasRef.current, context=canvas?.getContext('2d');
+    if (canvas && context) drawHandLandmarks(context,hands,canvas.width,canvas.height);
     setHandCount(hands.length);
-    const previous = framesRef.current.at(-1);
-    if (!hands.length || (previous && frame.timestamp_ms - previous.timestamp_ms > 500)) {
-      clearSequence();
-      setLivePrediction(null);
-      setStabilization(stabilizerRef.current.process(null));
-      if (!hands.length) return;
-    }
-    framesRef.current = [...framesRef.current, frame]
-      .filter(f => frame.timestamp_ms - f.timestamp_ms <= 6000).slice(-180);
-    const frames = framesRef.current;
-    if (requestRef.current || frames.length < 24 ||
-      frame.timestamp_ms - frames[0].timestamp_ms < 800 ||
-      frame.timestamp_ms - lastPredictionTimeRef.current < 450) return;
-    const controller = new AbortController();
-    requestRef.current = controller;
-    lastPredictionTimeRef.current = frame.timestamp_ms;
-    const generation = generationRef.current;
+    setReadyToSign(hands.length>0 && hasValidShoulders(frame));
+    const failure=captureRef.current.push(frame);
+    if (failure) showFailure(failure);
+  }, [showFailure]);
+
+  const beginSentence = () => {
+    clearSequence(); setCandidates([]); setLivePrediction(null);
+    captureRef.current.begin(performance.now());
+    setCaptureState('recording'); setCaptureMessage(vi.camera.signNow);
+    captureTimerRef.current=setTimeout(() => {
+      if (captureRef.current.recording) showFailure(captureRef.current.fail('sequence_limit',performance.now()));
+    },SENTENCE_LIMITS.maxMs);
+  };
+
+  const finishSentence = async () => {
+    if (!captureRef.current.recording || requestRef.current) return;
+    if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
+    captureTimerRef.current=null;
+    const finishedAt=performance.now();
+    const captured=captureRef.current.finish(finishedAt);
+    if ('reason' in captured) { showFailure(captured); return; }
+    const controller=new AbortController(), generation=generationRef.current;
+    requestRef.current=controller;
+    setCaptureState('processing'); setCaptureMessage(vi.camera.processing);
+    const timeout=setTimeout(() => controller.abort(),15000);
     try {
-      const res = await restApi.predictVSLSequence(frames, contextStep, controller.signal);
-      if (generation !== generationRef.current || controller.signal.aborted) return;
-      setLivePrediction(res);
-      const now = Date.now();
-      // Do not carry stability evidence across a slow/disconnected inference gap.
-      if (now - lastResultTimeRef.current > 1500) stabilizerRef.current.reset();
-      lastResultTimeRef.current = now;
-      const stable = stabilizerRef.current.process(res, now);
-      setStabilization(stable);
-      if (!stable.candidate) return;
-      const candidate = stable.candidate;
-      const meta = GLOSS_METADATA[candidate.gloss];
-      if (!meta || (contextStep === 'location' ? meta.category !== 'region' : meta.category !== 'symptom')) return;
-      const recognized: RecognizedGloss = {
-        gloss: candidate.gloss, label_vi: candidate.label_vi, confidence: candidate.confidence,
-        category: meta.category, maps_to: meta.maps_to, timestamp: now,
-      };
-      setCandidates(prev => prev.some(c => c.gloss === recognized.gloss) ? prev : [recognized, ...prev.slice(0,3)]);
+      const response=await restApi.predictVSLSequence(captured.frames,contextStep,controller.signal);
+      if (generation!==generationRef.current || controller.signal.aborted) return;
+      const meta=GLOSS_METADATA[response.gloss];
+      const valid=response.success && response.model_source==='vsl_v2_learned_translation' &&
+        Number.isFinite(response.confidence) && response.confidence>=0.7 && response.confidence<=1 &&
+        meta && (contextStep==='location' ? meta.category==='region' : meta.category==='symptom');
+      pendingResultRef.current={...captured.summary,gloss:valid ? response.gloss : 'UNKNOWN',
+        reason:valid ? 'accepted' : 'unknown',candidate_latency_ms:null,
+        response_latency_ms:performance.now()-finishedAt,
+        model_source:response.model_source,finishedAt};
+      setLivePrediction(valid ? response : null);
+      setCandidates(valid ? [{gloss:response.gloss,label_vi:response.label_vi || response.gloss,
+        category:meta.category,maps_to:meta.maps_to,confidence:response.confidence,timestamp:Date.now()}] : []);
+      setCaptureMessage(valid ? vi.camera.checkSuggestion : vi.camera.reasons.unknown);
     } catch {
-      if (!controller.signal.aborted && generation === generationRef.current) {
-        stabilizerRef.current.reset();
-        setStabilization(stabilizerRef.current.process(null));
-        setLivePrediction(null);
-      }
+      if (generation!==generationRef.current) return;
+      const reason=controller.signal.aborted ? 'inference_timeout' : 'network_error';
+      pendingResultRef.current={...captured.summary,gloss:'UNKNOWN',reason,candidate_latency_ms:null,
+        response_latency_ms:performance.now()-finishedAt,model_source:'vsl_v2_learned_translation',finishedAt};
+      setCandidates([]);setLivePrediction(null);setCaptureMessage(vi.camera.reasons[reason]);
     } finally {
-      if (requestRef.current === controller) requestRef.current = null;
+      clearTimeout(timeout);
+      if (requestRef.current===controller) {requestRef.current=null;setCaptureState('idle');}
     }
-  }, [contextStep, clearSequence]);
+  };
+
+  // Observe the DOM commit, never send reference/participant data to inference.
+  useEffect(() => {
+    const pending=pendingResultRef.current;
+    if (!pending) return;
+    pendingResultRef.current=null;
+    const {finishedAt,...result}=pending;
+    observerRef.current?.({...result,candidate_latency_ms:result.gloss==='UNKNOWN' ? null : performance.now()-finishedAt});
+  },[candidates]);
 
   useEffect(() => {
     let active = true;
@@ -228,13 +245,24 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
     setCandidates([]);
     setConfirmedGlosses([]);
     setLivePrediction(null);
+    setCaptureState('idle'); setCaptureMessage(vi.camera.ready);
     return () => { unsubscribe?.(); clearSequence(); };
-  }, [handleObservation, clearSequence]);
+  }, [handleObservation, clearSequence, contextStep]);
 
   useEffect(() => { start(); return stop; }, [start, stop]);
+  useEffect(() => {
+    if (!isActive) {
+      clearSequence();setCaptureState('idle');setLivePrediction(null);setCandidates([]);
+      setConfirmedGlosses([]);setReadyToSign(false);
+    }
+  },[isActive,clearSequence]);
 
   const handleVideoLoadedMetadata = () => {
-    if (videoRef.current) detectorRef.current?.start(videoRef.current);
+    const video=videoRef.current;
+    if (video) {
+      if (video.videoWidth>0 && video.videoHeight>0) setPreviewAspect(video.videoWidth/video.videoHeight);
+      detectorRef.current?.start(video);
+    }
   };
 
   // Gắn stream từ useCamera vào thẻ <video> (Duy trì một MediaStream duy nhất)
@@ -313,17 +341,27 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         )}
       </div>
 
+      <div className="flex flex-wrap gap-3 mb-4">
+        <Button onClick={beginSentence} disabled={!isActive || isAiLoading || !!aiError ||
+          !readyToSign || captureDisabled || captureState!=='idle'}>{vi.camera.begin}</Button>
+        <Button onClick={finishSentence} disabled={captureState!=='recording'}>{vi.camera.finish}</Button>
+        {captureState==='recording' && <Button variant="secondary" onClick={() => {
+          showFailure(captureRef.current.fail('cancelled',performance.now()));
+        }}>{vi.common.cancel}</Button>}
+      </div>
+      <p role="status" className="text-lg mb-4">{captureMessage}</p>
+
       {/* Layout 2 cột: BÊN TRÁI LÀ CAMERA TO RỘNG (8/12), BÊN PHẢI LÀ KẾT QUẢ & XÁC NHẬN (4/12) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         {/* CỘT TRÁI (8 / 12 CỘT): MÀN HÌNH CAMERA VÀ KHUNG XƯƠNG NGÓN TAY CỰC TO */}
         <div className="lg:col-span-7 flex flex-col gap-2">
-          <div className="relative aspect-square w-full max-w-[480px] mx-auto rounded-2xl overflow-hidden bg-black shadow-lg border-2 border-gray-800">
+          <div style={{aspectRatio:previewAspect}} className="relative w-full max-w-[480px] mx-auto rounded-2xl overflow-hidden bg-black shadow-lg border-2 border-gray-800">
             {/* Thẻ Video phát từ webcam */}
             <video
               ref={setVideoRef}
               data-testid="vsl-video-element"
               onLoadedMetadata={handleVideoLoadedMetadata}
-              className="absolute inset-0 w-full h-full object-cover -scale-x-100"
+              className="absolute inset-0 w-full h-full object-fill -scale-x-100"
               playsInline
               muted
             />
@@ -333,7 +371,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
               ref={canvasRef}
               width={360}
               height={360}
-              className="absolute inset-0 w-full h-full object-cover -scale-x-100 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-fill -scale-x-100 pointer-events-none"
             />
 
             {/* HUD trạng thái trực tiếp trên màn hình camera */}
@@ -352,18 +390,6 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
 
               {/* Badges trạng thái ổn định / cảnh báo cử chỉ */}
               <div className="flex items-center gap-1.5">
-                {stabilization.status === 'uncertain' && (
-                  <div className="px-2.5 py-1.5 rounded-xl bg-amber-500/80 backdrop-blur-md text-white text-base font-bold border border-amber-300/40 flex items-center gap-1.5 animate-pulse">
-                    <IconAlertTriangle className="w-3.5 h-3.5 text-amber-200" stroke={2.5} />
-                    <span>Chưa chắc chắn</span>
-                  </div>
-                )}
-                {stabilization.status === 'holding' && (
-                  <div className="px-2.5 py-1.5 rounded-xl bg-brand/80 backdrop-blur-md text-white text-base font-bold border border-white/20 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                    <span>Đang kiểm tra {stabilization.progressPercent}%</span>
-                  </div>
-                )}
                 <div className="px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-emerald-400 text-base font-bold border border-white/20 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-status-success animate-pulse" />
                   <span>{vi.camera.confirmationHint}</span>
@@ -392,32 +418,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                     </div>
                   </div>
 
-                  <span
-                    className={`text-base px-2.5 py-1 rounded-lg font-bold ${
-                      stabilization.status === 'uncertain'
-                        ? 'bg-amber-500/30 border border-amber-500/50 text-amber-200'
-                        : stabilization.status === 'stable'
-                          ? 'bg-status-success/30 border border-status-success/50 text-status-success'
-                          : 'bg-brand/30 border border-brand/50 text-brand-light'
-                    }`}
-                  >
-                    {stabilization.status === 'uncertain'
-                      ? 'Chưa chắc chắn'
-                      : stabilization.status === 'stable'
-                        ? '✓ Đã nhận diện'
-                        : `Đang kiểm tra (${stabilization.progressPercent}%)`}
-                  </span>
                 </div>
-
-                {/* Tiến trình giữ yên cử chỉ theo cấu hình camera */}
-                {stabilization.status === 'holding' && (
-                  <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className="bg-brand-light h-full rounded-full transition-all duration-100"
-                      style={{ width: `${stabilization.progressPercent}%` }}
-                    />
-                  </div>
-                )}
               </div>
             )}
 
@@ -458,7 +459,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         </div>
 
         {/* CỘT PHẢI (4 / 12 CỘT): TỪ CHỜ XÁC NHẬN & DANH SÁCH TRIỆU CHỨNG ĐÃ CHỌN */}
-        <div className="lg:col-span-5 flex flex-col justify-between gap-3 lg:h-[320px]">
+        <div className="lg:col-span-5 flex flex-col justify-between gap-3 ">
           {/* Box 1: Từ AI vừa nhận diện được (Awaiting Confirmation) */}
           <div className="bg-canvas p-3 rounded-xl border border-gray-200 flex flex-col gap-2 shadow-2xs">
             <div className="flex flex-wrap gap-2 items-center justify-between">

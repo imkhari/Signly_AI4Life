@@ -30,7 +30,8 @@ async function emit(from: number, to: number) {
   for (let i = from; i <= to; i++) {
     await act(async () => {
       clock = 10000 + i * 40;
-      detector.callback?.({frame:{timestamp_ms:i*40, landmarks:Array(411).fill(.5)},
+      const landmarks=Array(411).fill(.5);landmarks[27]=.4;landmarks[30]=.6;
+      detector.callback?.({frame:{timestamp_ms:clock, landmarks},
         hands:[Array.from({length:21}, () => ({x:.5,y:.5,z:0}))]});
     });
   }
@@ -42,6 +43,8 @@ const view = (apply = vi.fn(), contextStep: 'symptom' | 'location' = 'symptom') 
 describe('V2 camera lifecycle and confirmation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clock=10000;
+    vi.spyOn(performance,"now").mockImplementation(() => clock);
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
     vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
     vi.spyOn(Date, 'now').mockImplementation(() => clock);
@@ -62,7 +65,11 @@ describe('V2 camera lifecycle and confirmation', () => {
   it('sends only numeric sequences and requires Nhận then Apply', async () => {
     const apply = vi.fn();
     render(view(apply));
-    await emit(0,65);
+    await emit(0,0);
+    fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));
+    await emit(1,30);
+    expect(restApi.predictVSLSequence).not.toHaveBeenCalled();
+    await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Xong câu'}));});
     expect(restApi.predictVSLSequence).toHaveBeenCalled();
     const [frames, context] = vi.mocked(restApi.predictVSLSequence).mock.calls[0];
     expect(frames[0].landmarks).toHaveLength(411);
@@ -77,7 +84,10 @@ describe('V2 camera lifecycle and confirmation', () => {
     let resolve!: (value: typeof prediction) => void;
     vi.mocked(restApi.predictVSLSequence).mockReturnValue(new Promise(r => {resolve = r;}));
     const rendered = render(view());
-    await emit(0,25);
+    await emit(0,0);
+    fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));
+    await emit(1,30);
+    fireEvent.click(screen.getByRole('button',{name:'Xong câu'}));
     expect(restApi.predictVSLSequence).toHaveBeenCalledTimes(1);
     const signal = vi.mocked(restApi.predictVSLSequence).mock.calls[0][2]!;
     rendered.rerender(view(vi.fn(),'location'));

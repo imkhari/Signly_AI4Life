@@ -72,3 +72,6 @@ Thumbs.db
 *.swp
 *.swo
 
+
+# Anonymous individual trial exports stay local; only empty template/aggregate evidence is tracked.
+docs/validation/vsl-v2/local/

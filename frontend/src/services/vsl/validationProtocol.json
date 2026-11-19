@@ -1,0 +1,119 @@
+{
+  "version": "vsl-v2-internal-1",
+  "criteria_approval": "Q-25/D-026",
+  "cohort": "internal",
+  "participants": {
+    "P01": "development",
+    "P02": "development",
+    "P03": "final"
+  },
+  "conditions": [
+    "normal",
+    "low_light",
+    "off_axis",
+    "distance"
+  ],
+  "familiarities": [
+    "learning",
+    "fluent",
+    "unknown"
+  ],
+  "devices": [
+    "D01",
+    "D02"
+  ],
+  "expected_per_intent_final": 5,
+  "required_correct_per_intent": 4,
+  "expected_per_negative_final": 5,
+  "candidate_p95_ms_limit": 5000,
+  "intents": [
+    {
+      "id": "HEAD_SYMPTOM",
+      "label": "Đau đầu",
+      "kind": "positive",
+      "context": "symptom",
+      "expected": "ĐAU"
+    },
+    {
+      "id": "CHEST_LOCATION",
+      "label": "Vị trí đau ngực",
+      "kind": "positive",
+      "context": "location",
+      "expected": "NGỰC"
+    },
+    {
+      "id": "BREATH_SYMPTOM",
+      "label": "Khó thở",
+      "kind": "positive",
+      "context": "symptom",
+      "expected": "KHÓ-THỞ"
+    },
+    {
+      "id": "FEVER_DIAGNOSTIC",
+      "label": "Sốt — kiểm lỗi đã biết",
+      "kind": "diagnostic",
+      "context": "symptom",
+      "expected": "SỐT"
+    },
+    {
+      "id": "NEG_REST",
+      "label": "Tay nghỉ trong khung",
+      "kind": "negative_valid",
+      "context": "symptom",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_MOTION",
+      "label": "Động tác thông thường",
+      "kind": "negative_valid",
+      "context": "symptom",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_OUTSIDE",
+      "label": "Ý ngoài danh mục thử",
+      "kind": "negative_valid",
+      "context": "symptom",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_MISSING",
+      "label": "Mất landmark / rời khung",
+      "kind": "negative_invalid",
+      "context": "symptom",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_GAP",
+      "label": "Gián đoạn tracking",
+      "kind": "negative_invalid",
+      "context": "symptom",
+      "expected": "UNKNOWN"
+    }
+  ],
+  "reasons": [
+    "accepted",
+    "unknown",
+    "missing_shoulders",
+    "tracking_gap",
+    "sequence_limit",
+    "insufficient_frames",
+    "invalid_landmarks",
+    "network_error",
+    "inference_timeout",
+    "cancelled"
+  ],
+  "allowed_labels": [
+    "UNKNOWN",
+    "ĐAU",
+    "ĐẦU",
+    "BỤNG",
+    "BỤNG-DƯỚI",
+    "NGỰC",
+    "HỌNG",
+    "LƯNG",
+    "HO",
+    "SỐT",
+    "KHÓ-THỞ"
+  ]
+}

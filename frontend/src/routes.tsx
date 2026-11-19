@@ -2,9 +2,11 @@ import { createBrowserRouter } from 'react-router-dom';
 import { HomeRoleSelect } from './features/HomeRoleSelect';
 import { PatientPage } from './features/patient/PatientPage';
 import { NursePage } from './features/nurse/NursePage';
+import { VSLValidationPage } from './features/validation/VSLValidationPage';
 import { DemoPage } from './features/demo/DemoPage';
 
 export const router = createBrowserRouter([
+  {path:'/vsl-validation',element:<VSLValidationPage />},
   {
     path: '/',
     element: <HomeRoleSelect />,

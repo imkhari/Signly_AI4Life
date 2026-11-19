@@ -1,6 +1,7 @@
 """Replay observed landmarks; reference files are used only for scoring after inference."""
 
 import argparse
+import hashlib
 import json
 import statistics
 from pathlib import Path
@@ -22,7 +23,22 @@ def evaluate(root: Path, provided: Path) -> dict[str, Any]:
         identifier = sample["video_id"]
         if Path(identifier).name != identifier:
             raise ValueError("Invalid sample identifier")
-        result = engine.decode_frames(np.load(root / f"{identifier}.npy", allow_pickle=False))
+        raw = np.load(root / f"{identifier}.npy", allow_pickle=False)
+        try:
+            result = engine.decode_frames(raw)
+        except ValueError:
+            result = {
+                "translation": "",
+                "mean_token_probability": 0.0,
+                "reason": "invalid_landmarks_rejected",
+                "forward_decode_ms": None,
+                "engine_source": "vsl_v2_learned_translation",
+                "input_source": "observed_landmarks",
+                "checkpoint_sha256": engine.sha256,
+                "patient_confirmation_required": True,
+            }
+        result["input_frames"] = len(raw)
+        result["model_frames_used"] = min(len(raw), 300)
         reference = sample["reference"].split()
         hypothesis = result["translation"].split()
         rows.append(
@@ -46,16 +62,29 @@ def evaluate(root: Path, provided: Path) -> dict[str, Any]:
         "engine": "vsl_v2",
         "checkpoint_sha256": engine.sha256,
         "config_verification": engine.metadata["config_verification"],
+        "engine_impl_sha256": hashlib.sha256(
+            Path(__file__).with_name("engine.py").read_bytes()
+        ).hexdigest(),
+        "rejected_clips": sum(row.get("reason") == "invalid_landmarks_rejected" for row in records),
+        "clips_longer_than_camera_180_frames": sum(row["input_frames"] > 180 for row in records),
         "metric_unit": "Vietnamese word tokens, punctuation retained; not CTC glosses",
         "metrics": {
             key: value for key, value in metrics.items() if key not in ("errors", "limitations")
         },
         "sentence_mean_wer": mean_wer,
-        "provided_header": {key: value for key, value in supplied.items() if key != "predictions"},
+        "provided_header": {
+            key: value
+            for key, value in supplied.items()
+            if key not in ("predictions", "checkpoint")
+        },
         "reproduced_supplied_predictions": sum(
             row["matches_provided_prediction"] for row in records
         ),
-        "forward_decode_ms_median": statistics.median(row["forward_decode_ms"] for row in records),
+        "forward_decode_ms_median": statistics.median(
+            row["forward_decode_ms"] for row in records if row["forward_decode_ms"] is not None
+        )
+        if any(row["forward_decode_ms"] is not None for row in records)
+        else None,
         "predictions": records,
         "limitations": [
             "Owner-supplied references; not independent annotation or clinical validation.",
