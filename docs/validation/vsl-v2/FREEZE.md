@@ -1,6 +1,6 @@
 # Bản AI cho buổi thi — CANDIDATE
 
-**Chưa đóng băng chất lượng.** Profile hiện tại đã có10ca âm nội bộ hợp lệ:5tay nghỉ và5cử động thông thường. Nhóm tay nghỉ đã được đối chiếu CSV (T0001–T0005,P01/phát triển,cả5UNKNOWN,không có gợi ý sai; response103,90–215,90ms). Chưa có lượt dương VSL hoặc thử cuối; không coi nhóm tay nghỉ của1người là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
+**Chưa đóng băng chất lượng.** Profile hiện tại đã có11ca âm nội bộ hợp lệ:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật. Nhóm tay nghỉ đã được đối chiếu CSV (T0001–T0005,P01/phát triển,cả5UNKNOWN,không có gợi ý sai; response103,90–215,90ms). Chưa có lượt dương VSL hoặc thử cuối; không coi nhóm tay nghỉ của1người là đủ kiểm chứng nhận diện. PilotC52 quá thời gian và ảnh lỗi tracking được giữ riêng, không trộn số liệu.
 
 ## Phiên bản kỹ thuật
 
@@ -65,3 +65,7 @@ Người dùng gửi đầy đủT0001–T0005 cùng profile4e4ebb. Kiểm T0001
 ## Snapshot NEG_MOTION đủ5lượt
 
 Đã so hai dòng đầu khớp CSV2lượt và chỉ dùng snapshot5lượt thay thế cho tổng hợp. Tổng10ca âm hợp lệ (5NEG_REST+5NEG_MOTION),cả10UNKNOWN,0gợi ý sai trong nhóm;0dương/0lượt cuối. Không tính bản1rest hoặc2motion cũ lần nữa. Thử này của1người nội bộ/D01, không phải accuracyVSL. CANDIDATE; tiếp ca vẫy chào thông thường theo NEG_OUTSIDE kỹ thuật đã nêu trong README.
+
+## Lượt NEG_OUTSIDE đầu tiên
+
+Đã đối chiếu1CSV vẫy chào:92frame,4646,50ms,UNKNOWN,response198,10ms,worker ready. Snapshot nguồn riêng ngoài nhóm rest/motion, giữ mãT0001 gốc và hash nguồn. Tổng11ca âm hợp lệ,0gợi ý sai trong nhóm,0dương/0cuối,p95gợi ý null. Đây là vẫy chào thông thường của người đang học, không phải tậpVSL OOD được kiểm tra. CANDIDATE.

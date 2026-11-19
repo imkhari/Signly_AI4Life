@@ -1,6 +1,6 @@
 # Thử kỹ thuật camera V2 — Q-24/Q-25
 
-Trạng thái **CANDIDATE**. Cập nhật mới nhất: profile4e4ebb đã có10ca âm hợp lệ được đối chiếu CSV (5tay nghỉ+5cử động thông thường,cả10UNKNOWN);0lượt dương và chưa có thử cuối. Các pilot cũ bên dưới là lịch sử. Đã nhập1lượt pilot cũ vượt giới hạn, chưa có lượt ca âm tracking hợp lệ gọi API; bản mới có đếm ngược đang chờ thử lại. Hiện nhóm chưa biết VSL (Q-26). Chỉ thử kỹ thuật nội bộ bằng ca giả lập; chưa có bằng chứng khả năng dùng VSL hoặc hiệu quả bệnh viện. Kế hoạch và tiêu chí đã duyệt ở `docs/PLANS/12-VSL-V2-DEMO-FREEZE.md`.
+Trạng thái **CANDIDATE**. Cập nhật mới nhất: profile4e4ebb đã có11ca âm hợp lệ được đối chiếu CSV (5tay nghỉ+5cử động thông thường+1vẫy chào,cả11UNKNOWN);0lượt dương và chưa có thử cuối. Các pilot cũ bên dưới là lịch sử. Đã nhập1lượt pilot cũ vượt giới hạn, chưa có lượt ca âm tracking hợp lệ gọi API; bản mới có đếm ngược đang chờ thử lại. Hiện nhóm chưa biết VSL (Q-26). Chỉ thử kỹ thuật nội bộ bằng ca giả lập; chưa có bằng chứng khả năng dùng VSL hoặc hiệu quả bệnh viện. Kế hoạch và tiêu chí đã duyệt ở `docs/PLANS/12-VSL-V2-DEMO-FREEZE.md`.
 
 ## Mở bộ thử
 
@@ -75,4 +75,4 @@ Lỗi capture giữ nguyên màn camera, hiện lý do và “Lượt đã dừn
 
 Bấm Tải kết quả CSV để hiện thêm ô Nội dung CSV để sao chép. Nếu không có tệp tải xuống, bấm Sao chép CSV hoặc chọn toàn bộ trong ô và sao chép thủ công, dán vào tệp văn bản `.csv`. Không đóng/tải lại trang cho tới khi giữ được bản xuất, trừ khi chủ dự án chấp nhận mất phần chi tiết chưa xuất. Không suy từ ảnh kết quả thành số frame/timing chưa biết.
 
-Các bản xuất khác trang/lần mở được giữ thành nhóm nguồn riêng. Nếu mãTtrùng giữa hai nhóm, kiểm CSV từng nhóm trước rồi tổng hợp theo(batch_id,trial_id), ghi hash nguồn; không sửa mã gốc hoặc ghép CSV để bỏ qua kiểm tra trùng. Snapshot tích lũy mới của cùng nhóm thay bản cũ, không cộng lặp. Metrics hiện có provenance của rest-batch-01 và motion-batch-01; CSV nguồn nằm local Git ignore.
+Các bản xuất khác trang/lần mở được giữ thành nhóm nguồn riêng. Nếu mãTtrùng giữa hai nhóm, kiểm CSV từng nhóm trước rồi tổng hợp theo(batch_id,trial_id), ghi hash nguồn; không sửa mã gốc hoặc ghép CSV để bỏ qua kiểm tra trùng. Snapshot tích lũy mới của cùng nhóm thay bản cũ, không cộng lặp. Metrics hiện có provenance của rest-batch-01, motion-batch-01 và outside-batch-01; CSV nguồn nằm local Git ignore.

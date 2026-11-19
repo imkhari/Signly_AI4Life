@@ -1,6 +1,12 @@
 # Kết quả camera V2
 
-## Cập nhật mới nhất — 5tay nghỉ + 5cử động thông thường
+## Cập nhật mới nhất — 11ca âm kỹ thuật hợp lệ
+
+Đã đối chiếu CSV NEG_OUTSIDE đầu tiên: T0001/P01/phát triển/learning/D01/normal,worker ready,92frame,4646,50ms,UNKNOWN/unknown,response198,10ms. Theo hướng dẫn trước đó, đây là vẫy chào thông thường không khai triệu chứng; không phải bộVSL ngoài từ vựng được chuyên gia xác minh. CSV ở `local/P01-outside-batch-01-4e4ebb.csv` (Git ignore), kiểm riêng cùng profile4e4ebb.
+
+Tổng hiện tại11ca âm hợp lệ:5tay nghỉ+5cử động thông thường+1vẫy chào;0gợi ý sai trong nhóm,0dương/0cuối. Nhóm outside có mãT0001 riêng, không đổi mã hoặc cộng lặp bản nguồn cũ. metrics có3batch_provenance và SHA từng snapshot nguồn. CANDIDATE; không suy từ các lượt UNKNOWN rằng decoder đã chạy hoặc nhận đúngVSL.
+
+## Snapshot5tay nghỉ + 5cử động thông thường
 
 Đã nhận snapshot NEG_MOTION đầy đủT0001–T0005 củaP01/phát triển/D01/normal/profile4e4ebb, cả5worker ready. Frame65/79/78/85/90, thời gian ghi3248,50/3938,40/3851,60/4312,70/4509,90ms; cả5UNKNOWN/unknown, response198,50/105,50/204,50/202,30/196,90ms (trung vị198,50ms). Cả5đủ điều kiện ca âm theo protocol, không có gợi ý sai. CSV mới ở `local/P01-motion-five-4e4ebb.csv` (Git ignore), hai dòng đầu đã so khớp bản2lượt cũ; chỉ tính snapshot5lượt, không cộng thành7motion.
 
