@@ -1,6 +1,6 @@
 # Kịch bản demo AI4Care — 3 phút và 2 phút hỏi đáp
 
-Cập nhật ngày 19/11/2026. Hai màn hình đã ghép cặp, dữ liệu giả lập, ENV=demo, LLM_PROVIDER=mock. Luồng chính dùng Chạm. Camera tùy chọn cần diễn tập với người ký và thiết bị thật.
+Cập nhật ngày 19/11/2026. Điều kiện chuẩn bị: hai màn hình đã ghép cặp, dữ liệu giả lập, ENV=demo, LLM_PROVIDER=mock. Luồng chính dùng Chạm. Camera tùy chọn cần diễn tập với người ký và thiết bị thật. Ba phút là thời lượng mục tiêu theo Q-11, chưa có ba lượt diễn tập trên hai thiết bị xác nhận đạt thời lượng. Xem bộ D/E ở `08-PACKAGE-DE-HANDOFF.md` và outline/Q&A ở `09-PITCH-OUTLINE.md`.
 
 ## Luồng chính
 
@@ -39,6 +39,8 @@ Ký hiệu VSL → Tiếp tục → cử chỉ đã diễn tập → Nhận → 
 - **AI thực hiện phần nào?** MediaPipe lấy landmark tại trình duyệt. Bộ luật hình học tại backend LAN gợi ý cử chỉ rời rạc. Buổi thi dùng LLM mock, có validator và mẫu dự phòng.
 - **PyTorch làm gì?** Khi checkpoint tải được, nhánh hiện tại cộng điểm điều chỉnh vào điểm của nhãn luật. Xem /api/vsl/status để biết trạng thái tải.
 - **60 gloss nghĩa là gì?** Có 60 mục ánh xạ, trong đó 31 mục liên kết nhãn Voya. Đánh giá trên người ký độc lập còn chờ diễn tập.
+- **Chất lượng model đã được đo chưa?** Có báo cáo fixture tổng hợp và 12 ca bộ lọc thời gian, chưa có accuracy VSL người thật. Model từ repo bạn trong nhóm chưa đủ source/trọng số/config/vocab để chạy; chưa thay engine hiện tại.
+- **Hiệu quả người dùng ra sao?** Chưa thu lượt thử nội bộ hay người dùng mục tiêu. Bộ protocol/phiếu ở docs/validation đã sẵn sàng, chưa có số liệu giảm thời gian hoặc sai thông tin.
 - **Dữ liệu camera đi đâu?** Ảnh/video xử lý trong trình duyệt. Tọa độ 3D gửi tới backend LAN theo Q-16.
 - **Có phiên dịch viên trực tiếp?** MVP mô phỏng trạng thái yêu cầu hỗ trợ.
 - **Mất Internet thì sao?** Hai thiết bị vẫn cần kết nối LAN tới máy chủ. Trước thi phải thử ngắt đường Internet bên ngoài và chạy lại Chạm + mock.

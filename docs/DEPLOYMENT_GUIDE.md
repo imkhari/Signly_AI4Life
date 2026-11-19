@@ -33,6 +33,8 @@ Camera cần secure context. Thử đúng tablet, trình duyệt và mạng bu�
 
 Kết quả ngày 19/11/2026 được ghi trong 99-PROGRESS-LOG.md. Bộ E2E còn chạy máy chủ mock độc hại riêng trên cổng 18081 và frontend 15174. Trên macOS có thể chạy E2E bằng Chrome đã cài với biến SIGNLY_CHROMIUM_PATH trỏ tới /Applications/Google Chrome.app/Contents/MacOS/Google Chrome. Ảnh UI và trace nằm trong frontend/test-results.
 
+Lần kiểm tra Gói E trên mốc ee95fb0: make check qua 112 backend + 73 frontend, build qua và 8/8 E2E qua. Đây là hai trang trên cùng máy, chưa phải hai thiết bị LAN. Xem `docs/PLANS/08-PACKAGE-DE-HANDOFF.md` để biết phạm vi bằng chứng và checklist nhóm cần ký nhận. Bộ thử nội bộ ở `docs/validation/INTERNAL-TRIAL-PROTOCOL.md`, hiện chưa có lượt quan sát.
+
 ### Thiết bị thật cần người thao tác xác nhận
 
 - [ ] Ba lần liên tiếp trọn luồng ba phút trên đúng hai thiết bị.
@@ -48,7 +50,9 @@ Ghi ngày và người diễn tập cho từng mục. Hạng mục chưa có b�
 
 MediaPipe xử lý ảnh tại trình duyệt. Tọa độ 3D gửi tới backend LAN theo Q-16. Luật hình học chọn nhãn. Nếu checkpoint tải được, nhánh PyTorch cộng điểm điều chỉnh.
 
-medical_vsl_30.json có 60 mục và 31 liên kết tới bảng 4.363 nhãn Voya. Repo có fixture tổng hợp và checkpoint cục bộ. Chưa tìm thấy clip gán nhãn, tập test tách người ký hay báo cáo precision/recall tái lập. Regression từ chối landmark trùng điểm đã được thêm. Tay nghỉ và động tác ngoài danh mục cần đánh giá thực nghiệm.
+medical_vsl_30.json có 60 mục và 31 liên kết tới bảng 4.363 nhãn Voya. Repo có fixture tổng hợp và checkpoint cục bộ. Chưa có clip người thật gán nhãn hoặc tập test tách người ký để đánh giá nhận diện thực. Regression từ chối landmark trùng điểm đã được thêm. Tay nghỉ và động tác ngoài danh mục cần đánh giá thực nghiệm.
+
+Gói C hiện có công cụ và báo cáo tái lập **bằng fixture tổng hợp**, gồm precision/recall theo nhãn và 12 ca ổn định thời gian; chưa có báo cáo trên người ký thật. Chi tiết ở `AI_model/evaluation/README.md`. Hai clip âm tự tạo vẫn nhận nhầm; một ca dự đoán gián đoạn dài vẫn phát ứng viên. Bộ model mới còn thiếu file, chưa tích hợp vào bản demo.
 
 | Cử chỉ | Người ký / đã tập? | Thiết bị, ánh sáng, khoảng cách | Nhãn mong đợi | Số lượt | Đúng | Nhầm | Từ chối |
 |---|---|---|---|---|---|---|---|
