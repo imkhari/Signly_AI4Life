@@ -29,6 +29,11 @@ export interface HandData {
   landmarks: HandLandmarkPoint[];
 }
 
+export interface HolisticFrame {
+  timestamp_ms: number;
+  landmarks: number[];
+}
+
 export interface VSLTopK {
   gloss: string;
   confidence: number;
@@ -123,6 +128,16 @@ export class RestApiClient {
     if (!res.ok) {
       throw new Error(`VSL prediction failed: ${res.statusText}`);
     }
+    return (await res.json()) as VSLPredictionResponse;
+  }
+
+  async predictVSLSequence(frames: HolisticFrame[], contextStep?: string,
+    signal?: AbortSignal): Promise<VSLPredictionResponse> {
+    const res = await fetch(`${this.baseUrl}/vsl/predict`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
+      body: JSON.stringify({ frames, context_step: contextStep }),
+    });
+    if (!res.ok) throw new Error(`VSL inference failed: ${res.status}`);
     return (await res.json()) as VSLPredictionResponse;
   }
 

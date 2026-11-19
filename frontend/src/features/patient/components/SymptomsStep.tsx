@@ -124,6 +124,8 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
     { id: 'onset', label: vi.intake.onset },
     { id: 'extras', label: vi.intake.extras },
   ];
+  const cameraSupported = !['pain_scale', 'onset'].includes(activeTab);
+  const showCamera = cameraSupported && cameraOpen && (activeTab !== 'pain_body' || data.hasPain === true);
   const contextStep = activeTab === 'pain_body' ? 'location' :
     activeTab === 'pain_scale' || activeTab === 'onset' ? 'severity' : 'symptom';
 
@@ -167,7 +169,7 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
 
       <section aria-label={tabs.find(tab => tab.id === activeTab)?.label} className="bg-paper border rounded-2xl p-5 space-y-5">
         <h3 className="text-2xl font-bold">{tabs.find(tab => tab.id === activeTab)?.label}</h3>
-        {activeTab === 'complaint' && <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {!showCamera && activeTab === 'complaint' && <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {CHIEF_COMPLAINTS.map(item => <button type="button" key={item.code}
             aria-pressed={data.chiefComplaintCode === item.code}
             onClick={() => onChange({ chiefComplaintCode: item.code, chiefComplaintLabel: item.label,
@@ -188,7 +190,7 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
             </div>
           </div>}
 
-        {activeTab === 'pain_body' && isPainRelevant && data.hasPain === true && <BodyMap selectedRegions={data.bodyRegions}
+        {!showCamera && activeTab === 'pain_body' && isPainRelevant && data.hasPain === true && <BodyMap selectedRegions={data.bodyRegions}
           onToggleRegion={code => onChange({ bodyRegions: data.bodyRegions.includes(code) ? data.bodyRegions.filter(c => c !== code) : [...data.bodyRegions, code] })} />}
 
         {activeTab === 'pain_scale' && data.hasPain === true && <div className="space-y-4">
@@ -213,7 +215,7 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
           <Button variant="secondary" onClick={() => onChange({ onsetValue: null })}>{vi.intake.unknown}</Button>
         </div>}
 
-        {activeTab === 'extras' && <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {!showCamera && activeTab === 'extras' && <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {CHIEF_COMPLAINTS.filter(item => item.code !== data.chiefComplaintCode && !['OTHER', 'CHECKUP', 'PAIN'].includes(item.code))
             .map(item => <button type="button" key={item.code} aria-pressed={extras.includes(item.code)}
               onClick={() => onChange({ extraSymptoms: extras.includes(item.code) ? extras.filter(code => code !== item.code) : [...extras, item.code] })}
@@ -222,11 +224,11 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
             </button>)}
         </div>}
 
-        {cameraOpen && (activeTab !== 'pain_body' || data.hasPain === true) ?
+        {cameraSupported && (showCamera ?
           <VSLCameraView key={activeTab} contextStep={contextStep} onApplyGlosses={applyGlosses}
             onSwitchToTouchMode={() => { setCameraOpen(false); onSwitchMode?.('touch'); }} /> :
           <Button variant="secondary" disabled={['pain_body', 'pain_scale', 'onset'].includes(activeTab) && data.hasPain !== true}
-            onClick={() => setCameraOpen(true)}>{vi.intake.cameraButton}</Button>}
+            onClick={() => setCameraOpen(true)}>{vi.intake.cameraButton}</Button>)}
         <p className="text-sm text-mute">{vi.intake.contextHint}</p>
       </section>
 

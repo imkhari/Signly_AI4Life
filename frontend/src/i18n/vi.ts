@@ -1,4 +1,14 @@
 export const vi = {
+  camera: {
+    instruction: 'Giữ rõ mặt và hai tay. Ký một câu ngắn, rồi kiểm tra gợi ý.',
+    experimental: 'Camera thử nghiệm',
+    unavailable: 'Không thể mở nhận diện. Bạn có thể chuyển sang Chạm.',
+    loading: 'Đang mở nhận diện camera...',
+    localModel: 'Nạp mô hình từ máy chủ nội bộ',
+    touchHint: 'Dùng Chạm cho mức đau, thời gian hoặc khi gợi ý chưa đúng.',
+    confirmationHint: 'Chỉ gợi ý — cần xác nhận',
+    privacy: 'Tọa độ thân, mặt và hai tay được gửi qua mạng nội bộ. Không gửi video. Không lưu dữ liệu camera của phiên.',
+  },
   intake: {
     extras: 'Triệu chứng đi kèm',
     extraPrompt: 'Bạn còn muốn khai triệu chứng nào?',

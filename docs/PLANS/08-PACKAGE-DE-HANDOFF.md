@@ -44,7 +44,7 @@ Năm lần đo click → DOM điều dưỡng trong E2E là 170, 165, 164, 164, 
 - LLM mock và fallback cố định; validator có bằng chứng test riêng. Yêu cầu hỗ trợ/phiên dịch là mô phỏng.
 - Reset phiên. Camera chỉ phần thử nghiệm tùy chọn; không dùng làm điều kiện để hoàn tất luồng chính.
 
-Chưa đưa lên sân khấu như năng lực đã chứng minh: dịch VSL liên tục, nhận 60 ký hiệu với accuracy xác định, model mới đã tích hợp, phiên dịch viên thật, chẩn đoán, giảm thời gian khám hoặc triển khai ở bệnh viện công. Gói C còn thiếu model/dữ liệu và có ca nhận nhầm; Gói D chưa có quan sát người thử.
+Chưa đưa lên sân khấu như năng lực đã chứng minh: dịch VSL liên tục, nhận 60 ký hiệu với accuracy xác định, nhận diện camera đã kiểm chứng thực tế, phiên dịch viên thật, chẩn đoán, giảm thời gian khám hoặc triển khai ở bệnh viện công. Gói C đã nhận/tích hợp V2 và replay, còn thiếu kiểm chứng webcam/người ký mới và có ca nhận nhầm; Gói D chưa có quan sát người thử.
 
 ## Checklist diễn tập cần nhóm điền
 

@@ -40,14 +40,14 @@ Nguồn ngoài được xem ngày 19/11/2026. Cboard là ví dụ công cụ AAC
 | Có thể sửa thời gian mà vẫn giữ lý do chính và Ho đi kèm | `frontend/e2e/demo.spec.ts`, ca cuối | Dữ liệu giả lập, localhost |
 | Trả lời câu hỏi dị ứng cập nhật phiếu và cần xác nhận | E2E dị ứng + backend intake guards | Câu hỏi tổng quát đã map; không phải hội thoại y khoa tự do |
 | Bản demo có đường chặn output LLM độc hại | E2E mock độc hại và safety tests | Bộ ca đã kiểm, không phải bảo đảm mọi nội dung có thể phát sinh |
-| Nhận diện camera chưa được chứng minh đủ tốt | `AI_model/evaluation/reports/synthetic.json`, báo cáo C và review model ngoài | Fixture và kiểm kê; không có accuracy người thật |
+| Nhận diện camera chưa được chứng minh đủ tốt | `AI_model/evaluation/reports/synthetic.json`, báo cáo C và review model ngoài | Replay V2 300 NPY, chưa có accuracy camera/người ký mới |
 | Chưa biết có giảm thời gian hay sai dữ kiện cho người dùng | `docs/validation/RESULTS.md`: chưa thu lượt thử | Đây là giới hạn hiện tại |
 
 ## Câu trả lời ngắn cho ban giám khảo
 
 **Model của nhóm đã nhận diện tốt chưa?** Chưa đủ bằng chứng trên người ký mới. Bản đang chạy gợi ý bằng luật; nhóm đã có công cụ kiểm tra và đang chờ bộ model mới đầy đủ để so sánh. Không dùng 60 gloss hay confidence làm accuracy.
 
-**Vậy AI nằm ở đâu?** MediaPipe lấy landmark trong nhánh camera; pipeline diễn đạt được thiết kế qua LLM adapter, validator và fallback. Bản demo mặc định dùng LLM mock, nhóm trình bày rõ phần đó. Model học sâu mới chưa tích hợp; không gọi toàn bộ luồng Chạm là dịch VSL tự động.
+**Vậy AI nằm ở đâu?** MediaPipe lấy landmark trong nhánh camera; pipeline diễn đạt được thiết kế qua LLM adapter, validator và fallback. Bản demo mặc định dùng LLM mock, nhóm trình bày rõ phần đó. Model V2 đã tích hợp tùy chọn, lọc nhãn theo allowlist và cần xác nhận; không gọi toàn bộ luồng Chạm là dịch VSL tự động.
 
 **Nếu nhận sai thì sao?** Ứng viên cần bệnh nhân nhận/sửa trước khi cập nhật. Có thể chuyển sang Chạm, xem lại từng thẻ hoặc yêu cầu nhân viên hỗ trợ. Kiểm tra người dùng hiểu và phát hiện lỗi vẫn đang chờ thử.
 
@@ -63,6 +63,6 @@ Nguồn ngoài được xem ngày 19/11/2026. Cboard là ví dụ công cụ AAC
 
 **Có phiên dịch viên trực tiếp không?** MVP mô phỏng yêu cầu hỗ trợ, chưa kết nối dịch vụ phiên dịch thật.
 
-**Dữ liệu camera có bị upload không?** Bản Signly hiện tại xử lý video trong trình duyệt và gửi tọa độ tay tới backend LAN theo Q-16. Bản repo model ngoài có đường upload video khác; chưa đưa đường đó vào sản phẩm.
+**Dữ liệu camera có bị upload không?** Bản Signly hiện tại xử lý video trong trình duyệt và gửi 411 tọa độ thân/mặt/hai tay tới backend LAN theo Q-23. Bản repo model ngoài có đường upload video khác; chưa đưa đường đó vào sản phẩm.
 
 **Sau cuộc thi cần gì?** Nhận đầy đủ model, kiểm tra nguồn/quyền, đánh giá theo người ký, thử tác vụ với đúng người dùng/điều dưỡng và kiểm chứng quy trình trước khi xem xét triển khai. Không hứa có thể thay model trong vài phút.

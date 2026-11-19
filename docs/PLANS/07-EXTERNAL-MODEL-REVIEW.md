@@ -1,5 +1,7 @@
 # Đánh giá bản cập nhật AI4Life của nhóm
 
+> Báo cáo lịch sử trước khi nhận V2. Trạng thái mới và đánh giá V2 xem `11-VSL-V2-REVIEW-AND-ADOPTION.md`; không dùng mô tả thiếu model bên dưới làm trạng thái hiện tại.
+
 Ngày kiểm tra: 19/11/2026. Repo: https://github.com/longlephanhai/AI4Life. Nhánh `master`, commit `52d9a0ef6c62453dea134767d901ce695aff0910`. Đọc bản sao riêng trong `/tmp/signly-ai4life-model-review`, không tích hợp vào app hiện tại.
 
 **Kết luận: pipeline dự kiến tiến bộ hơn về thiết kế, nhưng chưa đủ thành phần và bằng chứng để xác nhận model nhận diện tốt hơn. Gói C vẫn chưa hoàn tất đánh giá người ký độc lập.**

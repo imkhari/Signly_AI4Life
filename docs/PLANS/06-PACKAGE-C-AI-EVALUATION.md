@@ -1,5 +1,7 @@
 # Gói C — Kiểm kê AI và bộ đánh giá camera
 
+> Báo cáo lịch sử trước khi nhận V2. Trạng thái mới và đánh giá V2 xem `11-VSL-V2-REVIEW-AND-ADOPTION.md`; không dùng mô tả thiếu model bên dưới làm trạng thái hiện tại.
+
 Ngày thực hiện: 19/11/2026. Phạm vi theo `P9-AI4LIFE-VALIDATION.md`, Gói C mục 6 và Q-19: chưa có dữ liệu người ký hợp lệ, hoàn tất kiểm kê và công cụ bằng dữ liệu tổng hợp. **Chưa hoàn tất đánh giá VSL với người thật, chưa huấn luyện model mới.**
 
 ## 1. Kết luận để chọn tính năng trình diễn

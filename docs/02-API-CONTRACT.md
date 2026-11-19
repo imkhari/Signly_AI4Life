@@ -203,8 +203,24 @@ created → paired → collecting → summary_ready → patient_confirmed → nu
 - Mọi `INPUT_UPDATED` sau `patient_confirmed` đưa trạng thái về `collecting` và xóa dấu xác nhận.
 - `REQUEST_INTERPRETER` không đổi trạng thái chính; thêm cờ `interpreter_requested = true`.
 
-## 7. Camera tùy chọn trong B1
+## 7. Camera V2 tùy chọn — Q-23 duyệt 19/11/2026
 
-POST /api/vsl/predict nhận hands và context_step. Luồng UI dùng symptom cho chọn lý do/triệu chứng đi kèm, location cho vị trí, severity cho nhận số. Ở lượt thời gian, số đếm từ context severity được gắn vào pain.onset.value, đơn vị do bệnh nhân chọn bằng Chạm. Không chuyển gloss HÔM-NAY thành thời gian bằng 0.
+`POST /api/vsl/predict` nhận **đúng một** trong hai dạng, không nhận ảnh/video:
 
-GET /api/vsl/status trả trạng thái engine và danh mục. Bộ luật chọn nhãn, checkpoint nếu tải được điều chỉnh điểm. Các gợi ý trên UI được lọc theo mục đang trả lời và cần bệnh nhân Nhận rồi Áp dụng.
+```typescript
+// Camera hiện tại: chuỗi holistic, chỉ RAM.
+{ frames: { timestamp_ms: number; landmarks: number[] }[], context_step?: string }
+// Tương thích client cũ; chỉ nhánh này mới dùng hình học.
+{ hands: HandInput[], context_step?: string }
+```
+
+- `frames`: 8–300 frame, mỗi frame đúng 411 số hữu hạn trong [-10,10], không ép boolean/string thành số. Timestamp hữu hạn ≥ 0, tăng nghiêm ngặt, toàn cửa sổ ≤ 10 giây. Layout: pose25×3 + face70×3 + tay trái21×3 + tay phải21×3; nhóm thiếu điền 0, vai tại subset 9/10. Chỉ số theo `HolisticDetector.ts` và nguồn VSL-GH trong README V2.
+- `hands`: 0–2 bàn tay như client cũ; hai trường đều có hoặc đều thiếu trả 422. Không tự chuyển lỗi V2 sang heuristic.
+- UI mới dùng `symptom` cho lý do/triệu chứng đi kèm, `location` cho vị trí. **Mức đau và thời gian chỉ dùng Chạm**; context khác ở V2 trả UNKNOWN.
+- V2 chạy PyTorch/NumPy trong tiến trình riêng. Client chỉ có một HTTP đang chờ, cửa sổ ≤ 6 giây/180 frame, hủy khi đổi bước; worker nội suy gần 30 FPS, chỉ một inference, không xếp hàng. Timeout 15 giây/mất runtime/lỗi/không đủ chuyển động → `success:false, gloss:"UNKNOWN", confidence:0`.
+- Response giữ `VSLPredictionResponse`: `success`, `gloss`, `label_vi`, `tokens`, `confidence`, `latency_ms`, `model_source` và các trường tương thích có mặc định. `model_source="vsl_v2_learned_translation"`. Confidence là điểm token chưa hiệu chỉnh, **không phải accuracy**. Không gửi câu decoder tự do về UI.
+- Chỉ ánh xạ toàn câu nằm trong allowlist ở `backend/app/ai/vsl_v2.py`; câu phủ định/đa ý/ngoài danh mục bị từ chối. Gợi ý phải qua ổn định, **Nhận → Áp dụng → xác nhận toàn phiếu**. Không thay `PATIENT_CONFIRMED` hoặc `NURSE_VERIFIED`.
+
+`GET /api/vsl/status`: `primary_camera_engine`, `v2_runtime_available`, `v2_status`, `v2_worker_ready`, `v2_supported_contexts`, `v2_probability_calibrated:false`. Các field cũ `model_source/is_model_loaded/supported_gestures_count/...` chỉ mô tả nhánh `hands`, được ghi rõ ở `legacy_fields_describe`; 60 mục ontology không phải số ký hiệu V2 nhận đúng. `GET /vocab` tiếp tục trả danh mục chung.
+
+`SESSION_RESET` xóa bộ đệm client, hủy HTTP, giải phóng camera/detector và kết thúc worker. Worker cũng được dọn khi backend shutdown; không lưu tọa độ/câu nhận diện vào file hay log.

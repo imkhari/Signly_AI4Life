@@ -54,7 +54,7 @@ Danh sách seed (cần chuyên gia y tế rà soát — Q-07): `BREATH_DIFFICULT
 | Không lưu lâu dài | Backend giữ dữ liệu trong `dict` RAM theo `session_id`; không ghi đĩa, không DB, log không chứa nội dung bệnh nhân |
 | Frontend | Chỉ `sessionStorage`; không `localStorage`, không cookie theo dõi |
 | Xóa sạch | `SESSION_RESET` (hoàn tất / idle 10 phút / thủ công) → xóa RAM, sessionStorage, dừng camera + TTS, revoke object URL |
-| Camera | MediaPipe xử lý khung hình **trên trình duyệt**. Camera tùy chọn gửi tọa độ 3D bàn tay tới backend LAN để gợi ý cử chỉ. Video/ảnh ở trong trình duyệt. Cấu hình này được chủ dự án xác nhận ngày 19/11/2026. |
+| Camera | MediaPipe xử lý khung hình **trên trình duyệt**. Camera tùy chọn gửi tọa độ 3D bàn tay tới backend LAN để gợi ý cử chỉ. Với V2 theo Q-23, chuỗi **411 tọa độ thân, mặt và hai tay** được gửi qua LAN; không gửi ảnh/video, không đưa tọa độ/câu decoder vào LLM, không lưu vào phiên hoặc log. Q-16 giữ tương thích cho client tay cũ; Q-23 duyệt mở rộng ngày 19/11/2026. |
 | LLM | Chỉ gửi `SemanticFrame` đã ẩn danh; `free_text` bị loại hoặc che (`[REDACTED]`) nếu chứa số điện thoại/CCCD/email (regex) |
 | Log | Chỉ ghi: `session_id` băm, event, thời gian, kết quả validator. Không ghi payload |
 | Hiển thị | Hiển thị rõ cho bệnh nhân: "Thông tin sẽ bị xóa khi kết thúc" |
@@ -79,3 +79,14 @@ Danh sách seed (cần chuyên gia y tế rà soát — Q-07): `BREATH_DIFFICULT
 Chủ dự án duyệt triển khai B0+B1 trong Q-20. Backend kiểm critical ack trước duyệt, chặn xác nhận PAIN_FALSE_BUT_SEVERITY, và chặn cập nhật dữ liệu sau duyệt. Phiếu đã duyệt cần phiên mới nếu sửa. Mỗi phiên có một câu hỏi dị ứng tổng quát đang chờ, chỉ nhận câu trả lời gắn đúng question_id và cần xác nhận lại toàn phiếu.
 
 Các thẻ rà soát có biểu tượng, nhãn và giá trị chưa rõ. Chọn vị trí không tự khẳng định có đau. Giữ lời khai bổ sung xuyên suốt dữ liệu cấu trúc, diễn đạt và bàn giao. Test bổ sung kiểm tra bỏ sót/phủ định triệu chứng đi kèm để kích hoạt fallback. Các quy tắc cảnh báo y tế và ngưỡng severity giữ theo cấu hình đã chốt.
+
+## 9. Review V2 và ngoại lệ skill — Q-23
+
+File skill `safety-review` mà tài liệu nhắc tới không có tại `.claude/skills/safety-review/SKILL.md` hoặc nơi đã tìm. Chủ dự án duyệt **review bằng checklist docs07 + tests** thay thế cho đợt V2 ngày 19/11/2026 (D-024), không miễn các ranh giới y tế.
+
+- Không hiển thị trực tiếp câu decoder. Allowlist toàn câu, kiểm ngữ cảnh và điểm hữu hạn; phủ định/đa ý/chẩn đoán/lời khuyên/không biết vùng cụ thể → từ chối, không suy diễn.
+- V2 không dùng LLM sinh văn bản y tế. Sau khi bệnh nhân nhập/xác nhận, tóm tắt vẫn đi qua validator và fallback hiện có; không bỏ bước xác nhận/duyệt/cảnh báo critical.
+- Các guard chuyển động và điểm ≥ 0,7 là ngưỡng kỹ thuật **chưa hiệu chỉnh**. Tay nghỉ/ngoài danh mục người thật chưa được kiểm chứng. Có lỗi sốt → ho/đau đầu trong replay, vì vậy không công bố đã sẵn sàng lâm sàng.
+- Buffer client tối đa 6 giây/180 frame, xóa khi mất tay/gián đoạn/đổi câu hỏi/unmount. Chỉ một HTTP chờ; abort + generation guard chặn kết quả cũ. Camera được cấp quyền muộn sau đóng màn hình phải dừng track ngay.
+- Worker chỉ giữ model lâu dài, không giữ request cuối trong vòng chờ. Reset kết thúc worker và tăng generation chặn kết quả đang chạy. Không ghi raw input, tọa độ, tên file bệnh nhân hoặc câu dịch vào log. Tệp đánh giá công khai và fixture không phải dữ liệu phiên.
+- Review dùng test mapping phủ định/đa ý/chẩn đoán, malformed input, unavailable runtime, reset/cancellation, UI Nhận/Áp dụng và E2E luồng xác nhận/critical/fallback. Các quyền riêng tư LAN/HTTPS và thử người dùng thật vẫn cần diễn tập trên thiết bị mục tiêu.

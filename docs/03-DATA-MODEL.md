@@ -114,3 +114,9 @@ Phiếu trực quan cho sửa lý do chính, tình trạng/vị trí đau, mức
 Triệu chứng đi kèm phải hiện trong phiếu, nurse_view, tóm tắt/fallback và bản in. Validator từ chối đầu ra bỏ sót hoặc phủ định nhãn extra_symptoms đã khai và chuyển sang fallback. Mức độ bao phủ ngôn ngữ của validator vẫn được đánh giá bằng test cụ thể.
 
 Câu trả lời dị ứng có reply_to trỏ tới câu hỏi còn hiệu lực. Có dị ứng nhưng chưa có tên vẫn là mục cần hỏi lại. B1 dùng câu hỏi dị ứng tổng quát để ánh xạ đúng allergy.has_allergy.
+
+## 8. Gợi ý từ V2 — Q-23
+
+Schema SemanticFrame vẫn **1.0**. `HolisticFrame` chỉ là đầu vào tạm cho REST, không phải trường lưu trong frame/phiếu. Decoder V2 có 442 token tiếng Việt; CTC head 374 lớp thiếu class order xác minh nên bị tắt xuất gloss. Chỉ nhãn có sẵn trong ontology được gợi ý theo ngữ cảnh, không thêm slot hoặc suy đoán dữ kiện.
+
+Ví dụ “tôi bị đau đầu” → symptom ĐAU hoặc location ĐẦU; “tôi bị đau bụng” chỉ gợi ý ĐAU, **không tự chọn ABDOMEN_UPPER** vì chưa biết bụng trên/dưới. “tôi bị đau lưng” không tự chọn LOWER_BACK. Câu phủ định hoặc đa ý chưa biểu diễn an toàn → UNKNOWN, dùng Chạm/hỏi nhân viên. Không lấy số từ câu dịch để điền mức đau/thời gian. Chọn Nhận vẫn chưa xác nhận toàn phiếu.

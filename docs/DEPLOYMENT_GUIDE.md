@@ -48,16 +48,14 @@ Ghi ngày và người diễn tập cho từng mục. Hạng mục chưa có b�
 
 ## 4. Camera và dữ liệu đánh giá
 
-MediaPipe xử lý ảnh tại trình duyệt. Tọa độ 3D gửi tới backend LAN theo Q-16. Luật hình học chọn nhãn. Nếu checkpoint tải được, nhánh PyTorch cộng điểm điều chỉnh.
+Camera V2 dùng holistic 411 tọa độ thân/mặt/tay qua backend LAN theo Q-23, không gửi video. Runtime Torch riêng `AI_model/runtime/.venv`, checkpoint `AI_model/checkpoints/vsl_v2.pt`; `make check-v2` kiểm model cục bộ. Máy mới làm theo `AI_model/vsl_v2/README.md`. GET `/api/vsl/status` kiểm `v2_runtime_available` và `v2_worker_ready`; các field hình học cũ chỉ dành request `hands` cũ.
 
-medical_vsl_30.json có 60 mục và 31 liên kết tới bảng 4.363 nhãn Voya. Repo có fixture tổng hợp và checkpoint cục bộ. Chưa có clip người thật gán nhãn hoặc tập test tách người ký để đánh giá nhận diện thực. Regression từ chối landmark trùng điểm đã được thêm. Tay nghỉ và động tác ngoài danh mục cần đánh giá thực nghiệm.
-
-Gói C hiện có công cụ và báo cáo tái lập **bằng fixture tổng hợp**, gồm precision/recall theo nhãn và 12 ca ổn định thời gian; chưa có báo cáo trên người ký thật. Chi tiết ở `AI_model/evaluation/README.md`. Hai clip âm tự tạo vẫn nhận nhầm; một ca dự đoán gián đoạn dài vẫn phát ứng viên. Bộ model mới còn thiếu file, chưa tích hợp vào bản demo.
+Chỉ gợi ý nhãn thuộc allowlist theo câu hỏi, phải Nhận/Áp dụng/xác nhận hai chiều; mức đau/thời gian dùng Chạm. 300 replay NPY đã tái hiện đúng output của người cung cấp, 256 câu khớp reference, WER từ 9,27%, có sốt → ho/đau đầu. Đây không phải đánh giá webcam. Chưa có test người ký mới/tay nghỉ/ngoài danh mục trên thiết bị thật, không công bố accuracy bệnh viện. Không dùng hướng dẫn động tác hình học cũ như chuẩn VSL.
 
 | Cử chỉ | Người ký / đã tập? | Thiết bị, ánh sáng, khoảng cách | Nhãn mong đợi | Số lượt | Đúng | Nhầm | Từ chối |
 |---|---|---|---|---|---|---|---|
-| Chạm ngực | Chờ diễn tập | Chờ diễn tập | NGỰC / ĐAU theo ca | — | — | — | — |
-| Áp trán | Chờ diễn tập | Chờ diễn tập | SỐT | — | — | — | — |
+| Câu VSL đau ngực | Chờ diễn tập | Chờ diễn tập | NGỰC / ĐAU theo ca | — | — | — | — |
+| Câu VSL sốt | Chờ diễn tập | Chờ diễn tập | SỐT | — | — | — | — |
 | Tay nghỉ | Chờ diễn tập | Chờ diễn tập | UNKNOWN | — | — | — | — |
 | Ngoài danh mục / rời khung | Chờ diễn tập | Chờ diễn tập | UNKNOWN | — | — | — | — |
 

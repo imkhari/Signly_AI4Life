@@ -65,9 +65,11 @@ AI4Care sử dụng kiến trúc Adapter (`LLMClient` Protocol). Mặc định h
 
 ## Camera tùy chọn
 
-MediaPipe lấy landmark tại trình duyệt. Tọa độ 3D gửi tới backend LAN theo Q-16.
-Luật hình học chọn nhãn. Nhánh PyTorch điều chỉnh điểm nếu checkpoint tải được.
-Danh mục 60 gloss có 31 liên kết nhãn Voya. Đánh giá trên người ký độc lập còn chờ diễn tập.
+Camera hiện dùng V2 learned translation trong môi trường riêng. MediaPipe lấy 411 tọa độ thân/mặt/hai tay tại trình duyệt rồi gửi qua LAN theo Q-23, không gửi video/lưu tọa độ phiên. Chỉ gợi ý nhãn trong danh mục theo câu hỏi, bắt buộc Nhận → Áp dụng → xác nhận toàn phiếu; mức đau/thời gian dùng Chạm.
+
+Máy hiện tại đã có runtime và checkpoint. Trên máy mới cần `make setup-v2`, đóng gói checkpoint do nhóm cung cấp theo [README V2](AI_model/vsl_v2/README.md), rồi `make check-v2`. Không cài torch vào backend. `GET /api/vsl/status` cho biết trạng thái V2; thiếu runtime trả UNKNOWN, không âm thầm dùng hình học.
+
+Replay 300 mẫu tái hiện 300/300 output kèm model; 256/300 câu đúng reference, WER từ 9,27%. Đây là tập câu đóng của người cung cấp, không phải accuracy webcam/bệnh viện. Có hai mẫu sốt nhận nhầm. Camera vẫn thử nghiệm; danh mục 60 gloss không phải cam kết nhận đúng 60 ký hiệu.
 
 Bản thi dùng Chạm + LLM mock. Xem [kịch bản](docs/PLANS/01-DEMO-SCRIPT.md) và [checklist](docs/DEPLOYMENT_GUIDE.md).
 

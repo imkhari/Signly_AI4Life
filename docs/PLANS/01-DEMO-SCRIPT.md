@@ -36,10 +36,10 @@ Ký hiệu VSL → Tiếp tục → cử chỉ đã diễn tập → Nhận → 
 
 ## Q&A
 
-- **AI thực hiện phần nào?** MediaPipe lấy landmark tại trình duyệt. Bộ luật hình học tại backend LAN gợi ý cử chỉ rời rạc. Buổi thi dùng LLM mock, có validator và mẫu dự phòng.
+- **AI thực hiện phần nào?** MediaPipe lấy landmark tại trình duyệt. Camera V2 gửi chuỗi holistic qua LAN, model học sâu giải mã rồi lọc toàn câu thành nhãn cho bệnh nhân kiểm tra. Buổi thi dùng LLM mock, có validator và mẫu dự phòng.
 - **PyTorch làm gì?** Khi checkpoint tải được, nhánh hiện tại cộng điểm điều chỉnh vào điểm của nhãn luật. Xem /api/vsl/status để biết trạng thái tải.
-- **60 gloss nghĩa là gì?** Có 60 mục ánh xạ, trong đó 31 mục liên kết nhãn Voya. Đánh giá trên người ký độc lập còn chờ diễn tập.
-- **Chất lượng model đã được đo chưa?** Có báo cáo fixture tổng hợp và 12 ca bộ lọc thời gian, chưa có accuracy VSL người thật. Model từ repo bạn trong nhóm chưa đủ source/trọng số/config/vocab để chạy; chưa thay engine hiện tại.
+- **60 gloss nghĩa là gì?** Có 60 mục ánh xạ chung; V2 chỉ gợi ý tập con allowlist, không cam kết nhận đúng 60 ký hiệu. Đánh giá trên người ký độc lập còn chờ diễn tập.
+- **Chất lượng model đã được đo chưa?** V2 đã tích hợp thử nghiệm; replay 300 NPY tái hiện output 300/300, 256/300 câu khớp reference, WER từ 9,27%. Có hai mẫu sốt nhận nhầm. Chưa có accuracy camera trên người ký mới hoặc thẩm định lâm sàng. Xem kế hoạch 11 và báo cáo V2.
 - **Hiệu quả người dùng ra sao?** Chưa thu lượt thử nội bộ hay người dùng mục tiêu. Bộ protocol/phiếu ở docs/validation đã sẵn sàng, chưa có số liệu giảm thời gian hoặc sai thông tin.
 - **Dữ liệu camera đi đâu?** Ảnh/video xử lý trong trình duyệt. Tọa độ 3D gửi tới backend LAN theo Q-16.
 - **Có phiên dịch viên trực tiếp?** MVP mô phỏng trạng thái yêu cầu hỗ trợ.

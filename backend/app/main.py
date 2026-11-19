@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -5,11 +7,20 @@ from app.api.rest.dev import router as dev_router
 from app.api.rest.health import router as health_router
 from app.api.rest.ontology import router as ontology_router
 from app.api.rest.sessions import router as sessions_router
+from app.api.rest.vsl import clear_vsl_motion_buffer
 from app.api.rest.vsl import router as vsl_router
 from app.api.ws.hub import router as ws_router
 from app.config import settings
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    clear_vsl_motion_buffer()
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="AI4Care Backend API",
     description="Multimodal Triage Assistant for Deaf & Speech-Impaired Patients",
     version="0.1.0",

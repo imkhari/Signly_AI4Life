@@ -39,3 +39,9 @@ Phiên bản: dùng **bản ổn định mới nhất tại thời điểm P0**,
 
 ## Quyết định "web hay app?" (từ ghi chú tay)
 Chọn **Web App responsive (PWA-ready)**: một codebase chạy trên tablet/kiosk/máy tính/điện thoại, không cần cài đặt, dễ demo. App native chỉ xét sau MVP (Q-04).
+
+## Runtime camera V2 — được duyệt Q-22/Q-23
+
+PyTorch 2.15.0 + NumPy 2.5.5 và dependency pin tại `AI_model/runtime/requirements-lock.txt`, môi trường **riêng** `AI_model/runtime/.venv` (máy kiểm thử Python 3.15.2 ARM64). Backend dùng stdlib subprocess/JSON-lines, không cài torch vào backend để tránh kích hoạt nhánh model cũ. `make setup-v2`, `make check-v2`; máy/OS/Python khác phải kiểm wheel tương thích, không tự đổi lockfile.
+
+HolisticLandmarker dùng `@mediapipe/tasks-vision` hiện có, model task và WASM phục vụ tại `/models` và `/wasm`. Không fallback CDN. GPU không được thì thử CPU cục bộ. Kiến trúc MIT và nguồn/hash ở `AI_model/vsl_v2/vendor/` và model manifest; weights V2 do chủ dự án cung cấp giữ ngoài Git.
