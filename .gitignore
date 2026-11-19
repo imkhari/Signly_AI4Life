@@ -50,6 +50,8 @@ wheels/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+AI_model/training/data/
+AI_model/training/runs/
 .coverage
 .coverage.*
 htmlcov/

@@ -32,6 +32,7 @@ check-backend:
 	@echo "==> [Backend] Linting with ruff..."
 	$(VENV)/bin/ruff check backend
 	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/evaluation
+	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/training
 	@echo "==> [Backend] Type checking with mypy..."
 	$(VENV)/bin/mypy backend/app backend/tests
 	@echo "==> [Backend] Running unit tests with pytest..."
@@ -87,3 +88,8 @@ evaluate-vsl-stability:
 inspect-vsl-package:
 	@test -n "$(MODEL_PACKAGE)" || (echo "Cần MODEL_PACKAGE=/đường/dẫn/bộ-model"; exit 2)
 	$(PYTHON) -m AI_model.evaluation.model_package --package "$(MODEL_PACKAGE)" --manifest "$(MODEL_MANIFEST)" --output AI_model/evaluation/reports/model-package.json
+
+.PHONY: check-train
+check-train:
+	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/training
+	AI_model/training/.venv/bin/python -m unittest discover -s AI_model/training/tests -v
