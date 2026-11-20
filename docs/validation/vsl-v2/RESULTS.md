@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Ảnh gợi ý đau ngực do người dùng gửi
+
+Ngày20/11/2026, sau khi thử ca “Tôi bị đau ngực”, người dùng gửi ảnh màn bệnh nhân hiển thị Đau/Nhức, Có đau và vị trí Ngực. Ảnh cũng thể hiện gợi ý đang chờ Dùng thông tin này, mức đau/thời gian cần nhập bằng Chạm. Đây là bằng chứng UI đã hiển thị đủ gợi ý cho ca đang diễn tập.
+
+Chỉ ghi nhận mô tả từ ảnh trong hội thoại. Chưa có trial_id, fingerprint trên trang, frame_count, timing, CSV, xác minh động tác VSL hoặc ảnh xác nhận điều dưỡng của cùng lượt. Không suy ra accuracy, số lần thử, tốc độ hoặc đã đạt Q-25. TRIALS.csv và metrics.json tiếp tục phản ánh bản xuất đã có. Tiếp theo hoàn tất phiếu giả lập và xác nhận hai phía, sau đó thử lặp có ghi kết quả. Model vẫn CANDIDATE.
+
 ## Q-29 — lý do từ chối đã triển khai
 
 Profile `480d15a6d436cbe61bcf9673f7a62c7234cfbff12c10ffb3d528007615f90912` có 0 lượt CSV. Theo duyệt của chủ dự án, API intake trả mã cố định khi guard chuyển động từ chối, điểm model hữu hạn dưới0,7 hoặc câu giải mã không khớp allowlist. UI hiển thị lời nhắc tương ứng, giữ UNKNOWN và gợi ý null. Phản hồi lạ tiếp tục dùng thông báo chung.
