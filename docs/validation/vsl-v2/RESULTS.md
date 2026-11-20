@@ -1,5 +1,25 @@
 # Kết quả camera V2
 
+## CSV đau ngực 5 lượt ngày 20/11/2026 — chưa đạt
+
+Profile `7537ba3f6f6d867590635bf1018667544340706a956dc4d38671443b75dd470a`. Người dùng dán CSV T0001–T0005, P01/D01, internal/development/learning, context intake, điều kiện normal, câu đích PAIN+CHEST. Đây là một batch mới, không cộng với các lượt diễn tập tự báo trước đó.
+
+| Lượt | Gợi ý hiển thị | Kết quả theo câu đích | Phản hồi (ms) | Frame | Thu (ms) |
+|---|---|---|---|---|---|
+| T0001 | UNKNOWN | Từ chối | 212,70 | 110 | 5489,30 |
+| T0002 | FEVER | Sai, đã hiện gợi ý Sốt | 201,90 | 103 | 5172,30 |
+| T0003 | UNKNOWN | Từ chối | 202,00 | 104 | 5146,20 |
+| T0004 | UNKNOWN | Từ chối | 205,40 | 114 | 5673,70 |
+| T0005 | UNKNOWN | Từ chối | 205,60 | 110 | 5505,30 |
+
+Tổng 0/5 đúng gợi ý đầy đủ, 1/5 sai, 4/5 từ chối. Cả 5 worker ready và có phản hồi, không ghi tracking_gap hoặc worker_unavailable. Trung vị phản hồi 205,40 ms. Gợi ý duy nhất có latency 253,70 ms nhưng sai; không dùng số này để tuyên bố đạt hiệu năng gợi ý đúng. Đây là tỷ lệ của batch thử kỹ thuật với câu đích dự kiến, chưa phải accuracy tổng quát hoặc phép thử VSL đã xác minh.
+
+CSV giữ reason unknown cho bốn lượt bị từ chối, chưa phân biệt guard chuyển động, điểm thấp hoặc ngoài allowlist. Không thể truy lại nguyên nhân từ CSV này; cũng chưa thể quy lỗi cho người ký, extractor hay model. Thời lượng thu khoảng 5,15–5,67 giây chỉ là quan sát, không chứng minh thời lượng gây lỗi. Không sửa ngưỡng, checkpoint hoặc ép vị trí theo nhãn dự kiến.
+
+CSV được dựng lại nguyên giá trị từ nội dung người dùng dán, giữ cục bộ tại `local/P01-chest-five-7537ba3f.csv` (Git ignore), SHA256 `8814c0556ba27e47109aeadb83baaa718ff5901b2f266b129de553abc02f9e6a`. Công cụ trials summarize đã kiểm theo snapshot profile; metrics.json ghi 5 lượt phát triển, 0 lượt cuối, chưa đạt Q-25. Không lưu video/ảnh/landmark. TRIALS.csv mẫu vẫn chỉ có header.
+
+Kết luận hiện tại thay cho sự lạc quan từ diễn tập tự báo ở các mục lịch sử phía dưới: camera chưa chứng minh ổn định cho đau ngực, tiếp tục CANDIDATE. Cần đối chiếu câu ký trọn vẹn đã được xác minh trước khi đánh giá nguyên nhân hoặc chỉnh model; phép so extractor trên một video từ đau bụng chưa chứng minh giải quyết ca đau ngực. Giữ bước kiểm tra gợi ý và Chạm khi sai/không rõ.
+
 ## Hoàn tất đợt diễn tập nhanh sau sửa Web legacy
 
 Ngày20/11/2026, sau3lượt tay nghỉ và3lượt chỉnh áo không có gợi ý, người dùng thử lại câu đau ngực theo hướng dẫn và trả lời “có ok có hiện”. Trong ngữ cảnh câu hỏi yêu cầu Có đau/Ngực, ghi thêm1lượt trả đúng gợi ý theo lời báo. Tổng ca đau ngực sau sửa có4lượt tự báo đúng:3liên tiếp ban đầu và1lượt sau nhóm âm. Các lượt này không bao gồm ảnh Ngực đúng hoặc nhầm Đầu từ phiên bản trước.

@@ -1,6 +1,6 @@
 # Thử kỹ thuật camera V2 — Q-24/Q-25
 
-Trạng thái **CANDIDATE**. Luồng sản phẩm Q-27 dùng cả câu để gợi ý nhiều trường; trang thử gửi cùng context intake và chấm gợi ý có cấu trúc sau khi hiển thị. Các bản xuất cũ vẫn đọc được bằng snapshot profile tương ứng. Phiên bản mới có0lượt live. Có11ca âm profile4e4ebb được giữ nguyên tại baseline (5tay nghỉ+5cử động thông thường+1vẫy chào,cả11UNKNOWN), không chuyển thành kết quả luồng nhận cả câu. Chưa có lượt dương VSL hoặc thử cuối. Hiện nhóm chưa biết VSL (Q-26); thử kỹ thuật nội bộ không chứng minh khả năng dùng VSL hoặc hiệu quả bệnh viện.
+Trạng thái **CANDIDATE**. Luồng sản phẩm Q-27 dùng cả câu để gợi ý nhiều trường; trang thử gửi cùng context intake và chấm gợi ý có cấu trúc sau khi hiển thị. Các bản xuất cũ vẫn đọc được bằng snapshot profile tương ứng. Profile hiện tại 7537ba3f đã có 5 lượt CSV phát triển P01 cho câu đích đau ngực, 0 đúng, 1 nhầm Sốt và 4 từ chối; chưa có lượt cuối. Xem RESULTS.md và metrics.json. Có11ca âm profile4e4ebb được giữ nguyên tại baseline (5tay nghỉ+5cử động thông thường+1vẫy chào,cả11UNKNOWN), không chuyển thành kết quả luồng nhận cả câu. Chưa có lượt dương được xác minh cách ký VSL hoặc thử cuối. Hiện nhóm chưa biết VSL (Q-26); thử kỹ thuật nội bộ không chứng minh khả năng dùng VSL hoặc hiệu quả bệnh viện.
 
 ## Mở bộ thử
 

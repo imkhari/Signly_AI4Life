@@ -3,38 +3,234 @@
   "protocol": "vsl-v2-intake-2",
   "status": "CANDIDATE",
   "live": {
-    "trials": 0,
-    "outcomes": {},
-    "positive_trials": 0,
+    "trials": 5,
+    "outcomes": {
+      "rejected": 4,
+      "wrong": 1
+    },
+    "positive_trials": 5,
     "aborted_trials": 0,
     "positive_correct": 0,
-    "positive_wrong": 0,
-    "positive_rejected": 0,
-    "positive_correct_rate": null,
-    "per_trial_suggestion_precision": null,
+    "positive_wrong": 1,
+    "positive_rejected": 4,
+    "positive_correct_rate": 0.0,
+    "per_trial_suggestion_precision": 0.0,
     "negative_trials": 0,
     "valid_tracking_negative_attempts": 0,
     "valid_tracking_negative_submitted": 0,
     "valid_tracking_negative_false_rate": null,
     "negative_false_suggestions": 0,
     "negative_false_suggestion_rate": null,
-    "candidate_latency_samples": 0,
-    "candidate_latency_p95_ms": null,
-    "candidate_latency_median_ms": null,
-    "response_samples": 0,
+    "candidate_latency_samples": 1,
+    "candidate_latency_p95_ms": 253.7,
+    "candidate_latency_median_ms": 253.7,
+    "response_samples": 5,
     "timeouts": 0
   },
   "synthetic_records": 0,
   "groups": {
-    "split": {},
-    "participant_code": {},
-    "intent_id": {},
-    "condition": {},
-    "device_code": {},
-    "worker_state": {},
-    "kind": {}
+    "split": {
+      "development": {
+        "trials": 5,
+        "outcomes": {
+          "rejected": 4,
+          "wrong": 1
+        },
+        "positive_trials": 5,
+        "aborted_trials": 0,
+        "positive_correct": 0,
+        "positive_wrong": 1,
+        "positive_rejected": 4,
+        "positive_correct_rate": 0.0,
+        "per_trial_suggestion_precision": 0.0,
+        "negative_trials": 0,
+        "valid_tracking_negative_attempts": 0,
+        "valid_tracking_negative_submitted": 0,
+        "valid_tracking_negative_false_rate": null,
+        "negative_false_suggestions": 0,
+        "negative_false_suggestion_rate": null,
+        "candidate_latency_samples": 1,
+        "candidate_latency_p95_ms": 253.7,
+        "candidate_latency_median_ms": 253.7,
+        "response_samples": 5,
+        "timeouts": 0
+      }
+    },
+    "participant_code": {
+      "P01": {
+        "trials": 5,
+        "outcomes": {
+          "rejected": 4,
+          "wrong": 1
+        },
+        "positive_trials": 5,
+        "aborted_trials": 0,
+        "positive_correct": 0,
+        "positive_wrong": 1,
+        "positive_rejected": 4,
+        "positive_correct_rate": 0.0,
+        "per_trial_suggestion_precision": 0.0,
+        "negative_trials": 0,
+        "valid_tracking_negative_attempts": 0,
+        "valid_tracking_negative_submitted": 0,
+        "valid_tracking_negative_false_rate": null,
+        "negative_false_suggestions": 0,
+        "negative_false_suggestion_rate": null,
+        "candidate_latency_samples": 1,
+        "candidate_latency_p95_ms": 253.7,
+        "candidate_latency_median_ms": 253.7,
+        "response_samples": 5,
+        "timeouts": 0
+      }
+    },
+    "intent_id": {
+      "CHEST_LOCATION": {
+        "trials": 5,
+        "outcomes": {
+          "rejected": 4,
+          "wrong": 1
+        },
+        "positive_trials": 5,
+        "aborted_trials": 0,
+        "positive_correct": 0,
+        "positive_wrong": 1,
+        "positive_rejected": 4,
+        "positive_correct_rate": 0.0,
+        "per_trial_suggestion_precision": 0.0,
+        "negative_trials": 0,
+        "valid_tracking_negative_attempts": 0,
+        "valid_tracking_negative_submitted": 0,
+        "valid_tracking_negative_false_rate": null,
+        "negative_false_suggestions": 0,
+        "negative_false_suggestion_rate": null,
+        "candidate_latency_samples": 1,
+        "candidate_latency_p95_ms": 253.7,
+        "candidate_latency_median_ms": 253.7,
+        "response_samples": 5,
+        "timeouts": 0
+      }
+    },
+    "condition": {
+      "normal": {
+        "trials": 5,
+        "outcomes": {
+          "rejected": 4,
+          "wrong": 1
+        },
+        "positive_trials": 5,
+        "aborted_trials": 0,
+        "positive_correct": 0,
+        "positive_wrong": 1,
+        "positive_rejected": 4,
+        "positive_correct_rate": 0.0,
+        "per_trial_suggestion_precision": 0.0,
+        "negative_trials": 0,
+        "valid_tracking_negative_attempts": 0,
+        "valid_tracking_negative_submitted": 0,
+        "valid_tracking_negative_false_rate": null,
+        "negative_false_suggestions": 0,
+        "negative_false_suggestion_rate": null,
+        "candidate_latency_samples": 1,
+        "candidate_latency_p95_ms": 253.7,
+        "candidate_latency_median_ms": 253.7,
+        "response_samples": 5,
+        "timeouts": 0
+      }
+    },
+    "device_code": {
+      "D01": {
+        "trials": 5,
+        "outcomes": {
+          "rejected": 4,
+          "wrong": 1
+        },
+        "positive_trials": 5,
+        "aborted_trials": 0,
+        "positive_correct": 0,
+        "positive_wrong": 1,
+        "positive_rejected": 4,
+        "positive_correct_rate": 0.0,
+        "per_trial_suggestion_precision": 0.0,
+        "negative_trials": 0,
+        "valid_tracking_negative_attempts": 0,
+        "valid_tracking_negative_submitted": 0,
+        "valid_tracking_negative_false_rate": null,
+        "negative_false_suggestions": 0,
+        "negative_false_suggestion_rate": null,
+        "candidate_latency_samples": 1,
+        "candidate_latency_p95_ms": 253.7,
+        "candidate_latency_median_ms": 253.7,
+        "response_samples": 5,
+        "timeouts": 0
+      }
+    },
+    "worker_state": {
+      "ready": {
+        "trials": 5,
+        "outcomes": {
+          "rejected": 4,
+          "wrong": 1
+        },
+        "positive_trials": 5,
+        "aborted_trials": 0,
+        "positive_correct": 0,
+        "positive_wrong": 1,
+        "positive_rejected": 4,
+        "positive_correct_rate": 0.0,
+        "per_trial_suggestion_precision": 0.0,
+        "negative_trials": 0,
+        "valid_tracking_negative_attempts": 0,
+        "valid_tracking_negative_submitted": 0,
+        "valid_tracking_negative_false_rate": null,
+        "negative_false_suggestions": 0,
+        "negative_false_suggestion_rate": null,
+        "candidate_latency_samples": 1,
+        "candidate_latency_p95_ms": 253.7,
+        "candidate_latency_median_ms": 253.7,
+        "response_samples": 5,
+        "timeouts": 0
+      }
+    },
+    "kind": {
+      "positive": {
+        "trials": 5,
+        "outcomes": {
+          "rejected": 4,
+          "wrong": 1
+        },
+        "positive_trials": 5,
+        "aborted_trials": 0,
+        "positive_correct": 0,
+        "positive_wrong": 1,
+        "positive_rejected": 4,
+        "positive_correct_rate": 0.0,
+        "per_trial_suggestion_precision": 0.0,
+        "negative_trials": 0,
+        "valid_tracking_negative_attempts": 0,
+        "valid_tracking_negative_submitted": 0,
+        "valid_tracking_negative_false_rate": null,
+        "negative_false_suggestions": 0,
+        "negative_false_suggestion_rate": null,
+        "candidate_latency_samples": 1,
+        "candidate_latency_p95_ms": 253.7,
+        "candidate_latency_median_ms": 253.7,
+        "response_samples": 5,
+        "timeouts": 0
+      }
+    }
   },
-  "confusion": [],
+  "confusion": [
+    {
+      "expected": "PAIN+CHEST",
+      "displayed": "UNKNOWN",
+      "trials": 4
+    },
+    {
+      "expected": "PAIN+CHEST",
+      "displayed": "FEVER",
+      "trials": 1
+    }
+  ],
   "final_normal": {
     "trials": 0,
     "outcomes": {},
@@ -71,9 +267,24 @@
   },
   "numeric_criteria_met": false,
   "limitations": [
-    "No human camera trials recorded; n=0.",
     "Self-reported anonymous trial records are not independently verified.",
     "Sign language validity and target-user effectiveness remain unverified.",
     "Freeze also requires regression and human confirmation that final trials were untouched."
+  ],
+  "batch_provenance": [
+    {
+      "batch_id": "P01-chest-batch-01-7537ba3f",
+      "source": "docs/validation/vsl-v2/local/P01-chest-five-7537ba3f.csv",
+      "sha256": "8814c0556ba27e47109aeadb83baaa718ff5901b2f266b129de553abc02f9e6a",
+      "rows": 5,
+      "origin": "CSV pasted by user, reconstructed with original field values",
+      "trial_ids": [
+        "T0001",
+        "T0002",
+        "T0003",
+        "T0004",
+        "T0005"
+      ]
+    }
   ]
 }

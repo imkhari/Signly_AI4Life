@@ -1,6 +1,6 @@
 # Bản AI cho buổi thi — CANDIDATE
 
-**Mức B cho sân khấu.** Diễn tập bằng landmark công khai với worker thật đã đi hết hai màn hình. Chạm là luồng chính. **Chưa đóng băng chất lượng.** Luồng Q-27 theo câu mới có0lượt live.11ca âm của profile4e4ebb được giữ ở baseline cùng nguồn/nhóm/hash:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật, cả11UNKNOWN. Chưa có lượt dương VSL hoặc thử cuối. Không gộp kết quả cũ vào cấu hình mới, không coi ca âm của1người là kiểm chứng nhận diện.
+**Mức B cho sân khấu.** Diễn tập bằng landmark công khai với worker thật đã đi hết hai màn hình. Chạm là luồng chính. **Chưa đóng băng chất lượng.** Profile hiện tại 7537ba3f có 5 lượt CSV phát triển đau ngực, 0 đúng, 1 nhầm Sốt và 4 từ chối; chưa đạt yêu cầu.11ca âm của profile4e4ebb được giữ ở baseline cùng nguồn/nhóm/hash:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật, cả11UNKNOWN. Chưa có lượt dương VSL hoặc thử cuối. Không gộp kết quả cũ vào cấu hình mới, không coi ca âm của1người là kiểm chứng nhận diện.
 ## Phiên bản kỹ thuật
 
 Profile kỹ thuật hiện tại được ghi trong `frontend/public/vsl-validation-profile.json` và snapshot `profiles/`. Profile4e4ebb cũ giữ riêng11lượt; pilotC52 riêng1lượt không đạt đầu vào. Q-27 thay ánh xạ gợi ý cả câu và UI, giữ weights. Fingerprint ràng buộc code và policy; chưa đưa ra quyết định đóng băng.
@@ -18,7 +18,7 @@ Chỉ xem xét đau đầu (PAIN+HEAD), đau ngực (PAIN+CHEST), khó thở (BR
 
 ## Điều kiện đổi trạng thái
 
-`metrics.json` của bản mới đang n=0; baseline4e4ebb giữ11ca âm phát triển; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
+`metrics.json` của profile 7537ba3f hiện có n=5 lượt phát triển P01, 0 đúng, 1 sai và 4 từ chối, chưa có lượt cuối; baseline4e4ebb giữ11ca âm phát triển; pilot cũ có1lượt hết thời gian không đạt điều kiện đầu vào, tỷ lệ/latency null, số học chưa đạt. Để ghi FROZEN_FOR_INTERNAL_DEMO cần: đủ ma trận người/lượt đúng split, mỗi ý chính P03≥4/5,25ca âm không có gợi ý sai (tách tracking hợp lệ với đầu vào hỏng),p95≤5giây khi có gợi ý, sốt kiểm riêng, regression qua và nhóm xác nhận chưa dùng lượt cuối để tune. Các ca âm tracking hợp lệ phải thực sự có chuỗi đủ điều kiện gửi API; lỗi quá ngắn/mất vai không thay thế phép thử đó.
 
 Đạt số học không tự thành kiểm chứng VSL/người dùng mục tiêu. Nếu sửa cấu hình sau lượt cuối, giữ snapshot cũ và thử cuối mới; không ghi đè kết quả thất bại. Ghi rõ cohort nội bộ đang học theo Q-26.
 
