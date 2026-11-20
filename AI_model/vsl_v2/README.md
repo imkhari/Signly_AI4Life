@@ -63,7 +63,7 @@ TinyTemporalCTC đã dừng. Báo cáo cuối/evidence giữ tại `AI_model/eva
 
 Sau guard mất vai, replay300clip có255câu đúng (85,00%),WER từ205/2157=9,50%,từ chối1clip SENT280.299output còn lại giống baseline; lỗi sốt vẫn còn. Xem `reports/post-guard-replay.json`. Đã chỉ tải lại300NPY (~50,6MiB), khớp hash từng file, không tải lại toàn bộ dataset. Đây là dữ liệu đã mở, không độc lập và không có capture web.
 
-`make prepare-vsl-validation`, mở `/vsl-validation` và làm theo `docs/validation/vsl-v2/README.md`. Có CSV rời rạc và CLI `trials.py`, snapshot cấu hình theo hash; không nhận tọa độ trong CSV. Các kết quả tổng hợp và bản candidate tại RESULTS.md/FREEZE.md. Người thử trực tiếp hiệnn=0, chưa hiệu chỉnh ngưỡng hoặc đóng băng chất lượng; không train lại khi chưa có căn cứ và dữ liệu phù hợp.
+`make prepare-vsl-validation`, mở `/vsl-validation` và làm theo `docs/validation/vsl-v2/README.md`. Có CSV rời rạc và CLI `trials.py`, snapshot cấu hình theo hash; không nhận tọa độ trong CSV. Các kết quả tổng hợp và bản candidate tại RESULTS.md/FREEZE.md. Batch webcam kỹ thuật profile7537ba3f có5lượt đau ngực,0đúng/1nhầm Sốt/4từ chối, giữ ở baselines/. Bản xuất mới thêm mã Q-29 và chưa có lượt mới; chưa hiệu chỉnh ngưỡng hoặc đóng băng chất lượng; không train lại khi chưa có căn cứ và dữ liệu phù hợp.
 
 Tái lấy đúng300NPY test, kiểm hash và không tải video:
 

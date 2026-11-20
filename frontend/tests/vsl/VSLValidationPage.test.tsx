@@ -9,6 +9,7 @@ vi.mock('../../src/features/patient/components/VSLCameraView',() => ({
     <button disabled={captureDisabled} onClick={() => onTrialResult(result)}>Emit controlled prediction</button>,
 }));
 beforeEach(() => {
+  Object.assign(result,{gloss:'COUGH',reason:'accepted',diagnostic_code:undefined,candidate_latency_ms:100});
   vi.stubGlobal('fetch',vi.fn(async (url:string) => ({ok:true,json:async () =>
     url.includes('profile') ? {profile_id:'a'.repeat(64)} : {v2_worker_ready:false}})));
 });
@@ -34,4 +35,24 @@ it('blocks mixing results after the running profile changes',async () => {
   expect(screen.getByRole('alert')).toHaveTextContent('Cấu hình đã đổi');
   expect(screen.getByRole('button',{name:'Bắt đầu lượt thử'})).toBeDisabled();
   expect(screen.getByRole('button',{name:'Tải kết quả CSV'})).toBeEnabled();
+});
+
+
+it('exports the controlled rejection code without changing its rejected outcome',async () => {
+  Object.assign(result,{gloss:'UNKNOWN',reason:'unknown',diagnostic_code:'model_score_low',candidate_latency_ms:null});
+  Object.defineProperty(URL,'createObjectURL',{configurable:true,value:vi.fn(() => 'blob:trial')});
+  Object.defineProperty(URL,'revokeObjectURL',{configurable:true,value:vi.fn()});
+  vi.spyOn(HTMLAnchorElement.prototype,'click').mockImplementation(() => {});
+  render(<VSLValidationPage />);await act(async () => {});
+  fireEvent.change(screen.getByRole('combobox',{name:'Loại lượt thử'}),{target:{value:'CHEST_LOCATION'}});
+  fireEvent.click(screen.getByRole('checkbox'));
+  await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Bắt đầu lượt thử'}));});
+  fireEvent.click(screen.getByText('Emit controlled prediction'));
+  expect(screen.getByText(/T0001.*CHEST_LOCATION: UNKNOWN/)).toHaveTextContent('Điểm nhận diện chưa đạt ngưỡng');
+  fireEvent.click(screen.getByRole('button',{name:'Tải kết quả CSV'}));
+  const csv=(screen.getByRole('textbox') as HTMLTextAreaElement).value;
+  expect(csv.split('\n')[0]).toMatch(/evidence_kind,diagnostic_code$/);
+  expect(csv).toContain('"rejected"');
+  expect(csv).toContain('"model_score_low"');
+  expect(csv).not.toContain('landmarks');
 });

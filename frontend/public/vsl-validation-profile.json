@@ -1,9 +1,9 @@
 {
-  "profile_id": "7537ba3f6f6d867590635bf1018667544340706a956dc4d38671443b75dd470a",
+  "profile_id": "dd5759035ab67f6205fe568474d081490952a940a73c2ff2a394df26eeac4657",
   "sources": {
     "AI_model/vsl_v2/engine.py": "5fdbe53272d04e9c2798708a668c56ff77b090099b54ead0867a2eac72af93ce",
-    "AI_model/vsl_v2/trials.py": "babcf65bb786e45f581beb0b5370e271b8fd2cd8fe3fc122ffc20c379998818a",
-    "frontend/src/features/validation/VSLValidationPage.tsx": "92151041255512b738f180820e0d2253426b4afaf26776012d109ef60e2f271c",
+    "AI_model/vsl_v2/trials.py": "e0b96fa2834d86f1aeaaabcd023250ea9bbdf5baaff3a98c74cc95eb91c0c290",
+    "frontend/src/features/validation/VSLValidationPage.tsx": "24bbe312f001e1e46b1e2fa878313818e8a4099415770405b6dd663fb5377532",
     "AI_model/vsl_v2/worker.py": "bde5312a8b5135508b6d74c85485b18fe0ef8f51468ea7b7ec6bb4f8ba63f245",
     "backend/app/ai/vsl_v2.py": "e51f1cece0f29327502072ecffd014f25d3d4c9ea4b4c6b6e1432365f4330125",
     "backend/app/api/rest/vsl.py": "833fb403e5fcf9ab7c4b7c88523d8572cde4b3485bc32a4ffe828c55778af62a",
@@ -14,8 +14,8 @@
     "frontend/src/features/patient/PatientPage.tsx": "f46579168bceff650032f8170c154149c1730879d235ad0425498fa26f25aabd",
     "frontend/src/services/vsl/HolisticDetector.ts": "dd86be0327789a22c719019c0f1fb18b44ad7258f7d3315ac840e6d62d61ed14",
     "frontend/src/services/vsl/LegacyHolistic.ts": "eb0b0c98793aca67411ff51444e3161112ba8a1317bf0d9f2f20089492c907a5",
-    "frontend/src/services/vsl/SentenceCapture.ts": "adf56959823770d3519335e61d8347dd7da98d56f21588955a554b2d152cc8f4",
-    "frontend/src/features/patient/components/VSLCameraView.tsx": "04c5949371d434f740f4fe2ea006f523fb92fa056c4ab5c83b944a248c737e3b",
+    "frontend/src/services/vsl/SentenceCapture.ts": "11eb9e13403d93ac00d1953af8b3819ca1ed8e851ff963923f7d7e195d72d9e6",
+    "frontend/src/features/patient/components/VSLCameraView.tsx": "dbae8968b0c5b58f05ffac69c12e41f70929e29e5e523444836af271c4356f83",
     "frontend/src/services/vsl/validationProtocol.json": "1645f0cd743950e93b43a2c55e585a4124388f2794a271961dd52891cc9f5ecd",
     "AI_model/vsl_v2/model-manifest.json": "fa0cfe022050e24f7332689d9d8a4a43ac11c42dbb34691bd09a73a0d395e14f",
     "AI_model/runtime/requirements-lock.txt": "688a91dbbafaf3b535be811fec9198f8250f7701fba9e78e0c84c82a57a4aeb0",

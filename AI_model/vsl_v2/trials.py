@@ -36,6 +36,7 @@ FIELDS = [
     "profile_id",
     "evidence_kind",
 ]
+DIAGNOSTIC_CODES = {"", "hand_motion_unclear", "model_score_low", "phrase_not_supported"}
 SOURCES = [
     "AI_model/vsl_v2/engine.py",
     "AI_model/vsl_v2/trials.py",
@@ -125,13 +126,20 @@ def read_trials(
     intents = {item["id"]: item for item in policy["intents"]}
     with path.open(newline="", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
-        if reader.fieldnames != FIELDS:
+        if reader.fieldnames not in (FIELDS, FIELDS + ["diagnostic_code"]):
             raise ValueError("Unexpected columns/order; raw data forbidden")
         rows = []
         seen = set()
         for index, row in enumerate(reader, 2):
             if None in row or any(value is None for value in row.values()):
                 raise ValueError(f"Malformed CSV row {index}")
+            diagnostic = row.get("diagnostic_code", "")
+            if diagnostic not in DIAGNOSTIC_CODES:
+                raise ValueError("Uncontrolled diagnostic code")
+            if diagnostic and (row["reason"] != "unknown" or row["displayed_candidate"] != "UNKNOWN"
+                               or row["context"] != "intake"):
+                raise ValueError("Diagnostic code requires an intake model rejection")
+            row["diagnostic_code"] = diagnostic
             code = row["trial_id"]
             if not code.startswith("T") or not code[1:].isdigit() or len(code) > 10 or code in seen:
                 raise ValueError("Invalid/duplicate trial_id")
@@ -315,6 +323,9 @@ def summarize(
         "protocol": policy["version"],
         "status": "CANDIDATE",
         "live": counts(live),
+        "diagnostic_counts": dict(Counter(
+            r.get("diagnostic_code") or "not_recorded" for r in live
+        )),
         "synthetic_records": len(rows) - len(live),
         "groups": groups,
         "confusion": [

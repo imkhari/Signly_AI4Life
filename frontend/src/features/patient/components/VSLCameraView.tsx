@@ -224,8 +224,12 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       const displayedLabel=suggestion
         ? [suggestion.chief_complaint_code, ...suggestion.body_regions].join('+')
         : valid ? response.gloss : 'UNKNOWN';
+      const hint=response.suggested_next_step;
+      const diagnosticCode=contextStep==='intake' && reason==='unknown' &&
+        (hint==='hand_motion_unclear' || hint==='model_score_low' || hint==='phrase_not_supported')
+        ? hint : undefined;
       pendingResultRef.current={...captured.summary,gloss:displayedLabel,
-        reason,candidate_latency_ms:null,
+        reason,diagnostic_code:diagnosticCode,candidate_latency_ms:null,
         response_latency_ms:performance.now()-finishedAt,
         model_source:response.model_source,finishedAt};
       setLivePrediction(valid ? response : null);
@@ -233,7 +237,6 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       setCandidates(valid ? [{gloss:response.gloss,label_vi:response.label_vi || response.gloss,
         category:meta.category,maps_to:meta.maps_to,confidence:response.confidence,timestamp:Date.now()}] : []);
       let message:string=vi.camera.reasons[reason];
-      const hint=response.suggested_next_step;
       if (contextStep==='intake' && reason==='unknown' && hint &&
         Object.prototype.hasOwnProperty.call(vi.camera.rejectionHints,hint)) {
         message=vi.camera.rejectionHints[hint as keyof typeof vi.camera.rejectionHints];

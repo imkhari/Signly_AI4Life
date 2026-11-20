@@ -8,7 +8,7 @@ import { vi } from '../../i18n/vi';
 type Row = Record<string,string>;
 const fields=['trial_id','participant_code','cohort','split','signing_familiarity','device_code',
   'worker_state','intent_id','context','condition','expected_label','displayed_candidate','ever_wrong_candidate','outcome',
-  'candidate_latency_ms','response_latency_ms','frame_count','capture_duration_ms','reason','profile_id','evidence_kind'];
+  'candidate_latency_ms','response_latency_ms','frame_count','capture_duration_ms','reason','profile_id','evidence_kind','diagnostic_code'];
 const csvCell=(value:string) => `"${value.replace(/"/g,'""')}"`;
 
 export function VSLValidationPage() {
@@ -66,6 +66,7 @@ export function VSLValidationPage() {
       candidate_latency_ms:result.candidate_latency_ms===null ? '' : result.candidate_latency_ms.toFixed(2),
       response_latency_ms:result.response_latency_ms===null ? '' : result.response_latency_ms.toFixed(2),
       frame_count:String(result.frame_count),capture_duration_ms:result.capture_duration_ms.toFixed(2),
+      diagnostic_code:result.diagnostic_code ?? '',
       reason:result.reason,profile_id:profile,evidence_kind:synthetic ? 'synthetic' : 'live_internal',
     }]);
     setLocked(true);
@@ -150,7 +151,9 @@ export function VSLValidationPage() {
       {rows.map(row => <p key={row.trial_id} className="p-3 border rounded-xl text-lg">
         {row.trial_id} · {row.participant_code} · {row.intent_id}: {row.displayed_candidate} · {vi.validation.outcomes[row.outcome as keyof typeof vi.validation.outcomes]}
         {row.candidate_latency_ms && ` · ${row.candidate_latency_ms} ms`}
-        {' · '}{vi.camera.reasons[row.reason as keyof typeof vi.camera.reasons]}
+        {' · '}{row.diagnostic_code
+          ? vi.camera.rejectionHints[row.diagnostic_code as keyof typeof vi.camera.rejectionHints]
+          : vi.camera.reasons[row.reason as keyof typeof vi.camera.reasons]}
         {policy.intents.find(item => item.id===row.intent_id)?.kind==='negative_valid' &&
           row.outcome==='unmeasurable' && <span className="block font-semibold">{vi.validation.ineligibleNegative}</span>}
       </p>)}

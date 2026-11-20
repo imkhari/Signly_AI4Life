@@ -223,3 +223,35 @@ def test_worker_failure_is_unmeasurable_even_when_response_arrived(tmp_path):
     result = counts(load(tmp_path, [record]))
     assert result["outcomes"] == {"unmeasurable": 1}
     assert result["valid_tracking_negative_submitted"] == 0
+
+
+@pytest.mark.parametrize(
+    "diagnostic", ["", "hand_motion_unclear", "model_score_low", "phrase_not_supported"]
+)
+def test_optional_diagnostic_preserves_rejection_scoring(tmp_path, diagnostic):
+    record = row("CHEST_LOCATION", actual="UNKNOWN", evidence="live_internal")
+    record["diagnostic_code"] = diagnostic
+    path = tmp_path / "diagnostic.csv"
+    with path.open("w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=FIELDS + ["diagnostic_code"])
+        writer.writeheader()
+        writer.writerow(record)
+    records = read_trials(path, IDENTIFIER)
+    report = summarize(records, IDENTIFIER)
+    assert report["live"]["positive_rejected"] == 1
+    assert report["diagnostic_counts"] == {diagnostic or "not_recorded": 1}
+
+
+@pytest.mark.parametrize("diagnostic,actual", [
+    ("private decoder text", "UNKNOWN"), ("model_score_low", "PAIN+CHEST"),
+])
+def test_diagnostic_forbids_free_text_and_accepted_predictions(tmp_path, diagnostic, actual):
+    record = row("CHEST_LOCATION", actual=actual)
+    record["diagnostic_code"] = diagnostic
+    path = tmp_path / "invalid-diagnostic.csv"
+    with path.open("w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=FIELDS + ["diagnostic_code"])
+        writer.writeheader()
+        writer.writerow(record)
+    with pytest.raises(ValueError):
+        read_trials(path, IDENTIFIER)

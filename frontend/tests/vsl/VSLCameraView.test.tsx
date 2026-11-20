@@ -201,7 +201,8 @@ it('does not begin a new sentence using stale tracking readiness',async () => {
     expect(screen.queryByRole('button',{name:'Dùng thông tin này'})).not.toBeInTheDocument();
     expect(apply).not.toHaveBeenCalled();
     expect(record).toHaveBeenCalledWith(expect.objectContaining({gloss:'UNKNOWN',
-      reason:'unknown',candidate_latency_ms:null}));
+      reason:'unknown',candidate_latency_ms:null,
+      diagnostic_code:hint==='arbitrary decoder text' ? undefined : hint}));
   });
 
   it('reinitializes the detector and clears the error after retrying recognition',async ()=>{

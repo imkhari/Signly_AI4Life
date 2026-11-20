@@ -1,5 +1,19 @@
 # Kết quả camera V2
 
+## Bổ sung chẩn lỗi trước lượt thử tiếp theo
+
+Ngày 20/11/2026. Profile `dd5759035ab67f6205fe568474d081490952a940a73c2ff2a394df26eeac4657` thay đổi phần ghi bằng chứng, giữ checkpoint, extractor, ngưỡng và cách chấm. CSV mới thêm cột cuối `diagnostic_code`, chỉ cho phép trống hoặc ba mã Q-29 đã duyệt: hand_motion_unclear, model_score_low, phrase_not_supported. Chỉ ghi cho intake bị từ chối/UNKNOWN. Không có câu decoder, điểm token, ảnh hoặc landmark. Bảng kết quả giữ lời nhắc tương ứng. CSV cũ vẫn đọc được; mã trống được tổng hợp not_recorded và không tự suy nguyên nhân.
+
+5 lượt đau ngực thất bại của profile7537ba3f giữ nguyên ở `baselines/7537ba3f6f6d867590635bf1018667544340706a956dc4d38671443b75dd470a.json`, có provenance/hash CSV. metrics.json của profiledd575903 có0lượt vì chưa thử bản xuất mới; việc tách profile không xóa bằng chứng thất bại và không chứng minh cải thiện nhận diện. Không yêu cầu lặp cả ma trận trước khi xác định mẫu ký.
+
+Kiểm tra bản chẩn lỗi: make check qua192backend+113frontend, build và5E2E mô phỏng qua. CLI đọc lại CSV cũ vẫn0đúng/1sai/4từ chối, cả5diagnostic not_recorded. Không tính các kiểm tra này là lượt webcam.
+
+Việc còn lại để chốt bản demo:
+
+1. Có mẫu trọn câu đích được người biết VSL kiểm tra, ưu tiên đau ngực. Landmark replay và video từ đau bụng hiện có chưa thay thế điều này.
+2. Đối chiếu pipeline trên mẫu đó và ghi mã từ chối ở lượt webcam mới; chỉ sửa tiền xử lý/model khi khoanh được nguyên nhân. Nhầm Sốt vẫn là lỗi cần xử lý, không giấu nhãn bằng câu đích được chọn trong trang thử.
+3. Sau khóa cấu hình, đạt tiêu chí Q-25 trên lượt cuối và diễn tập thiết bị thật, đủ Nhận/Sửa, Chạm, hai phía xác nhận và reset. Chỉ khi đó mới xem xét đóng băng phạm vi demo; chưa suy thành sẵn sàng bệnh viện.
+
 ## CSV đau ngực 5 lượt ngày 20/11/2026 — chưa đạt
 
 Profile `7537ba3f6f6d867590635bf1018667544340706a956dc4d38671443b75dd470a`. Người dùng dán CSV T0001–T0005, P01/D01, internal/development/learning, context intake, điều kiện normal, câu đích PAIN+CHEST. Đây là một batch mới, không cộng với các lượt diễn tập tự báo trước đó.
