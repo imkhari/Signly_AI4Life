@@ -1,5 +1,5 @@
 {
-  "profile_id": "371d8f141d6b2639b94c7f179a1c27462070332a19812a7fc4cb1f1951a42928",
+  "profile_id": "eb2d8c37b8a57d77850930e7dcda19eb5db85888b7d5926b86460136dca3a733",
   "sources": {
     "AI_model/vsl_v2/engine.py": "5fdbe53272d04e9c2798708a668c56ff77b090099b54ead0867a2eac72af93ce",
     "AI_model/vsl_v2/trials.py": "1ec8fb01ba10d148d67abf5dbbec17380115fb51a7ac321f347f2b246950c7a2",
@@ -10,11 +10,11 @@
     "backend/app/domain/vsl.py": "9fb5c49a9a725d07ca7c991d9d6a6354d869c15fa5c61940ff825244d3afa4e5",
     "frontend/src/types/vsl.ts": "72cba8ff1ea727fe414ade84e3ffd4d088ae8ab8daad573b4e6badacf75d6e33",
     "frontend/src/features/patient/sentenceIntake.ts": "4c64a84b3a18ac92970836bbe81ccada3e86ade9e365a77e52510573b43fd13c",
-    "frontend/src/features/patient/components/SymptomsStep.tsx": "d4a67bfd7a29ae078c348d5866a7e14bc85329ee2522d12d36c973822a5b506e",
+    "frontend/src/features/patient/components/SymptomsStep.tsx": "5ec36629bfb3d241953cf3e5bb3531aa8cc87d42a7d89bd12c999dc8e88a5988",
     "frontend/src/features/patient/PatientPage.tsx": "f46579168bceff650032f8170c154149c1730879d235ad0425498fa26f25aabd",
     "frontend/src/services/vsl/HolisticDetector.ts": "21e745e12adaa40cc123f49b8660f5523e7f0c893f5366669af59e88f1fa9b36",
     "frontend/src/services/vsl/SentenceCapture.ts": "9d4094a69f236ef0b8ad02130d86bb1397aa369678b6ff3027475241ffd137f7",
-    "frontend/src/features/patient/components/VSLCameraView.tsx": "3d8de5ddba46ce4bb7d390598da932b249b00dec7aa70f466c3577632136cb04",
+    "frontend/src/features/patient/components/VSLCameraView.tsx": "816173d37ae365206732a54ac30ec9149e95d4033f26aa7916d93ebef57a8c49",
     "frontend/src/services/vsl/validationProtocol.json": "1645f0cd743950e93b43a2c55e585a4124388f2794a271961dd52891cc9f5ecd",
     "AI_model/vsl_v2/model-manifest.json": "fa0cfe022050e24f7332689d9d8a4a43ac11c42dbb34691bd09a73a0d395e14f",
     "AI_model/runtime/requirements-lock.txt": "688a91dbbafaf3b535be811fec9198f8250f7701fba9e78e0c84c82a57a4aeb0",

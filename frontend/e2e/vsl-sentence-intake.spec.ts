@@ -38,7 +38,12 @@ async function pair(context: BrowserContext) {
 
 async function capture(page: Page) {
   await page.getByRole('button',{name:'Bắt đầu ký',exact:true}).click();
-  await page.getByTestId('vsl-video-element').scrollIntoViewIfNeeded();
+  const video=page.getByTestId('vsl-video-element');
+  await video.scrollIntoViewIfNeeded();
+  const size=await video.boundingBox();
+  expect(size!.width).toBeGreaterThan(600);
+  expect(size!.width / size!.height).toBeCloseTo(4/3, 2);
+  expect(await video.locator('..').locator('canvas').boundingBox()).toEqual(size);
   await expect(page.getByRole('timer')).toBeInViewport();
   await expect(page.getByRole('button',{name:'Xong câu',exact:true})).toBeInViewport();
   const header=await page.getByRole('banner').boundingBox();

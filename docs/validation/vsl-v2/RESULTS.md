@@ -1,5 +1,9 @@
 # Kết quả camera V2
 
+## Cập nhật khung xem camera
+
+Profile eb2d8c37 có 0 lượt CSV. Ở profile 371d8f14, màn bệnh nhân đã hiển thị một lần gián đoạn theo dõi sau 3,2 giây trước khi gửi nhận diện. Chỉ quan sát được thông báo, không có bản xuất hoặc phép đo chất lượng câu ký. Baseline CSV cũ giữ nguyên. Khung xem đã được tăng kích thước để người thử canh tay. Quyết định sân khấu vẫn ở mức B.
+
 ## Ngày 20/11/2026 — kiểm tra trước khi mở camera cho người thử
 
 **Phương án B.** Chạm là luồng chính cho sân khấu. Bản thử `371d8f141d6b2639b94c7f179a1c27462070332a19812a7fc4cb1f1951a42928` đang có 0 lượt webcam. Chưa có câu nào đạt tiêu chí Q-25 qua camera hay số đo p95 ra gợi ý trên thiết bị thi.

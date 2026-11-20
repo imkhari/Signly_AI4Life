@@ -406,7 +406,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       {!connected && <p role="alert" className="text-lg text-warn mb-4">Đang mất kết nối. Gợi ý cũ đã hủy; chờ kết nối lại trước khi ký.</p>}
 
       <div style={{top:'var(--patient-header-height, 0px)'}} className="sticky z-20 bg-paper py-2">
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-wrap gap-2 mb-1">
         <Button onClick={beginSentence} disabled={!isActive || isAiLoading || !!aiError ||
           !readyToSign || captureDisabled || !connected || captureState!=='idle'}>{vi.camera.begin}</Button>
         <Button onClick={finishSentence} disabled={captureState!=='recording'}>{vi.camera.finish}</Button>
@@ -414,20 +414,22 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
           showFailure(captureRef.current.fail('cancelled',performance.now()));
         }}>{vi.common.cancel}</Button>}
       </div>
-      <p role="status" className="text-lg mb-4">{captureMessage}</p>
+      <p role="status" className="text-lg">{captureMessage}</p>
       {captureFailure && <p data-testid="vsl-capture-stopped" className="text-xl font-bold text-warn mb-4">
         {vi.camera.stopped((captureFailure.capture_duration_ms/1000).toFixed(1))}
       </p>}
-      {captureState==='recording' && <p role="timer" aria-live="off" className="text-2xl font-bold text-action mb-4">
+      {captureState==='recording' && <p role="timer" aria-live="off" className="text-2xl font-bold text-action">
         {vi.camera.remaining(remainingSeconds)}
       </p>}
       </div>
 
-      {/* Layout 2 cột: BÊN TRÁI LÀ CAMERA TO RỘNG (8/12), BÊN PHẢI LÀ KẾT QUẢ & XÁC NHẬN (4/12) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        {/* CỘT TRÁI (8 / 12 CỘT): MÀN HÌNH CAMERA VÀ KHUNG XƯƠNG NGÓN TAY CỰC TO */}
-        <div className="lg:col-span-7 flex flex-col gap-2">
-          <div style={{aspectRatio:previewAspect}} className="relative w-full max-w-[480px] mx-auto rounded-2xl overflow-hidden bg-black shadow-lg border-2 border-gray-800">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
+        <div className="min-w-0 xl:col-span-2 flex flex-col gap-2">
+          {isActive && <p data-testid="vsl-tracking" className="text-base text-ink">
+            <strong>Camera đang thấy</strong> {tracking || 'Đang tìm mặt, vai và bàn tay…'}
+          </p>}
+          <div style={{aspectRatio:previewAspect, maxWidth:`calc(65dvh * ${previewAspect})`}}
+            className="relative w-full mx-auto rounded-2xl overflow-hidden bg-black shadow-lg">
             {/* Thẻ Video phát từ webcam */}
             <video
               ref={setVideoRef}
@@ -501,9 +503,6 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             )}
           </div>
 
-          {isActive && <p data-testid="vsl-tracking" className="text-base text-ink">
-            <strong>Camera đang thấy</strong> {tracking || 'Đang tìm mặt, vai và bàn tay…'}
-          </p>}
           <p className="text-lg text-mute p-3 rounded-xl bg-canvas">
             {vi.camera.privacy}
           </p>
@@ -513,8 +512,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
           </p>}
         </div>
 
-        {/* CỘT PHẢI (4 / 12 CỘT): TỪ CHỜ XÁC NHẬN & DANH SÁCH TRIỆU CHỨNG ĐÃ CHỌN */}
-        {contextStep==='intake' ? <div className="lg:col-span-5 bg-canvas rounded-xl p-4 space-y-4" aria-label="Gợi ý cả câu">
+        {contextStep==='intake' ? <div className="min-w-0 bg-canvas rounded-xl p-4 space-y-4" aria-label="Gợi ý cả câu">
           <h4 className="text-xl font-bold">Thông tin camera đề xuất</h4>
           {intakeSuggestion ? <>
             <dl className="space-y-3 text-xl">
@@ -539,7 +537,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
               }}>Bỏ gợi ý / Ký lại</Button>
             </div>
           </> : <p>Chưa có gợi ý. Bấm Bắt đầu ký khi đã nhìn rõ thân trên và bàn tay.</p>}
-        </div> : <div className="lg:col-span-5 flex flex-col justify-between gap-3 ">
+        </div> : <div className="min-w-0 flex flex-col justify-between gap-3 ">
           {/* Box 1: Từ AI vừa nhận diện được (Awaiting Confirmation) */}
           <div className="bg-canvas p-3 rounded-xl border border-gray-200 flex flex-col gap-2 shadow-2xs">
             <div className="flex flex-wrap gap-2 items-center justify-between">

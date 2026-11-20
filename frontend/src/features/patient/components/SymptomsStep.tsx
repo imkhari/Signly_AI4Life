@@ -179,7 +179,7 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-5">
+    <div className={`w-full mx-auto space-y-5 ${showCamera ? '' : 'max-w-5xl'}`}>
       <h2 className="text-2xl font-bold text-ink">{vi.wizard.step2}</h2>
       {sentenceFlow && <p role="status" className="text-lg bg-canvas rounded-xl p-4">Đã đưa gợi ý vào bản nháp. Hãy bổ sung phần còn thiếu bằng Chạm; chọn Chưa rõ nếu chưa trả lời được. Bạn sẽ kiểm tra toàn phiếu trước khi xác nhận.</p>}
       {!intakeCamera && <div role="tablist" aria-label="Các phần triệu chứng" className="flex flex-wrap gap-3">
@@ -191,7 +191,7 @@ export const SymptomsStep: React.FC<SymptomsStepProps> = ({
           </button>)}
       </div>}
 
-      <section aria-label={tabs.find(tab => tab.id === activeTab)?.label} className="bg-paper border rounded-2xl p-5 space-y-5">
+      <section aria-label={tabs.find(tab => tab.id === activeTab)?.label} className={`bg-paper border rounded-2xl space-y-5 ${showCamera ? 'p-1 sm:p-2' : 'p-5'}`}>
         <h3 className="text-2xl font-bold">{tabs.find(tab => tab.id === activeTab)?.label}</h3>
         {!showCamera && activeTab === 'complaint' && <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {CHIEF_COMPLAINTS.map(item => <button type="button" key={item.code}
