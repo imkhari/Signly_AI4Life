@@ -226,7 +226,8 @@ def test_worker_failure_is_unmeasurable_even_when_response_arrived(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "diagnostic", ["", "hand_motion_unclear", "model_score_low", "phrase_not_supported"]
+    "diagnostic",
+    ["", "face_not_tracked", "hand_motion_unclear", "model_score_low", "phrase_not_supported"]
 )
 def test_optional_diagnostic_preserves_rejection_scoring(tmp_path, diagnostic):
     record = row("CHEST_LOCATION", actual="UNKNOWN", evidence="live_internal")
@@ -255,3 +256,17 @@ def test_diagnostic_forbids_free_text_and_accepted_predictions(tmp_path, diagnos
         writer.writerow(record)
     with pytest.raises(ValueError):
         read_trials(path, IDENTIFIER)
+
+
+def test_face_missing_input_cannot_satisfy_valid_negative_gate(tmp_path):
+    record = row("NEG_REST", actual="UNKNOWN", evidence="live_internal")
+    record.update(diagnostic_code="face_not_tracked", outcome="unmeasurable")
+    path = tmp_path / "face-missing.csv"
+    with path.open("w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=FIELDS + ["diagnostic_code"])
+        writer.writeheader()
+        writer.writerow(record)
+    report = summarize(read_trials(path, IDENTIFIER), IDENTIFIER)
+    assert report["live"]["outcomes"] == {"unmeasurable": 1}
+    assert report["live"]["valid_tracking_negative_submitted"] == 0
+    assert report["live"]["valid_tracking_negative_false_rate"] is None

@@ -120,3 +120,61 @@ test('tracking rejection stays at the camera and CSV has a manual copy path',asy
   await page.getByRole('button',{name:'Sao chép CSV',exact:true}).click();
   await expect(page.getByText('Chưa sao chép tự động được. Chọn nội dung trong ô rồi dùng Sao chép.')).toBeVisible();
 });
+
+for (const hint of ['face_not_tracked','hand_motion_unclear','model_score_low','phrase_not_supported',
+  'worker_unavailable','uncontrolled decoder text']) {
+  test(`synthetic intake rejection retains only its controlled diagnostic in CSV: ${hint}`,async ({page})=>{
+    await syntheticCamera(page);
+    await page.route('**/api/vsl/predict',route=>route.fulfill({json:{success:false,
+      gloss:'UNKNOWN',confidence:0,model_source:'vsl_v2_learned_translation',
+      intake_suggestion:null,suggested_next_step:hint}}));
+    await page.goto('/vsl-validation?evidence=synthetic');
+    await page.getByRole('checkbox').check();
+    await page.getByLabel('Loại lượt thử').selectOption('CHEST_LOCATION');
+    await page.getByRole('button',{name:'Bắt đầu lượt thử',exact:true}).click();
+    const begin=page.getByRole('button',{name:'Bắt đầu ký',exact:true});
+    await expect(begin).toBeEnabled();await begin.click();
+    const start=await page.evaluate(()=>Number(Reflect.get(window,'testObservedFrames')));
+    await expect.poll(()=>page.evaluate(()=>Number(Reflect.get(window,'testObservedFrames'))))
+      .toBeGreaterThan(start+28);
+    await page.getByRole('button',{name:'Xong câu',exact:true}).click();
+    await expect(page.getByText(/T0001.*CHEST_LOCATION: UNKNOWN/)).toBeVisible();
+    await expect(page.getByRole('button',{name:'Dùng thông tin này'})).toHaveCount(0);
+    await page.getByRole('button',{name:'Tải kết quả CSV'}).click();
+    const csv=await page.getByRole('textbox',{name:'Nội dung CSV để sao chép'}).inputValue();
+    const [header,line]=csv.trim().split('\n');
+    const keys=header.split(',');
+    const cells=line.split(',').map(value=>value.replace(/^"|"$/g,''));
+    const row=Object.fromEntries(keys.map((key,i)=>[key,cells[i]]));
+    const detailed=['face_not_tracked','hand_motion_unclear','model_score_low','phrase_not_supported'].includes(hint);
+    expect(row.diagnostic_code).toBe(detailed ? hint : '');
+    expect(row.reason).toBe(hint==='worker_unavailable' ? hint : 'unknown');
+    expect(row.outcome).toBe(hint==='worker_unavailable' ? 'unmeasurable' : 'rejected');
+    expect(row.evidence_kind).toBe('synthetic');
+    expect(csv).not.toContain('uncontrolled decoder text');
+    expect(csv).not.toContain('landmarks');
+    expect(csv).not.toContain('translation');
+  });
+}
+
+
+test('synthetic missing-face negative is unmeasurable in the exported CSV',async ({page})=>{
+  await syntheticCamera(page);
+  await page.route('**/api/vsl/predict',route=>route.fulfill({json:{success:false,
+    gloss:'UNKNOWN',confidence:0,model_source:'vsl_v2_learned_translation',
+    intake_suggestion:null,suggested_next_step:'face_not_tracked'}}));
+  await page.goto('/vsl-validation?evidence=synthetic');
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button',{name:'Bắt đầu lượt thử',exact:true}).click();
+  const begin=page.getByRole('button',{name:'Bắt đầu ký',exact:true});
+  await expect(begin).toBeEnabled();await begin.click();
+  const start=await page.evaluate(()=>Number(Reflect.get(window,'testObservedFrames')));
+  await expect.poll(()=>page.evaluate(()=>Number(Reflect.get(window,'testObservedFrames'))))
+    .toBeGreaterThan(start+28);
+  await page.getByRole('button',{name:'Xong câu',exact:true}).click();
+  await expect(page.getByText(/T0001.*NEG_REST: UNKNOWN.*Chưa đủ điều kiện đo/)).toBeVisible();
+  await page.getByRole('button',{name:'Tải kết quả CSV'}).click();
+  const csv=await page.getByRole('textbox',{name:'Nội dung CSV để sao chép'}).inputValue();
+  expect(csv).toContain('"unmeasurable"');expect(csv).toContain('"face_not_tracked"');
+  expect(csv).not.toContain('"correct"');
+});

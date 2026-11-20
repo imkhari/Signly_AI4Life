@@ -1,5 +1,10 @@
 # Bản AI cho buổi thi — CANDIDATE
 
+## Kết luận kiểm lại ngày20/11/2026
+
+**CANDIDATE — chưa đóng băng chất lượng camera.** Q-33 đã được duyệt và triển khai chặn thiếu toàn bộ mặt. Profile hiện tại9e377812 có0lượt webcam mới; lỗi batch7537ba3f giữ ở baselines/ và chưa được chứng minh đã sửa. Các probe kỹ thuật không thay thế lượt cuối Q-25. Xem READINESS-REVIEW.md cho từng yêu cầu và REFERENCE-REQUEST.md cho1mẫu đối chiếu còn cần. Các mục phía dưới giữ lịch sử, không tự chuyển số liệu profile cũ vào bản mới.
+
+
 Cập nhật 20/11/2026 — profile hiện tại dd575903 bổ sung mã Q-29 trong CSV, chưa có lượt mới. Batch5lượt đau ngực profile7537ba3f (0đúng,1Sốt sai,4từ chối) giữ ở baselines/, không bị thay thế bằng số0 của bản xuất mới. Nhận diện chưa được chứng minh cải thiện. Xem đầu RESULTS.md.
 
 **Mức B cho sân khấu.** Diễn tập bằng landmark công khai với worker thật đã đi hết hai màn hình. Chạm là luồng chính. **Chưa đóng băng chất lượng.** Profile đo trước 7537ba3f có 5 lượt CSV phát triển đau ngực, 0 đúng, 1 nhầm Sốt và 4 từ chối; chưa đạt yêu cầu.11ca âm của profile4e4ebb được giữ ở baseline cùng nguồn/nhóm/hash:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật, cả11UNKNOWN. Chưa có lượt dương VSL hoặc thử cuối. Không gộp kết quả cũ vào cấu hình mới, không coi ca âm của1người là kiểm chứng nhận diện.

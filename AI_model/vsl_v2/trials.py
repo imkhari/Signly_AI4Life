@@ -36,7 +36,9 @@ FIELDS = [
     "profile_id",
     "evidence_kind",
 ]
-DIAGNOSTIC_CODES = {"", "hand_motion_unclear", "model_score_low", "phrase_not_supported"}
+DIAGNOSTIC_CODES = {
+    "", "face_not_tracked", "hand_motion_unclear", "model_score_low", "phrase_not_supported"
+}
 SOURCES = [
     "AI_model/vsl_v2/engine.py",
     "AI_model/vsl_v2/trials.py",
@@ -89,7 +91,8 @@ def profile(root: Path = ROOT) -> dict[str, Any]:
 
 
 def outcome(
-    expected: str, actual: str, ever_wrong: bool, reason: str = "", kind: str = ""
+    expected: str, actual: str, ever_wrong: bool, reason: str = "", kind: str = "",
+    diagnostic: str = ""
 ) -> str:
     if reason == "cancelled":
         return "aborted"
@@ -100,7 +103,9 @@ def outcome(
         if kind == "negative_invalid":
             if not tracking_failure:
                 return "unmeasurable"
-        elif reason not in ("accepted", "unknown"):
+        elif reason not in ("accepted", "unknown") or (
+            kind == "negative_valid" and diagnostic == "face_not_tracked"
+        ):
             return "unmeasurable"
     if actual == expected:
         return "correct"
@@ -181,7 +186,7 @@ def read_trials(
                 raise ValueError("Wrong candidate exposure cannot be hidden")
             if row["outcome"] != outcome(
                 row["expected_label"], row["displayed_candidate"], ever, row["reason"],
-                intent["kind"] if intent["context"] == "intake" else "",
+                intent["kind"] if intent["context"] == "intake" else "", diagnostic,
             ):
                 raise ValueError("Outcome differs from recorded prediction")
             for key in ("candidate_latency_ms", "response_latency_ms", "capture_duration_ms"):
@@ -219,6 +224,7 @@ def counts(rows: list[dict[str, Any]]) -> dict[str, Any]:
         if row["response_latency_ms"] is not None
         and row["frame_count"] >= 24
         and row["reason"] in ("accepted", "unknown")
+        and row.get("diagnostic_code") != "face_not_tracked"
     ]
     eligible_false = sum(row["outcome"] == "wrong" for row in eligible_negatives)
     times = [row["candidate_latency_ms"] for row in rows if row["candidate_latency_ms"] is not None]
@@ -277,6 +283,7 @@ def summarize(
                         r["response_latency_ms"] is not None
                         and r["frame_count"] >= 24
                         and r["reason"] in ("accepted", "unknown")
+                        and r.get("diagnostic_code") != "face_not_tracked"
                         for r in chosen
                     )
                 )

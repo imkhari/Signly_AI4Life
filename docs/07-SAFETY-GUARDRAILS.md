@@ -113,3 +113,11 @@ Theo Q-28, lỗi worker ở luồng intake phải hiển thị lựa chọn th�
 Q-29 đã được chủ dự án duyệt ngày20/11/2026. Lý do từ chối intake được ánh xạ sang mã kiểm soát và lời nhắc cố định. Câu decoder/điểm token không trả thêm ra UI, không ghi log hoặc vào phiếu. Điểm thiếu/không hợp lệ không được diễn giải thành model_score_low. Thông báo phrase_not_supported mô tả đầu ra nhận diện; chưa quy lỗi cho người ký. Ngưỡng0,7, guard chuyển động/vai/capture và bước Nhận/Sửa tiếp tục áp dụng.
 
 Q-32 ngày20/11/2026 đã được duyệt. Camera dùng Holistic Web legacy0.5.1675471629, modelComplexity1, smoothLandmarks và confidence0,5 theo recipe. JS/WASM/model chỉ nạp từ /models/holistic-legacy tại máy nội bộ. Chỉ một send đang chờ. stop tăng generation và bỏ kết quả cũ; close chờ send hiện tại hoàn tất trước giải phóng graph. Ảnh resize360×360 ở canvas chỉ tồn tại trong trình duyệt; backend tiếp tục chỉ nhận411tọa độ của câu đã thu. Giữ ngưỡng0,7, capture/guard và xác nhận hai phía. Nạp lỗi hiển thị đường Chạm. Phải thử lại theo profile mới trước khi kết luận chất lượng.
+
+## 12. Review chặn thiếu mặt toàn lượt — Q-33
+
+Chủ dự án duyệt20/11/2026 theo kế hoạch15. Sau guard chuyển động hiện có, chuỗi hoàn toàn thiếu face70 (mọi giá trị trong nhóm ở mọi frame bằng0 sau resampling) bị từ chối trước decoder. Intake nhận mã face_not_tracked; các context cũ UNKNOWN. Không đặt tỷ lệ frame mới hoặc chặn một frame mất mặt, không đổi model/normalization/điểm0,7/capture/allowlist/xác nhận.
+
+Mã hướng dẫn cố định được hiển thị và có thể xuất cùng nhãn/timing thử nội bộ theo yêu cầu người thử, trong cột diagnostic_code. Không thêm media, landmark, câu decoder, điểm token, PII hoặc dữ liệu phiên y tế. Ca âm tracking hợp lệ thiếu toàn mặt không được tính đạt; lượt dương từ chối vẫn nằm trong mẫu số. CSV cũ không có mã vẫn giữ nguyên ý nghĩa.
+
+Review theo ngoại lệ Q-23: gate không gọi decoder cho chuỗi thiếu toàn mặt; giữ đầu vào có mặt hoặc chỉ mất tạm thời; mapping chỉ mã cố định/null; UI không có nút nhận gợi ý; CSV cấm văn bản tự do và loại đầu vào thiếu khỏi ca âm hợp lệ. Kiểm định này không xác nhận nguyên nhân ca nhầm Sốt, không chữa lỗi model sốt→ho và chưa chứng minh dùng bệnh viện.

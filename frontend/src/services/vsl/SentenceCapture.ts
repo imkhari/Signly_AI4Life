@@ -9,7 +9,7 @@ export interface CaptureFailure extends CaptureSummary { reason:CaptureReason; t
 export interface CameraTrialResult extends CaptureSummary {
   gloss:string; reason:CaptureReason; candidate_latency_ms:number|null; response_latency_ms:number|null;
   model_source:string;
-  diagnostic_code?:'hand_motion_unclear' | 'model_score_low' | 'phrase_not_supported';
+  diagnostic_code?:'face_not_tracked' | 'hand_motion_unclear' | 'model_score_low' | 'phrase_not_supported';
 }
 
 // Offsets in the pinned pose25/face70/left21/right21 layout, before preview mirroring.

@@ -134,4 +134,6 @@ Sau gợi ý: vị trí/tình trạng đau nếu thiếu → mức đau khi có 
 
 Q-28 bổ sung ý nghĩa `worker_unavailable` của trường hướng dẫn trong phản hồi camera intake. Lỗi này không tạo gợi ý, không ghi Semantic Frame và không đưa dữ liệu vào LLM.
 
-Q-29 mở rộng tập mã kiểm soát của suggested_next_step trong phản hồi camera intake: hand_motion_unclear, model_score_low và phrase_not_supported. Các trường gợi ý ngữ nghĩa vẫn để null khi bị từ chối. CSV thử nội bộ tiếp tục dùng reason unknown, chỉ hiển thị lời hướng dẫn cụ thể trong RAM của UI.
+Q-29 mở rộng tập mã kiểm soát của suggested_next_step trong phản hồi camera intake: hand_motion_unclear, model_score_low và phrase_not_supported. Các trường gợi ý ngữ nghĩa vẫn để null khi bị từ chối. CSV thử nội bộ giữ reason unknown. Theo prompt hoàn thiện và Q-33 ngày20/11/2026, bản xuất tự nguyện thêm diagnostic_code cố định của Q-29/Q-33; không xuất văn bản tự do, media hoặc landmark. Bản cũ thiếu cột không bị suy nguyên nhân.
+
+Q-33 thêm mã face_not_tracked khi cả chuỗi không có landmark mặt, trước decoder. UNKNOWN/gợi ý null không ghi phiếu hoặc LLM. Ca âm hợp lệ nhưng thiếu toàn bộ mặt là unmeasurable; không biến đầu vào không đủ thành thành công của ca âm. Không thêm field vào SemanticFrame1.0.

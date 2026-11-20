@@ -58,3 +58,7 @@ Báo cáo máy đọc tại AI_model/vsl_v2/reports/extractor-comparison-qipedc-
 ## Đã tích hợp camera thử theo Q-32
 
 Chủ dự án duyệt tích hợp ngày20/11/2026. HolisticDetector dùng Web legacy và TasksHolisticDetector chỉ dùng đối chiếu. Công cụ compare-video.mjs nay chạy chính lớp camera production cho nhánh legacy_web. Báo cáo extractor-comparison-qipedc-D0356-production.json tái hiện PAIN ở Python/production legacy và UNKNOWN ở Tasks trên cùng110ảnh. Tệp JS/WASM/model cục bộ có checksum trong asset-manifest.json. Nạp lỗi dùng Chạm. Chưa có kết quả webcam ở profile mới.
+
+## Kiểm lại trong đợt hoàn thiện20/11/2026
+
+Đã chạy lại trên cùng video/hash/110ảnh/FPS29,97 bằng worker production. Python và Web legacy tiếp tục trả PAIN/true/vùng rỗng; Tasks UNKNOWN/phrase_not_supported. Sai khác thân XYZ trung bình legacy Web so Python0,005878, Tasks0,079954; giá trị đo lần chạy này không giống tuyệt đối lần trước. Xem AI_model/vsl_v2/reports/extractor-recheck-2026-11-20.json. Lần gọi đầu của công cụ đã kết thúc do Vite điều hướng lại khi tối ưu dependency; lần chạy lại sau tối ưu hoàn tất. Không giữ kết quả dở hoặc gọi đó là lỗi VSL. Không có thêm video câu đau ngực/đau đầu/khó thở được xác minh.

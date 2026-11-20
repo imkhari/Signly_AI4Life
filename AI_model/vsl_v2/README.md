@@ -74,3 +74,9 @@ backend/.venv/bin/python -m AI_model.vsl_v2.fetch_test_subset --output /tmp/vsl-
 `pipeline-after.json` kiểm8câu thuộc allowlist qua worker với timestamp giả định30FPS; không thay thế video có FPS đã xác minh hoặc camera thật.
 
 Camera hiện tại dùng JS/WASM/model từ frontend/public/models/holistic-legacy, pin @mediapipe/holistic0.5.1675471629 theo Q-32. asset-manifest.json ghi legacy_files và checksum. Cấu hình, số liệu và giới hạn phép đo tại docs/validation/vsl-v2/EXTRACTOR-COMPARISON.md.
+
+## Kiểm chứng phần còn lại — Q-33
+
+Đợt20/11/2026 có4NPY ghim hash,17biến thể/mẫu, tái lập so3extractor trên cùng110ảnh và kiểm HTTP thật. Q-33 chặn hoàn toàn thiếu face70 trước decoder, intake trả face_not_tracked; không đổi checkpoint/điểm/normalization và không chặn mất mặt tạm thời. Báo cáo/bảng bằng chứng tại docs/validation/vsl-v2/READINESS-REVIEW.md. Batch webcam đau ngực0/5đúng vẫn giữ; chưa chứng minh cải thiện webcam. Chưa có mẫu ký trọn câu được xác minh, chưa đạt Q-25.
+
+fetch_test_subset nay hỗ trợ --clip lặp để tải đúng4mẫu thay vì toàn300; chỉ nhận ID trong replay đã ghim và kiểm SHA256. robustness.py chỉ nhận4ID định trước, không nhận dữ liệu người dùng, không ghi raw tọa độ hoặc decoder; report cũ không ghi đè. Đây là công cụ chẩn độ nhạy, không phải benchmark accuracy.

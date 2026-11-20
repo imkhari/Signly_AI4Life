@@ -54,7 +54,8 @@ export function VSLValidationPage() {
     const wrong=result.gloss!=='UNKNOWN' && result.gloss!==reference.expected;
     const expectedTrackingFailure=reference.kind==='negative_invalid' &&
       (result.reason==='tracking_gap' || result.reason==='missing_shoulders');
-    const measured=result.reason==='accepted' || result.reason==='unknown';
+    const measured=(result.reason==='accepted' || result.reason==='unknown') &&
+      !(reference.kind==='negative_valid' && result.diagnostic_code==='face_not_tracked');
     const outcome=result.reason==='cancelled' ? 'aborted' : wrong ? 'wrong' :
       (reference.kind==='negative_invalid' ? !expectedTrackingFailure : !measured) ? 'unmeasurable' :
       result.gloss===reference.expected ? 'correct' : 'rejected';

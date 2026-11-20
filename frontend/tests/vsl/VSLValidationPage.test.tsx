@@ -56,3 +56,15 @@ it('exports the controlled rejection code without changing its rejected outcome'
   expect(csv).toContain('"model_score_low"');
   expect(csv).not.toContain('landmarks');
 });
+
+
+it('does not count a no-face rejection as a valid negative success',async () => {
+  Object.assign(result,{gloss:'UNKNOWN',reason:'unknown',diagnostic_code:'face_not_tracked',candidate_latency_ms:null});
+  render(<VSLValidationPage />);await act(async () => {});
+  fireEvent.click(screen.getByRole('checkbox'));
+  await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Bắt đầu lượt thử'}));});
+  fireEvent.click(screen.getByText('Emit controlled prediction'));
+  expect(screen.getByText(/T0001.*NEG_REST: UNKNOWN/)).toHaveTextContent('Chưa đủ điều kiện đo');
+  expect(screen.getByText(/T0001.*NEG_REST: UNKNOWN/)).toHaveTextContent('Chưa theo dõi được khuôn mặt');
+  expect(screen.getByText(/Lượt này chưa đủ đầu vào/)).toBeVisible();
+});

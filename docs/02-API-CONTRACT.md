@@ -252,9 +252,14 @@ Theo Q-29, phản hồi intake với success=false và gloss=UNKNOWN có thể d
 
 | Giá trị | Điều kiện | Hướng dẫn |
 |---|---|---|
+| face_not_tracked | Q-33, sau guard chuyển động, tất cả210giá trị face70 đều0 ở mọi frame; từ chối trước decoder | Đưa mặt vào khung, thử lại hoặc Chạm |
 | hand_motion_unclear | Worker trả reason no_clear_hand_motion, guard từ chối trước decoder | Giữ tay rõ trong hình và thử lại cả câu |
 | model_score_low | Điểm token trung bình hữu hạn trong [0;0,7), sau khi qua guard | Ký lại hoặc Chạm |
 | phrase_not_supported | Điểm qua ngưỡng nhưng toàn câu giải mã không có trong allowlist | Ký lại hoặc Chạm |
 | worker_unavailable | Q-28, worker không trả kết quả xử lý | Thử lại hoặc Chạm |
 
 Các nhánh khác tiếp tục dùng UNKNOWN chung. Mã hướng dẫn không chứa câu decoder, landmark hoặc giải thích tự do. Điểm model chưa được hiệu chỉnh xác suất. phrase_not_supported mô tả đầu ra của model, chưa xác định người dùng ký sai hoặc có ý nằm ngoài phạm vi.
+
+Theo Q-33 được duyệt20/11/2026, worker chỉ từ chối vì thiếu mặt khi toàn bộ nhóm face70 trống suốt chuỗi sau resampling. Mất mặt tạm thời không tự kích hoạt gate này. Context cũ giữ UNKNOWN mà không thêm hướng dẫn. Không đổi request, schema SemanticFrame hoặc ngưỡng token.
+
+Bản xuất thử nội bộ bổ sung cột cuối diagnostic_code tùy chọn, chỉ trống hoặc hand_motion_unclear/model_score_low/phrase_not_supported/face_not_tracked. Đây là mã cố định từ phản hồi đã duyệt, không câu decoder hoặc dữ liệu camera. CSV cũ vẫn đọc được; không hồi suy lý do. Ca âm tracking hợp lệ bị face_not_tracked ghi unmeasurable, không được tính là ca âm đạt; lượt dương vẫn ghi từ chối trong mẫu số. reason unknown giữ để tương thích.

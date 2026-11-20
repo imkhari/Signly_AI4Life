@@ -45,6 +45,8 @@ def predict_request(engine: V2Engine, request: dict[str, Any]) -> dict[str, Any]
     # Conservative engineering gates, not a calibrated OOD detector.
     if present.mean() < 0.5 or motion < 0.003:
         return {"translation": "", "mean_token_probability": 0.0, "reason": "no_clear_hand_motion"}
+    if not np.any(frames[:, 75:285]):
+        return {"translation": "", "mean_token_probability": 0.0, "reason": "no_face_landmarks"}
     return engine.decode_frames(frames)
 
 

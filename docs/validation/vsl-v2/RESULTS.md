@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Kiểm chứng phần còn lại và Q-33 — 20/11/2026
+
+Xem [READINESS-REVIEW.md](READINESS-REVIEW.md) cho bảng yêu cầu/bằng chứng và phạm vi trình diễn. Đã kiểm checksum/assets/runtime,4NPY qua worker/HTTP thật, cùng110ảnh RGB qua3extractor và68probe biến đổi có kiểm soát. Sau duyệt Q-33, chặn cả chuỗi hoàn toàn thiếu face70 trước decoder. Cả4probe xóa mặt từ3gợi ý sai+1từ chối chuyển thành4từ chối; các biến thể còn lại giữ nhãn, lỗi mẫu sốt→ho vẫn còn. Không tái lập hay xác định nguyên nhân lượt webcam nhầm FEVER.
+
+Profile hiện tại9e377812550b530d32d8ab035eb3d6237ff830275bd2371df6a90543e8e2f32e,0lượt webcam mới. Baseline7537ba3f vẫn có5lượt đau ngực0đúng/1FEVER/4từ chối và provenance nguyên vẹn; snapshotdd575903 giữ riêng0lượt. Không trộn probe/public/E2E vào metrics hoặc giảm số lỗi cũ. Kiểm tra cuối đợt: make check200backend+115frontend,18runtime,build và26E2E mô phỏng qua. Kết luận CANDIDATE, chưa đủ chốt chất lượng. Mẫu trọn câu được người biết VSL kiểm, P03/Q-25 và thiết bị thật vẫn pending. [REFERENCE-REQUEST.md](REFERENCE-REQUEST.md) chỉ yêu cầu tối thiểu1câu trước khi mời thử tiếp.
+
 ## Bổ sung chẩn lỗi trước lượt thử tiếp theo
 
 Ngày 20/11/2026. Profile `dd5759035ab67f6205fe568474d081490952a940a73c2ff2a394df26eeac4657` thay đổi phần ghi bằng chứng, giữ checkpoint, extractor, ngưỡng và cách chấm. CSV mới thêm cột cuối `diagnostic_code`, chỉ cho phép trống hoặc ba mã Q-29 đã duyệt: hand_motion_unclear, model_score_low, phrase_not_supported. Chỉ ghi cho intake bị từ chối/UNKNOWN. Không có câu decoder, điểm token, ảnh hoặc landmark. Bảng kết quả giữ lời nhắc tương ứng. CSV cũ vẫn đọc được; mã trống được tổng hợp not_recorded và không tự suy nguyên nhân.

@@ -226,7 +226,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         : valid ? response.gloss : 'UNKNOWN';
       const hint=response.suggested_next_step;
       const diagnosticCode=contextStep==='intake' && reason==='unknown' &&
-        (hint==='hand_motion_unclear' || hint==='model_score_low' || hint==='phrase_not_supported')
+        (hint==='face_not_tracked' || hint==='hand_motion_unclear' || hint==='model_score_low' || hint==='phrase_not_supported')
         ? hint : undefined;
       pendingResultRef.current={...captured.summary,gloss:displayedLabel,
         reason,diagnostic_code:diagnosticCode,candidate_latency_ms:null,

@@ -51,6 +51,7 @@ export const vi = {
   },
   camera: {
     rejectionHints: {
+      face_not_tracked: 'Chưa theo dõi được khuôn mặt trong lượt ký. Đưa mặt vào khung rồi thử lại hoặc dùng Chạm.',
       hand_motion_unclear: 'Chuyển động tay chưa đủ rõ để xử lý. Giữ tay trong hình và thử lại cả câu.',
       model_score_low: 'Điểm nhận diện chưa đạt ngưỡng. Bạn có thể ký lại hoặc chuyển sang Chạm.',
       phrase_not_supported: 'Đầu ra nhận diện chưa khớp câu được hỗ trợ. Bạn có thể ký lại hoặc dùng Chạm.',

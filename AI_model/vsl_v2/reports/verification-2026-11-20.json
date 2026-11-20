@@ -1,0 +1,47 @@
+{
+  "kind": "verification_record_not_model_accuracy",
+  "checked_on": "2026-11-20",
+  "profile_id": "9e377812550b530d32d8ab035eb3d6237ff830275bd2371df6a90543e8e2f32e",
+  "checks": [
+    {
+      "command": "make check",
+      "backend_passed": 200,
+      "frontend_passed": 115,
+      "exit_code": 0
+    },
+    {
+      "command": "make check-v2",
+      "runtime_passed": 18,
+      "exit_code": 0
+    },
+    {
+      "command": "npm run build --prefix frontend",
+      "exit_code": 0
+    },
+    {
+      "command": "SIGNLY_CHROMIUM_PATH=Chrome npx playwright test",
+      "e2e_passed": 26,
+      "exit_code": 0,
+      "evidence_kind": "synthetic_software_checks"
+    }
+  ],
+  "report_sha256": {
+    "artifacts-recheck-2026-11-20.json": "a187d5cedc72bda65a7baa7cf79aab8b6353c1e5b5d67098944f18c4243d3617",
+    "controlled-perturbations-2026-11-20.json": "48b055091f160aaa26d71d2f64ad01a9990cfc3e8ad89a1c1186267bbb0b6fac",
+    "controlled-perturbations-q33-2026-11-20.json": "5767664922ad2455070a45e19acae637f593e67da436aad3a39156c04ae6413e",
+    "extractor-recheck-2026-11-20.json": "def4b50212831010131c7cb500a34a4956114cbe2988007a4ff64bf62a67aa99",
+    "http-recheck-2026-11-20.json": "0cb4993f4ec8022adc0aa48c36fbbe535c5dffa4edadaf01fb1a9e0b4bd7fbad",
+    "http-recheck-q33-2026-11-20.json": "a1e70255be3aa835990a4db8078ba8e3c48dd578204970ebb8ab814ce06e314f",
+    "source-availability-2026-11-20.json": "771ef6478b8cf3a441a37aab058748748113d28c3ff397937948b15f3eb83a65"
+  },
+  "webcam_trials_added": 0,
+  "final_trials_added": 0,
+  "real_phone_tested": false,
+  "https_lan_tested": false,
+  "clinical_validation": false,
+  "limitations": [
+    "E2E uses synthetic streams/responses or a blank canvas, not participant signing.",
+    "Public replay and controlled perturbations are already-opened development diagnostics.",
+    "Q-25 final participant trials and verified full-sentence VSL reference remain pending."
+  ]
+}

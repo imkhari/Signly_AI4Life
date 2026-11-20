@@ -1,5 +1,8 @@
 # Thử kỹ thuật camera V2 — Q-24/Q-25
 
+Cập nhật Q-33 ngày20/11/2026: profile hiện tại9e377812, chặn cả chuỗi thiếu toàn bộ mặt trước decoder; CSV có mã face_not_tracked. Ca âm tracking hợp lệ bị mã này không tính đạt. Không có lượt webcam mới, vẫn CANDIDATE. Đọc [READINESS-REVIEW.md](READINESS-REVIEW.md) và [REFERENCE-REQUEST.md](REFERENCE-REQUEST.md) trước thử dương tiếp. Nội dung các snapshot cũ phía dưới là lịch sử.
+
+
 Cập nhật 20/11/2026 — profile hiện tại dd575903 bổ sung mã Q-29 trong CSV, chưa có lượt mới. Batch5lượt đau ngực profile7537ba3f (0đúng,1Sốt sai,4từ chối) giữ ở baselines/, không bị thay thế bằng số0 của bản xuất mới. Nhận diện chưa được chứng minh cải thiện. Xem đầu RESULTS.md.
 
 Trạng thái **CANDIDATE**. Luồng sản phẩm Q-27 dùng cả câu để gợi ý nhiều trường; trang thử gửi cùng context intake và chấm gợi ý có cấu trúc sau khi hiển thị. Các bản xuất cũ vẫn đọc được bằng snapshot profile tương ứng. Profile đo trước 7537ba3f đã có 5 lượt CSV phát triển P01 cho câu đích đau ngực, 0 đúng, 1 nhầm Sốt và 4 từ chối; chưa có lượt cuối. Xem RESULTS.md và metrics.json. Có11ca âm profile4e4ebb được giữ nguyên tại baseline (5tay nghỉ+5cử động thông thường+1vẫy chào,cả11UNKNOWN), không chuyển thành kết quả luồng nhận cả câu. Chưa có lượt dương được xác minh cách ký VSL hoặc thử cuối. Hiện nhóm chưa biết VSL (Q-26); thử kỹ thuật nội bộ không chứng minh khả năng dùng VSL hoặc hiệu quả bệnh viện.
@@ -97,4 +100,4 @@ Lỗi “Không thể mở nhận diện” thuộc bước nạp detector. Bấ
 
 ## Mã chẩn lỗi trong bản xuất
 
-Cột cuối diagnostic_code là phần bổ sung tùy chọn, không đổi reason hoặc cách tính đúng/sai. CSV cũ thiếu cột vẫn được đọc theo snapshot cũ. Chỉ ba mã Q-29 cố định được chấp nhận, không nhận văn bản tự do. Trống nghĩa là chưa ghi lý do chi tiết, không phải model đã xử lý thành công. Công cụ tổng hợp thêm diagnostic_counts; lỗi worker vẫn là unmeasurable như trước.
+Cột cuối diagnostic_code là phần bổ sung tùy chọn, không đổi reason hoặc cách tính đúng/sai. CSV cũ thiếu cột vẫn được đọc theo snapshot cũ. Chỉ các mã Q-29/Q-33 cố định được chấp nhận, không nhận văn bản tự do. Trống nghĩa là chưa ghi lý do chi tiết, không phải model đã xử lý thành công. Công cụ tổng hợp thêm diagnostic_counts; lỗi worker vẫn là unmeasurable như trước.

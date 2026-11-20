@@ -54,6 +54,9 @@ def map_candidate(result: dict[str, Any], context: str | None) -> dict[str, Any]
         "confidence": 0.0,
         "model_source": "vsl_v2_learned_translation",
     }
+    if context == "intake" and result.get("reason") == "no_face_landmarks":
+        unknown["suggested_next_step"] = "face_not_tracked"
+        return unknown
     if context == "intake" and result.get("reason") == "no_clear_hand_motion":
         unknown["suggested_next_step"] = "hand_motion_unclear"
         return unknown

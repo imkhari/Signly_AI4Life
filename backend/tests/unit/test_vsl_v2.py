@@ -100,6 +100,8 @@ def test_intake_distinguishes_missing_worker_result_from_abstention(monkeypatch,
     "decoded_result,hint",
     [
         ({"translation": "", "mean_token_probability": 0,
+          "reason": "no_face_landmarks"}, "face_not_tracked"),
+        ({"translation": "", "mean_token_probability": 0,
           "reason": "no_clear_hand_motion"}, "hand_motion_unclear"),
         (decoded("tôi bị đau ngực", 0.69), "model_score_low"),
         (decoded("tôi bị đau ngực và ho"), "phrase_not_supported"),

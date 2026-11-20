@@ -185,6 +185,7 @@ it('does not begin a new sentence using stale tracking readiness',async () => {
   });
 
   it.each([
+    ['face_not_tracked','Chưa theo dõi được khuôn mặt'],
     ['hand_motion_unclear','Chuyển động tay chưa đủ rõ'],
     ['model_score_low','Điểm nhận diện chưa đạt ngưỡng'],
     ['phrase_not_supported','Đầu ra nhận diện chưa khớp câu được hỗ trợ'],

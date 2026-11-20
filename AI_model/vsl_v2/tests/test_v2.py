@@ -107,6 +107,30 @@ class V2Tests(unittest.TestCase):
             )
             self.assertEqual(len(result), count)
 
+    def test_entirely_missing_face_is_rejected_before_decoder(self):
+        raw = np.load(FIXTURES / "SENT101.npz", allow_pickle=False)["frames"].copy()
+        raw[:, 75:285] = 0
+        engine = Mock()
+        result = predict_request(
+            engine, {"frames": raw, "timestamps_ms": np.arange(len(raw)) * 1000 / 30}
+        )
+        self.assertEqual(result["reason"], "no_face_landmarks")
+        self.assertEqual(result["translation"], "")
+        engine.decode_frames.assert_not_called()
+
+    def test_face_gate_does_not_require_every_frame_or_change_valid_input(self):
+        original = np.load(FIXTURES / "SENT101.npz", allow_pickle=False)["frames"]
+        engine = Mock()
+        for missing in (False, True):
+            raw = original.copy()
+            if missing:
+                raw[len(raw) // 3:2 * len(raw) // 3, 75:285] = 0
+            request = {"frames": raw, "timestamps_ms": np.arange(len(raw)) * 1000 / 30}
+            prepared = prepare_sequence(request)
+            predict_request(engine, request)
+            np.testing.assert_array_equal(engine.decode_frames.call_args.args[0], prepared)
+        self.assertEqual(engine.decode_frames.call_count, 2)
+
     def test_rest_and_static_input_do_not_call_the_decoder(self):
         engine = Mock()
         for raw in (np.zeros((30, 411)), np.full((30, 411), 0.5)):
