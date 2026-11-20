@@ -1,0 +1,63 @@
+{
+  "kind": "public_reference_availability_not_vsl_validation",
+  "checked_on": "2026-11-20",
+  "vslgh": {
+    "commit": "6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a",
+    "tree_api": "https://api.github.com/repos/nguyentheanh822/Vietnamese-Sign-Language-Translation/git/trees/6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a?recursive=1",
+    "tree_truncated": false,
+    "mp4_mov_webm_avi_entries": 0,
+    "public_npy_count_verified": 4,
+    "public_npy_bytes": 612080,
+    "annotations": [
+      {
+        "clip_id": "SENT101_S06_R01_F",
+        "sha256": "a44d3ba376c368e9e6ba27db42d158328fc3d8ee7c4418ebeed8d64511cfc01b"
+      },
+      {
+        "clip_id": "SENT103_S06_R01_F",
+        "sha256": "687afda9becf1f788013503e540f01111481aaea236eefa919e656c56586c299"
+      },
+      {
+        "clip_id": "SENT105_S06_R01_F",
+        "sha256": "9d7f6be0ba1d236eb86c7f755f65d093ad37224eca7237961200e877dddb33e9"
+      },
+      {
+        "clip_id": "SENT115_S06_R01_F",
+        "sha256": "40bcb81b001f6eb97ca9c8647014e2b9a678bedb50c7fd304c60d1ca1b459777"
+      }
+    ]
+  },
+  "qipedc": {
+    "url": "https://qipedc.moet.gov.vn/dictionary/getAll",
+    "method": "POST form, group=20",
+    "search_counts": {
+      "đau ngực": 0,
+      "đau đầu": 0,
+      "khó thở": 0,
+      "ngực": 0,
+      "đau": 7,
+      "thở": 2,
+      "sốt": 1
+    },
+    "full_target_sentence_found": false,
+    "media_redistribution_or_training_permission_verified": false
+  },
+  "medical_dictionary": {
+    "url": "https://tudienngonngukyhieu.com/phan-loai/du-an-250-ky-hieu-y-khoa-60",
+    "index_readable": true,
+    "target_detail_access": "403 from direct request/cache miss via web tool",
+    "verified_full_target_sentence": false
+  },
+  "hanoi_dictionary": {
+    "url": "https://talkingdictionary.swarthmore.edu/vietnamese_sign/?lang=en",
+    "owner": "Hanoi Sign Language community",
+    "reuse_requires_permission": true,
+    "media_downloaded": false,
+    "verified_full_target_sentence": false
+  },
+  "limitations": [
+    "Search results do not establish global absence of videos.",
+    "Annotations and landmark plots do not certify a live participant signing correctly.",
+    "No participant media or landmarks collected."
+  ]
+}

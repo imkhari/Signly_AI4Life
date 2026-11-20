@@ -14,11 +14,30 @@ COMMIT = "6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a"
 BASE = f"https://raw.githubusercontent.com/nguyentheanh822/Vietnamese-Sign-Language-Translation/{COMMIT}/data/keypoints/"
 
 
+def select_identifiers(
+    report: dict, manifest: dict[str, str], requested: list[str] | None
+) -> list[str]:
+    identifiers = [row["clip_id"] for row in report["predictions"]]
+    if len(identifiers) != 300 or len(set(identifiers)) != 300:
+        raise ValueError("Expected exactly300 unique public replay identifiers")
+    for identifier in identifiers:
+        if Path(identifier).name != identifier or identifier not in manifest:
+            raise ValueError("Unsafe/unknown public sample identifier")
+    if requested is None:
+        return identifiers
+    if not requested or len(requested) != len(set(requested)):
+        raise ValueError("Select a nonempty list of unique replay identifiers")
+    if any(identifier not in identifiers for identifier in requested):
+        raise ValueError("Only identifiers from the pinned replay may be fetched")
+    return requested
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Tải300NPY public để tái lập replay; không tải video"
     )
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--clip", action="append", help="Chỉ tải ID replay đã ghim; có thể lặp")
     args = parser.parse_args()
     report = json.loads((ROOT / "AI_model/vsl_v2/reports/greedy-replay.json").read_text())
     manifest = {
@@ -29,12 +48,7 @@ def main() -> None:
             ).read_text()
         )
     }
-    identifiers = [row["clip_id"] for row in report["predictions"]]
-    if len(identifiers) != 300 or len(set(identifiers)) != 300:
-        raise ValueError("Expected exactly300 unique public replay identifiers")
-    for identifier in identifiers:
-        if Path(identifier).name != identifier or identifier not in manifest:
-            raise ValueError("Unsafe/unknown public sample identifier")
+    identifiers = select_identifiers(report, manifest, args.clip)
     args.output.mkdir(parents=True, exist_ok=True)
 
     def fetch(identifier: str) -> int:

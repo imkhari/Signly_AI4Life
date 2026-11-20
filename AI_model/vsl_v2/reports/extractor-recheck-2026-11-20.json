@@ -1,0 +1,105 @@
+{
+  "kind": "public_video_extractor_comparison",
+  "video_sha256": "7ec1b1aeb4b8fc96eb9fa5d2e7e734c5fb07d41f3b1401a1396a482056a5bf11",
+  "frames": 110,
+  "source_fps": 29.97002997002997,
+  "groups": {
+    "pose": {
+      "legacy_present_frames": 110,
+      "browser_present_frames": 110,
+      "paired_points": 2750,
+      "mean_abs_xy_difference": 0.007189562282779,
+      "mean_abs_z_difference": 0.22548163096542967,
+      "mean_abs_xyz_difference": 0.0799535851769959
+    },
+    "face": {
+      "legacy_present_frames": 110,
+      "browser_present_frames": 110,
+      "paired_points": 7700,
+      "mean_abs_xy_difference": 0.0023206306413396612,
+      "mean_abs_z_difference": 0.0012039033916005485,
+      "mean_abs_xyz_difference": 0.001948388224759957
+    },
+    "left_hand": {
+      "legacy_present_frames": 79,
+      "browser_present_frames": 108,
+      "paired_points": 1638,
+      "mean_abs_xy_difference": 0.0023124653013634595,
+      "mean_abs_z_difference": 0.0007671041389534861,
+      "mean_abs_xyz_difference": 0.0017973449138934683
+    },
+    "right_hand": {
+      "legacy_present_frames": 108,
+      "browser_present_frames": 109,
+      "paired_points": 2268,
+      "mean_abs_xy_difference": 0.0018553883362909683,
+      "mean_abs_z_difference": 0.0005826739683307651,
+      "mean_abs_xyz_difference": 0.0014311502136375674
+    }
+  },
+  "predictions": {
+    "legacy": {
+      "gloss": "ĐAU",
+      "suggestion": {
+        "chief_complaint_code": "PAIN",
+        "pain_present": true,
+        "body_regions": []
+      },
+      "rejection_hint": null
+    },
+    "browser": {
+      "gloss": "UNKNOWN",
+      "suggestion": null,
+      "rejection_hint": "phrase_not_supported"
+    },
+    "legacy_web": {
+      "gloss": "ĐAU",
+      "suggestion": {
+        "chief_complaint_code": "PAIN",
+        "pain_present": true,
+        "body_regions": []
+      },
+      "rejection_hint": null
+    }
+  },
+  "legacy_web_groups": {
+    "pose": {
+      "legacy_present_frames": 110,
+      "browser_present_frames": 110,
+      "paired_points": 2750,
+      "mean_abs_xy_difference": 0.0024399551315741107,
+      "mean_abs_z_difference": 0.01275520504781426,
+      "mean_abs_xyz_difference": 0.005878371770320827
+    },
+    "face": {
+      "legacy_present_frames": 110,
+      "browser_present_frames": 110,
+      "paired_points": 7700,
+      "mean_abs_xy_difference": 0.0011041998534233538,
+      "mean_abs_z_difference": 0.0005918454813356616,
+      "mean_abs_xyz_difference": 0.0009334150627274565
+    },
+    "left_hand": {
+      "legacy_present_frames": 79,
+      "browser_present_frames": 74,
+      "paired_points": 1554,
+      "mean_abs_xy_difference": 0.0021112719059297323,
+      "mean_abs_z_difference": 0.0006284915596347128,
+      "mean_abs_xyz_difference": 0.0016170117904980592
+    },
+    "right_hand": {
+      "legacy_present_frames": 108,
+      "browser_present_frames": 108,
+      "paired_points": 2247,
+      "mean_abs_xy_difference": 0.0018665944211579558,
+      "mean_abs_z_difference": 0.0004672712587592616,
+      "mean_abs_xyz_difference": 0.0014001533670250576
+    }
+  },
+  "limitations": [
+    "Public-video audit, not live signing or clinical validation.",
+    "Identical RGB frames in the same order. Worker timestamps use source FPS.",
+    "XYZ differences describe extractor drift, not recognition accuracy.",
+    "Worker probe only. Browser capture rejection is not reproduced."
+  ]
+}
