@@ -3,7 +3,7 @@
 > AI agent: đọc file này đầu mỗi phiên, **thêm mục mới ở đầu bảng** khi kết thúc phiên. Không xóa lịch sử.
 
 ## Trạng thái hiện tại
-- Giai đoạn đang làm: **P9 — B0+B1 đã triển khai; C đã hoàn tất M0/M1 và kỹ thuật M2, M3 có11ca âm baseline4e4ebb; luồng câu Q-27 mới đã triển khai, người dùng báo3lượt đúng Đau+Ngực liên tiếp sau sửa,0lượt CSV mới; M5 CANDIDATE; D có bộ thử nội bộ, E đã kiểm phần mềm localhost và chuẩn bị bàn giao**
+- Giai đoạn đang làm: **P9 — B0+B1 đã triển khai; C đã hoàn tất M0/M1 và kỹ thuật M2, M3 có11ca âm baseline4e4ebb; luồng câu Q-27 mới đã triển khai, người dùng báo4lượt Đau+Ngực đúng sau sửa và6ca âm không gợi ý,0lượt CSV mới; M5 CANDIDATE; D có bộ thử nội bộ, E đã kiểm phần mềm localhost và chuẩn bị bàn giao**
 - Phase đã DONE: **P0 (Kickoff & phỏng vấn)**, **P1 (Bootstrap monorepo)**, **P2 (Backend domain & Parser)**, **P3 (AI Orchestration & Safety Guardrails)**, **P4 (Realtime WebSocket & Session REST)**, **P5 (Frontend Foundation)**, **P6 (Patient UI)**, **P7 (Nurse UI & Dashboard)**, **P8 (Camera VSL Mock & TTS)**, **P9 (Integration, Demo Script & Hardening)**
 - UI/slide: **Bộ slide học thuật mới tại `artifacts/ai4life/`: 16 slide chính + 5 phụ lục ẩn, demo cuối ở slide 16; có notes, nguồn và kịch bản 3/7 phút.**
 - Còn chờ: **Ba lượt trên hai thiết bị HTTPS LAN, ngắt Internet bên ngoài, camera/người ký thật, video dự phòng.**
@@ -11,6 +11,7 @@
 ## Nhật ký
 | Ngày | Người/Agent | Phase | Việc đã làm | Việc tiếp theo | Ghi chú / vấn đề |
 |---|---|---|---|---|---|
+| 2026-11-20 | Codex | P9 — hoàn tất diễn tập nhanh | Sau6ca âm tự báo, người dùng xác nhận lượt đau ngực cuối hiện đúng. Tổng sau sửa4ca Ngực đúng,3ca bụng PAIN/vùng chưa rõ,3tay nghỉ+3chỉnh áo không gợi ý. | Khi khóa demo, đo có CSV và kiểm các câu đích/người thử theo protocol; diễn tập sân khấu cùng thiết bị. | Tự báo, chưa CSV/timing/profile/xác minhVSL. CANDIDATE, chưa đạt Q-25 hoặc accuracy chính thức. |
 | 2026-11-20 | Codex | P9 —3lượt chỉnh áo tự báo | Người dùng báo3lượt chỉnh áo đều không có gợi ý triệu chứng. Tổng6lượt âm tự báo sau sửa:3tay nghỉ+3chỉnh áo. | Kiểm thêm1lượt đau ngực sau ca âm để xem camera vẫn tạo được gợi ý dương. | Chưa có CSV/reason/frame/timing/profile, không tăng metrics hoặc suy false-positive rate. |
 | 2026-11-20 | Codex | P9 —3lượt tay nghỉ tự báo | Người dùng báo3lượt tay nghỉ không có triệu chứng. Ghi kết quả quan sát qua lời báo. | Thử cử động thông thường trong khung và ghi cả gợi ý sai nếu có. | Chưa có reason/CSV/frame/timing/profile, chưa xác nhận ca âm hợp lệ theo protocol; không cộng metrics hoặc baseline cũ. |
 | 2026-11-20 | Codex | P9 —3lượt ca bụng tự báo | Người dùng báo3lượt theo mẫu đau bụng đều ra PAIN/true/vùng chưa rõ, khớp ánh xạ hiện tại. Ghi rõ gợi ý giống câu đau lưng chung nên chưa kiểm được vị trí/câu decoder. | Hoàn tất chọn vùng bằng Chạm hoặc thử ca dương khác có nguồn ký. | Chưa có CSV/timing/profile/xác minhVSL, không tăng accuracy hoặc metrics. |

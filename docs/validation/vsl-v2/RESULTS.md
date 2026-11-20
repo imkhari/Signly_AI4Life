@@ -1,5 +1,13 @@
 # Kết quả camera V2
 
+## Hoàn tất đợt diễn tập nhanh sau sửa Web legacy
+
+Ngày20/11/2026, sau3lượt tay nghỉ và3lượt chỉnh áo không có gợi ý, người dùng thử lại câu đau ngực theo hướng dẫn và trả lời “có ok có hiện”. Trong ngữ cảnh câu hỏi yêu cầu Có đau/Ngực, ghi thêm1lượt trả đúng gợi ý theo lời báo. Tổng ca đau ngực sau sửa có4lượt tự báo đúng:3liên tiếp ban đầu và1lượt sau nhóm âm. Các lượt này không bao gồm ảnh Ngực đúng hoặc nhầm Đầu từ phiên bản trước.
+
+Tổng đợt diễn tập tự báo gồm4lượt đau ngực đúng gợi ý,3lượt ca bụng có PAIN/vùng chưa rõ,3lượt tay nghỉ và3lượt chỉnh áo không có gợi ý. Ca bụng chưa xác nhận được câu decoder hoặc vị trí. Chưa có CSV, profile của trang, mã người/máy/lượt, timing hoặc xác minh VSL. Không tính accuracy, không tăng metrics và không tuyên bố đạt Q-25.
+
+Kết quả hỗ trợ tiếp tục diễn tập kịch bản đau ngực với cùng người và thiết bị. Chất lượng model vẫn CANDIDATE, kiểm chứng đầy đủ còn cần các câu đích khác, split/người thử và ca âm theo protocol. Kết quả người dùng báo đã đi hết hai màn hình trước đó được giữ như xác nhận diễn tập, chưa phải đánh giá hiệu quả bệnh viện.
+
 ## Ba lượt chỉnh áo không có gợi ý theo lời người dùng
 
 Ngày20/11/2026, sau hướng dẫn chỉnh áo/cử động thông thường trong khung khoảng3giây, người dùng báo “3 lượt chỉnh áo đều không có gợi ý triệu chứng”. Ghi thêm3lượt diễn tập không thấy gợi ý; tổng6lượt âm tự báo sau bản sửa gồm3tay nghỉ và3chỉnh áo. Chưa có CSV, reason, số frame/timing hoặc profile của trang nên chưa xác nhận đủ điều kiện NEG_MOTION theo protocol. Không cộng vào metrics hoặc11lượt baseline cũ. Chưa kết luận camera không có false positive ở người/điều kiện khác.
