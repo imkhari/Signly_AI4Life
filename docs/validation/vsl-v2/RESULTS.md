@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Camera Web legacy đã tích hợp
+
+Theo Q-32, camera dùng Holistic Web legacy0.5.1675471629 với toàn bộ JS/WASM/model cục bộ. Profile `0663da036379803b7c9bfd76caa9b4a36ebdb6ec623f739758bf509f1bf9a2c5` có0lượtCSV. Adapter xử lý gửi bất đồng bộ một lần, bỏ callback cũ sau stop, chờ send hoàn tất trước close và dọn canvas.
+
+make check186backend+109frontend,11runtime,build và8E2E camera qua. E2E thực nạp legacy/WASM khi chặn HTTPS bên ngoài, xử lý khung tổng hợp, giải phóng stream và kiểm luồng gợi ý/xác nhận hai phía với response mô phỏng. Công cụ so cùng110ảnh công khai đã dùng chính HolisticDetector production và V2 thật, tiếp tục trả PAIN/true/chưa rõ vùng. Camera người ký thật vẫn chờ thử. Kết quả mẫu đau bụng không kết luận cho câu đau ngực.
+
 ## Đã tái hiện khác biệt extractor trên video công khai
 
 Ngày20/11/2026, theo Q-30/Q-31, chạy cùng110ảnh RGB của video QIPEDC D0356 “đau bụng” qua Holistic Python0.10.21, Tasks Web hiện có và Holistic Web legacy. Cùng V2/worker/mapper, Python và Web legacy trả PAIN/true, chưa rõ vùng. Tasks Web trả UNKNOWN/phrase_not_supported. ChênhXYZ thân trung bình so với Python lần lượt0,07995 và0,00535.

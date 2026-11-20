@@ -49,3 +49,7 @@ HolisticLandmarker dùng `@mediapipe/tasks-vision` hiện có, model task và WA
 ## Môi trường kiểm extractor — Q-30/Q-31
 
 MediaPipe Python0.10.21, OpenCV contrib4.11.0.86 và NumPy1.26.4 trong AI_model/extractor-runtime/.venv (Python3.12). Dependency đầy đủ pin trong requirements-lock.txt cùng thư mục. @mediapipe/holistic0.5.1675471629 được tải vào AI_model/extractor-runtime/web để kiểm thêm bản Web legacy. Chỉ chạy offline trên video tham chiếu công khai. Công cụ Playwright tận dụng dependency frontend hiện có và HolisticDetector.detectFrame của app.
+
+## Camera production sau Q-32
+
+@mediapipe/holistic0.5.1675471629 đã được duyệt tích hợp. HolisticDetector dùng adapter LegacyHolistic, script/model/WASM cục bộ trong frontend/public/models/holistic-legacy. Các tệp và giấy phép Apache-2.0 có SHA256 trong asset-manifest.json. TasksHolisticDetector giữ cho công cụ so sánh. Thiết lập không dùng CDN. E2E kiểm bằng cách chặn toàn bộ HTTPS bên ngoài khi nạp và suy luận. Khả năng khởi tạo phụ thuộc trình duyệt/WebGL; lỗi đi theo thông báo dùng Chạm đã có.

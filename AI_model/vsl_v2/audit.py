@@ -29,10 +29,12 @@ def audit(root: Path = ROOT) -> dict[str, Any]:
     tokens = json.loads(tokens_path.read_text())
     checkpoint = root / "AI_model/checkpoints/vsl_v2.pt"
     artifacts = []
-    for path, expected in (
+    inputs = [
         (checkpoint, model["runtime_checkpoint_sha256"]),
         (root / asset["path"], asset["sha256"]),
-    ):
+    ]
+    inputs.extend((root / item["path"], item["sha256"]) for item in asset.get("legacy_files", []))
+    for path, expected in inputs:
         actual = sha256(path) if path.is_file() else None
         artifacts.append(
             {

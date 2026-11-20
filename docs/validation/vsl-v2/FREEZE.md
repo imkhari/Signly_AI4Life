@@ -7,7 +7,7 @@ Profile kỹ thuật hiện tại được ghi trong `frontend/public/vsl-valida
 
 - Checkpoint: `AI_model/checkpoints/vsl_v2.pt`, SHA256 `d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246`, không đổi weights.
 - Decoder tiếng Việt442 token, greedy; CTC374 không xuất gloss. Norm2 vai9/10; mọi frame phải có hai điểm vai hợp lệ, không dùng width gần0.
-- Resize toàn khung360×360 theo source đã pin, input không flip; preview giữ tỷ lệ video và lật gương. Extractor web khác legacy nguồn nên vẫn cần thử trực tiếp.
+- Resize toàn khung360×360 theo source đã pin, input không flip; preview giữ tỷ lệ video và lật gương. Camera hiện dùng Web legacy theo Q-32; vẫn cần thử trực tiếp theo profile mới.
 - Capture: Bắt đầu ký/Xong câu, một inference/câu, tối đa6giây/180frame, ít nhất24frame/800ms, không có gap>500ms, mất tracking/vai từ chối cả lượt. Không tự gửi đoạn câu bị cắt, không lặp cùng clip để tạo cảm giác ổn định.
 - Điểm0,7 và guard hand motion/presence hiện có giữ nguyên, chưa hiệu chỉnh. JSON profile ở `frontend/public/vsl-validation-profile.json`, bản lưu `profiles/<profile-id>.json` ràng buộc code, policy và artifacts; chạy prepare trước buổi thử.
 - Config train gốc/class order CTC và annotation65reference còn thiếu; không diễn giải replay thành xác minh nguồn train đầy đủ.
@@ -73,3 +73,7 @@ Người dùng gửi đầy đủT0001–T0005 cùng profile4e4ebb. Kiểm T0001
 ## Lịch sử kỹ thuật Q-27 ngày 19/11
 
 Profile mới: `509264a98b707ebdb6c80c1656dcaa075e3ce5e7afd38a7c36fa1ce5e96105dd`.173test backend+96frontend,8runtime,build và18E2E qua; có luồng gợi ý cả câu, patch đồng thời, hỏi bổ sung và xác nhận hai phía. E2E camera mô phỏng không điền vào số người/lượt thật. Model giữ nguyên checkpoint; trạng thái CANDIDATE, metrics mới0live. Baseline4e4ebb giữ nguyên11ca âm cùng provenance, không bị xóa hoặc chuyển thành bằng chứng cho bản mới.
+
+## Camera legacy theo Q-32
+
+Profile hiện tại 0663da036379803b7c9bfd76caa9b4a36ebdb6ec623f739758bf509f1bf9a2c5 có0lượtCSV. Giữ trọng số V2, chuyển extractor sang Web legacy đã được duyệt. CANDIDATE; ảnh gợi ý Ngực và lời báo Đầu trước đây thuộc phiên bản trước. Không chuyển chúng thành kết quả bản mới.

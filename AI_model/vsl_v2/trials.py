@@ -49,6 +49,7 @@ SOURCES = [
     "frontend/src/features/patient/components/SymptomsStep.tsx",
     "frontend/src/features/patient/PatientPage.tsx",
     "frontend/src/services/vsl/HolisticDetector.ts",
+    "frontend/src/services/vsl/LegacyHolistic.ts",
     "frontend/src/services/vsl/SentenceCapture.ts",
     "frontend/src/features/patient/components/VSLCameraView.tsx",
     "frontend/src/services/vsl/validationProtocol.json",

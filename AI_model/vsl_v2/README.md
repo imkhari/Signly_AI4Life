@@ -32,9 +32,9 @@ Lock được kiểm trên Python 3.15.2/ARM64. Máy khác cần wheel tương t
 
 Mã kiến trúc và danh mục từ tiếng Việt từ [VSL-GH commit 6c351e6](https://github.com/nguyentheanh822/Vietnamese-Sign-Language-Translation/tree/6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a), MIT, giữ `vendor/LICENSE`. `translation-vocabulary.json` chứa đúng thứ tự 442 token đã xác minh hành vi. **Không dùng CTC374 để xuất gloss** vì chưa có class order tương ứng được xác minh. Vocab gloss232 của nguồn công khai không được tráo vào head374.
 
-Các chỉ số pose25/face70/hands21+21 theo `source/extract_keypoints.py` của cùng nguồn. Resize toàn bộ khung hình về360×360 theo source extractor đã pin, không center-crop hoặc lật input; preview giữ tỷ lệ video và lật gương. HolisticLandmarker Tasks trên trình duyệt khác phiên bản extractor legacy của dataset; tác động miền dữ liệu cần kiểm trên camera thật.
+Các chỉ số pose25/face70/hands21+21 theo `source/extract_keypoints.py` của cùng nguồn. Resize toàn bộ khung hình về360×360 theo source extractor đã pin, không center-crop hoặc lật input; preview giữ tỷ lệ video và lật gương. Theo Q-32, camera thử đã chuyển sang Holistic Web legacy0.5.1675471629 sau phép so sánh một video công khai. Tác động trên webcam thật vẫn cần đánh giá.
 
-Asset holistic cục bộ lấy từ [model MediaPipe chính thức](https://storage.googleapis.com/mediapipe-models/holistic_landmarker/holistic_landmarker/float16/1/holistic_landmarker.task), cùng package `@mediapipe/tasks-vision` đã có. Xem [ví dụ chính thức](https://github.com/google-ai-edge/mediapipe-samples-web/blob/main/src/tasks/holistic-landmarker.ts). Nạp WASM và model từ server nội bộ, GPU lỗi thử CPU, không CDN. Hash asset ở `asset-manifest.json`.
+Asset Tasks được giữ để đối chiếu, lấy từ [model MediaPipe chính thức](https://storage.googleapis.com/mediapipe-models/holistic_landmarker/holistic_landmarker/float16/1/holistic_landmarker.task), cùng package `@mediapipe/tasks-vision` đã có. Xem [ví dụ chính thức](https://github.com/google-ai-edge/mediapipe-samples-web/blob/main/src/tasks/holistic-landmarker.ts). Nạp WASM và model từ server nội bộ, GPU lỗi thử CPU, không CDN. Hash asset ở `asset-manifest.json`.
 
 ## Bằng chứng chất lượng và giới hạn
 
@@ -72,3 +72,5 @@ backend/.venv/bin/python -m AI_model.vsl_v2.fetch_test_subset --output /tmp/vsl-
 ```
 
 `pipeline-after.json` kiểm8câu thuộc allowlist qua worker với timestamp giả định30FPS; không thay thế video có FPS đã xác minh hoặc camera thật.
+
+Camera hiện tại dùng JS/WASM/model từ frontend/public/models/holistic-legacy, pin @mediapipe/holistic0.5.1675471629 theo Q-32. asset-manifest.json ghi legacy_files và checksum. Cấu hình, số liệu và giới hạn phép đo tại docs/validation/vsl-v2/EXTRACTOR-COMPARISON.md.
