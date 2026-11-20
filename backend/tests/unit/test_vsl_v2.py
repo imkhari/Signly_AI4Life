@@ -82,6 +82,17 @@ def test_sentence_response_contract_and_legacy_context(monkeypatch) -> None:
         }).status_code == 422
 
 
+@pytest.mark.parametrize("result, hint", [({}, "worker_unavailable"), (decoded(""), None)])
+def test_intake_distinguishes_missing_worker_result_from_abstention(monkeypatch, result, hint):
+    monkeypatch.setattr(v2_runtime, "infer", AsyncMock(return_value=result))
+    with TestClient(app) as client:
+        body = client.post("/api/vsl/predict", json={
+            "frames": frames(), "context_step": "intake",
+        }).json()
+    assert body["suggested_next_step"] == hint
+    assert body["gloss"] == "UNKNOWN" and body["intake_suggestion"] is None
+
+
 def test_structured_suggestion_cannot_deny_pain_or_attach_unrelated_location() -> None:
     from pydantic import ValidationError
 

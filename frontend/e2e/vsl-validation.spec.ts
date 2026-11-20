@@ -14,9 +14,10 @@ async function syntheticCamera(page:import('@playwright/test').Page) {
       onResults(fn){this.callbacks.add(fn);return ()=>this.callbacks.delete(fn);}
       start(){this.timer=setInterval(()=>{
         const points=Array(411).fill(.5);points[27]=.4;points[30]=.6;
+        points.fill(0,348);
         if(window.testMissingShoulders) points.fill(0,27,33);
         if(window.testMissingHands) points.fill(0,285);
-        const observation={frame:{timestamp_ms:performance.now(),landmarks:points},hands:window.testMissingHands ? [] : [Array.from({length:21},()=>({x:.5,y:.5,z:0}))]};
+        const observation={frame:{timestamp_ms:performance.now(),landmarks:points},hands:window.testMissingHands ? [] : [Array.from({length:21},()=>({x:.25,y:.5,z:0}))]};
         window.testObservedFrames=(window.testObservedFrames||0)+1;
         for(const fn of this.callbacks)fn(observation);
       },40);}
@@ -31,17 +32,31 @@ test('guided synthetic trial uses the real capture UI, keeps reference out of re
     requests++;
     const body=route.request().postDataJSON();
     expect(Object.keys(body).sort()).toEqual(['context_step','frames']);
+    expect(body.context_step).toBe('intake');
     expect(body.frames.length).toBeGreaterThanOrEqual(24);
     expect(body.frames[0].landmarks).toHaveLength(411);
     await route.fulfill({json:{success:true,gloss:'ĐAU',label_vi:'Đau / Nhức',confidence:.95,
+      intake_suggestion:{chief_complaint_code:'PAIN',pain_present:true,body_regions:['CHEST']},
       model_source:'vsl_v2_learned_translation',latency_ms:25}});
   });
   await page.goto('/vsl-validation?evidence=synthetic');
   await expect(page.getByText('Đã nạp cấu hình thử. Chọn mã người và loại lượt.')).toBeVisible();
   await page.getByRole('checkbox').check();
-  await page.getByLabel('Loại lượt thử').selectOption('HEAD_SYMPTOM');
+  await page.getByLabel('Loại lượt thử').selectOption('CHEST_LOCATION');
   await page.getByRole('button',{name:'Bắt đầu lượt thử',exact:true}).click();
   const begin=page.getByRole('button',{name:'Bắt đầu ký',exact:true});await expect(begin).toBeEnabled();
+  const tracking=page.getByTestId('vsl-tracking');
+  await expect(tracking).toContainText('Tay trái');await expect(tracking).not.toContainText('Tay phải');
+  const geometry=await page.getByTestId('vsl-video-element').evaluate(video=>{
+    const canvas=video.parentElement!.querySelector('canvas')!;
+    const ctx=canvas.getContext('2d')!;
+    const mirror=(el:Element)=>getComputedStyle(el).scale.startsWith('-1') ||
+      new DOMMatrix(getComputedStyle(el).transform).a===-1;
+    return {video:mirror(video),overlay:mirror(canvas),aligned:video.getBoundingClientRect().x===canvas.getBoundingClientRect().x &&
+      video.getBoundingClientRect().width===canvas.getBoundingClientRect().width,
+      wrist:ctx.getImageData(90,180,1,1).data[3],opposite:ctx.getImageData(270,180,1,1).data[3]};
+  });
+  expect(geometry).toEqual({video:true,overlay:true,aligned:true,wrist:255,opposite:0});
   await begin.click();
   await expect(page.getByRole('timer')).toContainText('Còn');
   await page.screenshot({path:'test-results/vsl-validation-countdown.png',fullPage:true});
@@ -49,10 +64,9 @@ test('guided synthetic trial uses the real capture UI, keeps reference out of re
   await expect.poll(() => page.evaluate(() => (window as unknown as {testObservedFrames:number}).testObservedFrames)).toBeGreaterThan(start+28);
   expect(requests).toBe(0);
   await page.getByRole('button',{name:'Xong câu',exact:true}).click();
-  await expect(page.getByText(/T0001.*HEAD_SYMPTOM: ĐAU.*Khớp nhãn dự kiến/)).toBeVisible();
+  await expect(page.getByText(/T0001.*CHEST_LOCATION: PAIN\+CHEST.*Khớp nhãn dự kiến/)).toBeVisible();
   await expect(begin).toBeDisabled();expect(requests).toBe(1);
-  await page.getByRole('button',{name:'Nhận',exact:true}).click();
-  await page.getByTestId('btn-apply-vsl-glosses').click();
+  await page.getByRole('button',{name:'Dùng thông tin này',exact:true}).click();
   await expect(page.getByText('Đã thử thao tác Nhận/Lưu; không tạo phiếu bệnh nhân.')).toBeVisible();
   const downloadEvent=page.waitForEvent('download');
   await page.getByRole('button',{name:'Tải kết quả CSV'}).click();

@@ -1,5 +1,5 @@
 {
-  "version": "vsl-v2-internal-1",
+  "version": "vsl-v2-intake-2",
   "criteria_approval": "Q-25/D-026",
   "cohort": "internal",
   "participants": {
@@ -31,63 +31,63 @@
       "id": "HEAD_SYMPTOM",
       "label": "Đau đầu",
       "kind": "positive",
-      "context": "symptom",
-      "expected": "ĐAU"
+      "context": "intake",
+      "expected": "PAIN+HEAD"
     },
     {
       "id": "CHEST_LOCATION",
-      "label": "Vị trí đau ngực",
+      "label": "Tôi bị đau ngực",
       "kind": "positive",
-      "context": "location",
-      "expected": "NGỰC"
+      "context": "intake",
+      "expected": "PAIN+CHEST"
     },
     {
       "id": "BREATH_SYMPTOM",
       "label": "Khó thở",
       "kind": "positive",
-      "context": "symptom",
-      "expected": "KHÓ-THỞ"
+      "context": "intake",
+      "expected": "BREATH_DIFFICULTY"
     },
     {
       "id": "FEVER_DIAGNOSTIC",
       "label": "Sốt — kiểm lỗi đã biết",
       "kind": "diagnostic",
-      "context": "symptom",
-      "expected": "SỐT"
+      "context": "intake",
+      "expected": "FEVER"
     },
     {
       "id": "NEG_REST",
       "label": "Tay nghỉ trong khung",
       "kind": "negative_valid",
-      "context": "symptom",
+      "context": "intake",
       "expected": "UNKNOWN"
     },
     {
       "id": "NEG_MOTION",
       "label": "Động tác thông thường",
       "kind": "negative_valid",
-      "context": "symptom",
+      "context": "intake",
       "expected": "UNKNOWN"
     },
     {
       "id": "NEG_OUTSIDE",
       "label": "Ý ngoài danh mục thử",
       "kind": "negative_valid",
-      "context": "symptom",
+      "context": "intake",
       "expected": "UNKNOWN"
     },
     {
       "id": "NEG_MISSING",
       "label": "Mất landmark / rời khung",
       "kind": "negative_invalid",
-      "context": "symptom",
+      "context": "intake",
       "expected": "UNKNOWN"
     },
     {
       "id": "NEG_GAP",
       "label": "Gián đoạn tracking",
       "kind": "negative_invalid",
-      "context": "symptom",
+      "context": "intake",
       "expected": "UNKNOWN"
     }
   ],
@@ -100,20 +100,21 @@
     "insufficient_frames",
     "invalid_landmarks",
     "network_error",
+    "worker_unavailable",
     "inference_timeout",
     "cancelled"
   ],
   "allowed_labels": [
     "UNKNOWN",
-    "ĐAU",
-    "ĐẦU",
-    "BỤNG",
-    "BỤNG-DƯỚI",
-    "NGỰC",
-    "HỌNG",
-    "LƯNG",
-    "HO",
-    "SỐT",
-    "KHÓ-THỞ"
+    "PAIN",
+    "PAIN+HEAD",
+    "PAIN+CHEST",
+    "PAIN+ABDOMEN_UPPER",
+    "PAIN+ABDOMEN_LOWER",
+    "PAIN+NECK",
+    "PAIN+LOWER_BACK",
+    "COUGH",
+    "FEVER",
+    "BREATH_DIFFICULTY"
   ]
 }

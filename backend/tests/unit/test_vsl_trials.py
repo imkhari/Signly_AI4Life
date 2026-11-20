@@ -71,10 +71,10 @@ def test_empty_trials_remain_pending_with_null_rates(tmp_path):
 
 def test_rejections_and_wrong_exposure_are_not_hidden(tmp_path):
     records = [
-        row(actual="ĐAU"),
-        row(actual="HO"),
+        row(),
+        row(actual="COUGH"),
         row(actual="UNKNOWN"),
-        row("NEG_OUTSIDE", actual="HO"),
+        row("NEG_OUTSIDE", actual="COUGH"),
     ]
     for i, record in enumerate(records):
         record["trial_id"] = f"T{i + 1:04}"
@@ -111,7 +111,7 @@ def test_uncontrolled_or_inconsistent_records_are_rejected(tmp_path, key, value)
 
 
 def test_wrong_candidate_and_missing_timing_cannot_be_reported_as_correct(tmp_path):
-    record = row(actual="HO")
+    record = row(actual="COUGH")
     record["ever_wrong_candidate"] = "false"
     with pytest.raises(ValueError):
         load(tmp_path, [record])
@@ -131,6 +131,8 @@ def final_records(evidence="live_internal"):
         for _ in range(5):
             record = row(item["id"], participant="P03", evidence=evidence)
             record["trial_id"] = f"T{len(records) + 1:04}"
+            if item["kind"] == "negative_invalid":
+                record.update(reason="tracking_gap", response_latency_ms="", frame_count="2")
             records.append(record)
     return records
 
@@ -152,7 +154,7 @@ def test_any_false_negative_trial_suggestion_prevents_numeric_gate(tmp_path):
     records = final_records()
     record = next(r for r in records if r["intent_id"] == "NEG_MOTION")
     record.update(
-        displayed_candidate="HO",
+        displayed_candidate="COUGH",
         ever_wrong_candidate="true",
         outcome="wrong",
         candidate_latency_ms="100",
@@ -193,7 +195,9 @@ def test_profile_binds_sources_and_artifact_identifiers():
 def test_invalid_capture_does_not_count_as_valid_tracking_negative_evidence(tmp_path):
     records = final_records()
     record = next(r for r in records if r["intent_id"] == "NEG_REST")
-    record.update(reason="missing_shoulders", frame_count="2", response_latency_ms="")
+    record.update(
+        outcome="unmeasurable", reason="missing_shoulders", frame_count="2", response_latency_ms=""
+    )
     report = summarize(load(tmp_path, records), IDENTIFIER)
     assert not report["numeric_checks"]["NEG_REST"]
 
@@ -205,3 +209,17 @@ def test_archived_replay_audit_preserves_known_model_errors():
     assert result["recomputed_word_metrics"]["clips"] == 300
     assert result["scope_projection"]["symptom"]["outcomes"]["wrong"] == 2
     assert result["ctc_output_enabled"] is False
+
+
+@pytest.mark.parametrize("label", ["PAIN", "PAIN+HEAD"])
+def test_chest_trial_requires_both_complaint_and_region(tmp_path, label):
+    record = row("CHEST_LOCATION", actual=label)
+    assert load(tmp_path, [record])[0]["outcome"] == "wrong"
+
+
+def test_worker_failure_is_unmeasurable_even_when_response_arrived(tmp_path):
+    record = row("NEG_REST", evidence="live_internal")
+    record.update(reason="worker_unavailable", outcome="unmeasurable")
+    result = counts(load(tmp_path, [record]))
+    assert result["outcomes"] == {"unmeasurable": 1}
+    assert result["valid_tracking_negative_submitted"] == 0

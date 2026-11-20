@@ -143,4 +143,29 @@ it('does not begin a new sentence using stale tracking readiness',async () => {
     expect(screen.getByText(/Chưa nhận rõ/)).toBeVisible();expect(apply).not.toHaveBeenCalled();
   });
 
+  it('records a worker failure as unmeasurable with response time only', async () => {
+    const record=vi.fn();
+    vi.mocked(restApi.predictVSLSequence).mockResolvedValue({...prediction,success:false,
+      gloss:'UNKNOWN',suggested_next_step:'worker_unavailable'});
+    render(<VSLCameraView contextStep="intake" onApplyGlosses={vi.fn()} onTrialResult={record}
+      onSwitchToTouchMode={vi.fn()} />, {wrapper:SessionProvider});
+    await emit(0,0);fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));await emit(1,30);
+    await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Xong câu'}));});
+    expect(record).toHaveBeenCalledWith(expect.objectContaining({gloss:'UNKNOWN',reason:'worker_unavailable',
+      candidate_latency_ms:null,response_latency_ms:expect.any(Number)}));
+    expect(screen.getByText(/Bộ nhận diện chưa xử lý/)).toBeVisible();
+    expect(screen.getByRole('button',{name:'Chuyển sang Chạm'})).toBeEnabled();
+  });
+
+  it('clears the display and ends a capture if observations stop arriving', async () => {
+    render(view());await emit(0,0);
+    expect(screen.getByTestId('vsl-tracking')).toHaveTextContent('Mặt · Vai trái · Vai phải · Tay trái · Tay phải');
+    fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));await emit(1,1);
+    clock+=700;
+    await screen.findByTestId('vsl-capture-stopped');
+    expect(screen.getByTestId('vsl-tracking')).toHaveTextContent('Đang tìm');
+    expect(screen.getByRole('button',{name:'Bắt đầu ký'})).toBeDisabled();
+    expect(restApi.predictVSLSequence).not.toHaveBeenCalled();
+  });
+
 });

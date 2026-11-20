@@ -1,21 +1,21 @@
 {
-  "profile_id": "509264a98b707ebdb6c80c1656dcaa075e3ce5e7afd38a7c36fa1ce5e96105dd",
+  "profile_id": "371d8f141d6b2639b94c7f179a1c27462070332a19812a7fc4cb1f1951a42928",
   "sources": {
     "AI_model/vsl_v2/engine.py": "5fdbe53272d04e9c2798708a668c56ff77b090099b54ead0867a2eac72af93ce",
-    "AI_model/vsl_v2/trials.py": "530f105da969f87c8fe410f44015f44a97e2eb06f84b34f16007a3f27077a0f2",
-    "frontend/src/features/validation/VSLValidationPage.tsx": "d50f7e36ac41488818247f440c104a32e69189f7eeecca26a872c742409d759b",
+    "AI_model/vsl_v2/trials.py": "1ec8fb01ba10d148d67abf5dbbec17380115fb51a7ac321f347f2b246950c7a2",
+    "frontend/src/features/validation/VSLValidationPage.tsx": "92151041255512b738f180820e0d2253426b4afaf26776012d109ef60e2f271c",
     "AI_model/vsl_v2/worker.py": "bde5312a8b5135508b6d74c85485b18fe0ef8f51468ea7b7ec6bb4f8ba63f245",
     "backend/app/ai/vsl_v2.py": "d30cca558f72b9a7852e34da2be21f9bc24d3137fb93afc249140058f55604c7",
-    "backend/app/api/rest/vsl.py": "a1a73b5dba91e44918363bf9cda2313412fd4bcc29e5bfe2224d126a4afa1739",
+    "backend/app/api/rest/vsl.py": "833fb403e5fcf9ab7c4b7c88523d8572cde4b3485bc32a4ffe828c55778af62a",
     "backend/app/domain/vsl.py": "9fb5c49a9a725d07ca7c991d9d6a6354d869c15fa5c61940ff825244d3afa4e5",
     "frontend/src/types/vsl.ts": "72cba8ff1ea727fe414ade84e3ffd4d088ae8ab8daad573b4e6badacf75d6e33",
     "frontend/src/features/patient/sentenceIntake.ts": "4c64a84b3a18ac92970836bbe81ccada3e86ade9e365a77e52510573b43fd13c",
     "frontend/src/features/patient/components/SymptomsStep.tsx": "d4a67bfd7a29ae078c348d5866a7e14bc85329ee2522d12d36c973822a5b506e",
     "frontend/src/features/patient/PatientPage.tsx": "f46579168bceff650032f8170c154149c1730879d235ad0425498fa26f25aabd",
     "frontend/src/services/vsl/HolisticDetector.ts": "21e745e12adaa40cc123f49b8660f5523e7f0c893f5366669af59e88f1fa9b36",
-    "frontend/src/services/vsl/SentenceCapture.ts": "dfb57346bdc6321e505f7d17eca311f49da54d4c04c7ee80fa0928dcc20b2c1e",
-    "frontend/src/features/patient/components/VSLCameraView.tsx": "c5d66186018cf78679961ba6defaac77a95a2df403676deaf1975d8c681dc262",
-    "frontend/src/services/vsl/validationProtocol.json": "ab33a37b860095e99a78bf2755188d0178b33812aa61efee345eb878a7939936",
+    "frontend/src/services/vsl/SentenceCapture.ts": "9d4094a69f236ef0b8ad02130d86bb1397aa369678b6ff3027475241ffd137f7",
+    "frontend/src/features/patient/components/VSLCameraView.tsx": "3d8de5ddba46ce4bb7d390598da932b249b00dec7aa70f466c3577632136cb04",
+    "frontend/src/services/vsl/validationProtocol.json": "1645f0cd743950e93b43a2c55e585a4124388f2794a271961dd52891cc9f5ecd",
     "AI_model/vsl_v2/model-manifest.json": "fa0cfe022050e24f7332689d9d8a4a43ac11c42dbb34691bd09a73a0d395e14f",
     "AI_model/runtime/requirements-lock.txt": "688a91dbbafaf3b535be811fec9198f8250f7701fba9e78e0c84c82a57a4aeb0",
     "frontend/package-lock.json": "3f0159bba0ccf7f456c1beaeab88c1daed6eb3c73b931fc110f4cb7bb3ff5cc9",
@@ -23,11 +23,11 @@
     "AI_model/vsl_v2/translation-vocabulary.json": "f43f686da08fcab6ade5fa5bffec1379e24e7032c5b4ef7709a302e3ff2b5dcb",
     "checkpoint_sha256": "d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246",
     "holistic_task_sha256": "e2dab61191e2dcd0a15f943d8e3ed1dce13c82dfa597b9dd39f562975a50c3f8",
-    "policy_canonical_sha256": "7f050b1c73568b39c726eb09842b192f1e1b1b001beb977b1e05143d3b01d763"
+    "policy_canonical_sha256": "5de9dc164b5ac0c04d776da9b42b8abdf24b6349238f3b29ffd410476fec3146"
   },
-  "protocol": "vsl-v2-internal-1",
+  "protocol": "vsl-v2-intake-2",
   "policy": {
-    "version": "vsl-v2-internal-1",
+    "version": "vsl-v2-intake-2",
     "criteria_approval": "Q-25/D-026",
     "cohort": "internal",
     "participants": {
@@ -59,63 +59,63 @@
         "id": "HEAD_SYMPTOM",
         "label": "Đau đầu",
         "kind": "positive",
-        "context": "symptom",
-        "expected": "ĐAU"
+        "context": "intake",
+        "expected": "PAIN+HEAD"
       },
       {
         "id": "CHEST_LOCATION",
-        "label": "Vị trí đau ngực",
+        "label": "Tôi bị đau ngực",
         "kind": "positive",
-        "context": "location",
-        "expected": "NGỰC"
+        "context": "intake",
+        "expected": "PAIN+CHEST"
       },
       {
         "id": "BREATH_SYMPTOM",
         "label": "Khó thở",
         "kind": "positive",
-        "context": "symptom",
-        "expected": "KHÓ-THỞ"
+        "context": "intake",
+        "expected": "BREATH_DIFFICULTY"
       },
       {
         "id": "FEVER_DIAGNOSTIC",
         "label": "Sốt — kiểm lỗi đã biết",
         "kind": "diagnostic",
-        "context": "symptom",
-        "expected": "SỐT"
+        "context": "intake",
+        "expected": "FEVER"
       },
       {
         "id": "NEG_REST",
         "label": "Tay nghỉ trong khung",
         "kind": "negative_valid",
-        "context": "symptom",
+        "context": "intake",
         "expected": "UNKNOWN"
       },
       {
         "id": "NEG_MOTION",
         "label": "Động tác thông thường",
         "kind": "negative_valid",
-        "context": "symptom",
+        "context": "intake",
         "expected": "UNKNOWN"
       },
       {
         "id": "NEG_OUTSIDE",
         "label": "Ý ngoài danh mục thử",
         "kind": "negative_valid",
-        "context": "symptom",
+        "context": "intake",
         "expected": "UNKNOWN"
       },
       {
         "id": "NEG_MISSING",
         "label": "Mất landmark / rời khung",
         "kind": "negative_invalid",
-        "context": "symptom",
+        "context": "intake",
         "expected": "UNKNOWN"
       },
       {
         "id": "NEG_GAP",
         "label": "Gián đoạn tracking",
         "kind": "negative_invalid",
-        "context": "symptom",
+        "context": "intake",
         "expected": "UNKNOWN"
       }
     ],
@@ -128,21 +128,22 @@
       "insufficient_frames",
       "invalid_landmarks",
       "network_error",
+      "worker_unavailable",
       "inference_timeout",
       "cancelled"
     ],
     "allowed_labels": [
       "UNKNOWN",
-      "ĐAU",
-      "ĐẦU",
-      "BỤNG",
-      "BỤNG-DƯỚI",
-      "NGỰC",
-      "HỌNG",
-      "LƯNG",
-      "HO",
-      "SỐT",
-      "KHÓ-THỞ"
+      "PAIN",
+      "PAIN+HEAD",
+      "PAIN+CHEST",
+      "PAIN+ABDOMEN_UPPER",
+      "PAIN+ABDOMEN_LOWER",
+      "PAIN+NECK",
+      "PAIN+LOWER_BACK",
+      "COUGH",
+      "FEVER",
+      "BREATH_DIFFICULTY"
     ]
   },
   "status": "CANDIDATE",

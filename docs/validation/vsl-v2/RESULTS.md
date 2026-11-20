@@ -1,6 +1,22 @@
 # Kết quả camera V2
 
-## Luồng theo câu Q-27 — phiên bản mới
+## Ngày 20/11/2026 — kiểm tra trước khi mở camera cho người thử
+
+**Phương án B.** Chạm là luồng chính cho sân khấu. Bản thử `371d8f141d6b2639b94c7f179a1c27462070332a19812a7fc4cb1f1951a42928` đang có 0 lượt webcam. Chưa có câu nào đạt tiêu chí Q-25 qua camera hay số đo p95 ra gợi ý trên thiết bị thi.
+
+| Bằng chứng | Quan sát | Phạm vi |
+|---|---|---|
+| Replay đã có trên 300 landmark S06 | 255 câu khớp hoàn toàn, WER 205/2157 ≈ 9,50% | Tập đã xem, còn lỗi sốt. |
+| Replay riêng mẫu đau ngực | Mẫu công khai SENT103_S06_R01_F, 76 frame × 411, SHA256 `8f73c2603bc609b9c363d475090371850039c00698c57ed4a47223d1445afd88` khớp manifest. POST qua web app tới worker V2 thật trả PAIN/true/CHEST. | Cùng mẫu trong tập 300, không cộng thêm một ca độc lập. |
+| Diễn tập hai màn hình trên localhost | Phát lại 76 frame thay detector vào camera của bệnh nhân. Một request duy nhất đi tới worker thật. Bệnh nhân nhận Đau + Ngực, chọn 5/10 và 2 giờ bằng Chạm, xác nhận và nhận STT sau khi điều dưỡng duyệt. | Chrome, stream mô phỏng, LLM mock, phiếu giả lập. Không đo hiệu năng webcam/điện thoại. |
+| Kiểm tra phần mềm | 178 backend, 99 frontend, 8 runtime, build và 17 E2E liên quan qua (gồm ca replay bổ sung). Có ca bỏ gợi ý, lỗi worker, tracking, mất frame, đồng hồ và kiểm lật gương video/canvas với tay trái mô phỏng. | Các ca camera mô phỏng không ghi vào số lượt người thật. |
+| Webcam nội bộ | Pilot c52feba0 có 1 lượt quá thời gian. 4e4ebb4b có 11 ca âm hợp lệ. 509264a9 và bản hiện tại đều có 0 lượt. | Không có lượt dương VSL được xác minh hoặc lượt cuối P03. |
+
+Bộ thử dùng cùng context intake trên mọi ý. Đáp án chỉ dùng sau khi gợi ý hiển thị. Lỗi worker có lý do riêng kể cả khi API trả HTTP 200. Thời gian ký, phản hồi HTTP và thời gian tới gợi ý tách riêng. Có thể đối chiếu phiên bản cũ qua snapshot và baseline gốc.
+
+Nguồn VSL-GH đã ghim có chú thích “Tôi bị đau ngực.” và landmark. Cây tệp đầy đủ của commit không có video MP4/MOV/WEBM/AVI. Trong dự án chưa có clip hướng dẫn câu này hoặc xác nhận động tác từ người biết VSL. Lượt đầu chỉ thử thiết bị ở NEG_REST. [Chú thích SENT103](https://github.com/nguyentheanh822/Vietnamese-Sign-Language-Translation/blob/6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a/data/annotations/SENT103_S06_R01_F.txt)
+
+## Lịch sử Q-27
 
 Đã chuyển11lượt live profile4e4ebb sang `baselines/4e4ebb4bedf313ca4c449c07608cdcd8fe1adfa34a89547157bf4c921d9ad48f.json`, giữ nguyên nguồn/nhóm/hash. Không xóa bằng chứng và không coi đó là lượt thử luồng intake mới. `metrics.json` hiện dành cho profile mới,0lượt live; các mục bên dưới là lịch sử. Chưa có lượt dương được xác minh VSL, CANDIDATE. E2E nhận cả câu là mô phỏng detector/response, chỉ kiểm luồng và an toàn cập nhật.
 

@@ -52,7 +52,11 @@ export function VSLValidationPage() {
     if(recordedRef.current || !profile) return;
     recordedRef.current=true;
     const wrong=result.gloss!=='UNKNOWN' && result.gloss!==reference.expected;
+    const expectedTrackingFailure=reference.kind==='negative_invalid' &&
+      (result.reason==='tracking_gap' || result.reason==='missing_shoulders');
+    const measured=result.reason==='accepted' || result.reason==='unknown';
     const outcome=result.reason==='cancelled' ? 'aborted' : wrong ? 'wrong' :
+      (reference.kind==='negative_invalid' ? !expectedTrackingFailure : !measured) ? 'unmeasurable' :
       result.gloss===reference.expected ? 'correct' : 'rejected';
     setRows(previous => [...previous,{
       trial_id:`T${String(previous.length+1).padStart(4,'0')}`,participant_code:participant,
@@ -125,8 +129,13 @@ export function VSLValidationPage() {
       } catch {setWorkerState('unknown');}
       recordedRef.current=false;setLocked(false);setApplied(false);setPreparing(false);setActive(true);
     }}>{vi.validation.startTrial}</Button> : <>
-      <div ref={cameraAreaRef}><VSLCameraView contextStep={reference.context as 'symptom'|'location'} captureDisabled={locked}
-        onApplyGlosses={() => setApplied(true)} onTrialResult={record} /></div>
+      <div ref={cameraAreaRef}><VSLCameraView contextStep="intake" captureDisabled={locked}
+        onApplyGlosses={() => {}} onApplyIntakeSuggestion={() => setApplied(true)}
+        onSwitchToTouchMode={() => {
+          if (!recordedRef.current) record({gloss:'UNKNOWN',reason:'cancelled',frame_count:0,capture_duration_ms:0,
+            candidate_latency_ms:null,response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
+          setActive(false);
+        }} onTrialResult={record} /></div>
       {applied && <p>{vi.validation.applied}</p>}
       {locked && <a href="#vsl-validation-results" className="inline-flex min-h-[64px] items-center text-action underline">{vi.validation.viewResults}</a>}
       <div>{locked ? <Button onClick={() => setActive(false)}>{vi.validation.nextTrial}</Button> :
@@ -139,11 +148,11 @@ export function VSLValidationPage() {
     <section id="vsl-validation-results" aria-live="polite" className="space-y-3">
       <h2 className="text-2xl font-bold">{vi.validation.results} ({rows.length})</h2>
       {rows.map(row => <p key={row.trial_id} className="p-3 border rounded-xl text-lg">
-        {row.trial_id} · {row.participant_code} · {row.intent_id}: {row.displayed_candidate} · {policy.intents.find(item => item.id===row.intent_id)?.kind==='negative_valid' && row.response_latency_ms==='' ? vi.validation.ineligibleShort : vi.validation.outcomes[row.outcome as keyof typeof vi.validation.outcomes]}
+        {row.trial_id} · {row.participant_code} · {row.intent_id}: {row.displayed_candidate} · {vi.validation.outcomes[row.outcome as keyof typeof vi.validation.outcomes]}
         {row.candidate_latency_ms && ` · ${row.candidate_latency_ms} ms`}
         {' · '}{vi.camera.reasons[row.reason as keyof typeof vi.camera.reasons]}
         {policy.intents.find(item => item.id===row.intent_id)?.kind==='negative_valid' &&
-          row.response_latency_ms==='' && <span className="block font-semibold">{vi.validation.ineligibleNegative}</span>}
+          row.outcome==='unmeasurable' && <span className="block font-semibold">{vi.validation.ineligibleNegative}</span>}
       </p>)}
       <Button onClick={download} disabled={rows.length===0 || (active && !locked)}>{vi.validation.export}</Button>
       {exportText && <div className="space-y-3">

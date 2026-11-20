@@ -86,11 +86,20 @@ def profile(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
-def outcome(expected: str, actual: str, ever_wrong: bool, reason: str = "") -> str:
+def outcome(
+    expected: str, actual: str, ever_wrong: bool, reason: str = "", kind: str = ""
+) -> str:
     if reason == "cancelled":
         return "aborted"
     if ever_wrong or (actual != "UNKNOWN" and actual != expected):
         return "wrong"
+    if kind:
+        tracking_failure = reason in ("tracking_gap", "missing_shoulders")
+        if kind == "negative_invalid":
+            if not tracking_failure:
+                return "unmeasurable"
+        elif reason not in ("accepted", "unknown"):
+            return "unmeasurable"
     if actual == expected:
         return "correct"
     return "rejected"
@@ -162,7 +171,8 @@ def read_trials(
             if row["displayed_candidate"] not in ("UNKNOWN", row["expected_label"]) and not ever:
                 raise ValueError("Wrong candidate exposure cannot be hidden")
             if row["outcome"] != outcome(
-                row["expected_label"], row["displayed_candidate"], ever, row["reason"]
+                row["expected_label"], row["displayed_candidate"], ever, row["reason"],
+                intent["kind"] if intent["context"] == "intake" else "",
             ):
                 raise ValueError("Outcome differs from recorded prediction")
             for key in ("candidate_latency_ms", "response_latency_ms", "capture_duration_ms"):
@@ -251,7 +261,7 @@ def summarize(
             checks[intent["id"]] = (
                 len(chosen) == policy["expected_per_negative_final"]
                 and not any(r["outcome"] == "aborted" for r in chosen)
-                and not any(r["outcome"] == "wrong" for r in chosen)
+                and all(r["outcome"] == "correct" for r in chosen)
                 and (
                     intent["kind"] != "negative_valid"
                     or all(
@@ -264,7 +274,7 @@ def summarize(
             )
         else:
             checks["fever_diagnostic_recorded"] = len(chosen) == 5 and not any(
-                r["outcome"] == "aborted" for r in chosen
+                r["outcome"] in ("aborted", "unmeasurable") for r in chosen
             )
     positive_times = [
         r["candidate_latency_ms"]

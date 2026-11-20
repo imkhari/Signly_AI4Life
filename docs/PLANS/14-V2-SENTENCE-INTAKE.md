@@ -27,3 +27,5 @@ Không mở nhận diện hội thoại tự do, không thêm LLM trích xuất,
 Đã hoàn tất phạm vi kỹ thuật trên: 173 test backend, 96 test frontend (`make check`), 8 test runtime V2, build và 18 E2E qua. E2E dùng detector/response mô phỏng, WebSocket/phiếu/duyệt thật của app; kiểm đau+ngực cùng patch, không ghi trước nhận, bổ sung, hai bước xác nhận, bỏ gợi ý và fallback Chạm. Test lớp logic kiểm xóa detail cũ và câu ho không phủ định đau; lifecycle kiểm hủy request/gợi ý. Đã xem ảnh 720/1024; điều khiển/đồng hồ ghim khi cuộn không tự kéo trang.
 
 Backend localhost8000 đã được khởi động lại với intake; frontend localhost5173 chạy.11ca âm cũ giữ riêng baseline4e4ebb và hash nguồn, profile mới0lượt live. Chưa có phép thử dương VSL mới hoặc thay đổi chất lượng model. Chưa cập nhật PPTX/ảnh slide; README bàn giao ghi rõ snapshot cũ.
+
+Ngày 20/11/2026, theo yêu cầu kiểm chứng cả câu, trang thử chuyển sang intake ở profile mới. Bằng chứng và protocol nhãn đơn trước đây giữ trong snapshot riêng. Xem docs/validation/vsl-v2/RESULTS.md.

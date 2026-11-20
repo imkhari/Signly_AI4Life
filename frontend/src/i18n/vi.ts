@@ -41,7 +41,7 @@ export const vi = {
     negativeInstruction: 'Bắt đầu khi tay ở trong khung. Thực hiện loại lượt đã chọn rồi bấm Xong câu.',
     startTrial: 'Bắt đầu lượt thử', nextTrial: 'Lượt tiếp theo',cancelTrial: 'Hủy lượt thử',
     applied: 'Đã thử thao tác Nhận/Lưu; không tạo phiếu bệnh nhân.',
-    outcomes:{correct:'Khớp nhãn dự kiến',wrong:'Sai nhãn',rejected:'Không có gợi ý',aborted:'Đã hủy'},
+    outcomes:{unmeasurable:'Chưa đủ điều kiện đo',correct:'Khớp nhãn dự kiến',wrong:'Sai nhãn',rejected:'Không có gợi ý',aborted:'Đã hủy'},
     developmentPhase:'Thử phát triển',finalPhase:'Thử cuối',
     ineligibleShort:'Chưa đủ điều kiện đo',
     ineligibleNegative:'Lượt này chưa đủ đầu vào để đánh giá ca âm hợp lệ. Giữ kết quả và thử lại.',
@@ -60,6 +60,7 @@ export const vi = {
     processing: 'Đang kiểm tra câu vừa ký...',
     checkSuggestion: 'Kiểm tra gợi ý. Chỉ bấm Nhận khi đúng ý bạn.',
     reasons: {
+      worker_unavailable: 'Bộ nhận diện chưa xử lý được lượt này. Bạn có thể thử lại hoặc chuyển sang Chạm.',
       cancelled: 'Đã hủy lượt ký.',
       accepted: 'Kiểm tra gợi ý trước khi nhận.',
       unknown: 'Chưa nhận rõ. Bạn có thể ký lại hoặc chuyển sang Chạm.',

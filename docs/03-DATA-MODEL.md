@@ -131,3 +131,5 @@ Q-24: một câu có Bắt đầu ký/Xong câu tạo tối đa một gợi ý; 
 Câu ho/sốt/khó thở không chứa phủ định đau: pain_present=null, không false. Bụng/lưng chung chung chưa có mã vùng tương ứng trong ontology: danh sách rỗng, hỏi tiếp bằng hình. Mức đau/thời gian vẫn null cho đến khi người dùng chọn; không trích số tự do hoặc ghép nhãn từ các câu. Nếu thay thông tin liên quan, xóa mức đau/thời gian cũ để hỏi lại, giữ dị ứng và triệu chứng khác. Một câu nhiều ý hoặc phủ định chưa được hỗ trợ vẫn UNKNOWN.
 
 Sau gợi ý: vị trí/tình trạng đau nếu thiếu → mức đau khi có đau → thời gian → triệu chứng đi kèm → dị ứng → toàn phiếu → điều dưỡng. Có Chưa rõ; dữ liệu thiếu tiếp tục do parser đánh dấu uncertain/missing, không tự hoàn thành.
+
+Q-28 bổ sung ý nghĩa `worker_unavailable` của trường hướng dẫn trong phản hồi camera intake. Lỗi này không tạo gợi ý, không ghi Semantic Frame và không đưa dữ liệu vào LLM.

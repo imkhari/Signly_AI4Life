@@ -2,12 +2,31 @@ import type { HolisticFrame } from '../api/rest';
 
 export const SENTENCE_LIMITS = { maxMs:6000, maxFrames:180, minFrames:24, minSpanMs:800, maxGapMs:500 };
 export type CaptureReason = 'accepted' | 'unknown' | 'missing_shoulders' | 'tracking_gap' |
-  'sequence_limit' | 'insufficient_frames' | 'invalid_landmarks' | 'network_error' | 'inference_timeout' | 'cancelled';
+  'sequence_limit' | 'insufficient_frames' | 'invalid_landmarks' | 'network_error' | 'worker_unavailable' | 'inference_timeout' | 'cancelled';
 export interface CaptureSummary { frame_count:number; capture_duration_ms:number }
 export interface CaptureFailure extends CaptureSummary { reason:CaptureReason }
 export interface CameraTrialResult extends CaptureSummary {
   gloss:string; reason:CaptureReason; candidate_latency_ms:number|null; response_latency_ms:number|null;
   model_source:string;
+}
+
+// Offsets in the pinned pose25/face70/left21/right21 layout, before preview mirroring.
+export function observedGroups(frame: HolisticFrame): string[] {
+  const groups: [string, number, number][] = [
+    ['Mặt', 75, 285], ['Vai trái', 27, 30], ['Vai phải', 30, 33],
+    ['Tay trái', 285, 348], ['Tay phải', 348, 411],
+  ];
+  const visible: string[] = [];
+  for (const [label, start, end] of groups) {
+    for (let i = start; i < end; i += 3) {
+      const [x, y] = [frame.landmarks[i], frame.landmarks[i + 1]];
+      if (Number.isFinite(x) && Number.isFinite(y) && (x !== 0 || y !== 0)) {
+        visible.push(label);
+        break;
+      }
+    }
+  }
+  return visible;
 }
 
 export function hasValidShoulders(frame: HolisticFrame): boolean {

@@ -104,6 +104,8 @@ async def predict_vsl(req: VSLPredictRequest) -> VSLPredictResponse:
             [frame.timestamp_ms for frame in req.frames],
         )
         candidate = map_candidate(v2_result, req.context_step)
+        if req.context_step == "intake" and not v2_result:
+            candidate["suggested_next_step"] = "worker_unavailable"
         return VSLPredictResponse(**candidate)
     if _engine is None:
         return VSLPredictResponse(

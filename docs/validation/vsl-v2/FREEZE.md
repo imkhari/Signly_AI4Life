@@ -1,6 +1,6 @@
 # Bản AI cho buổi thi — CANDIDATE
 
-**Chưa đóng băng chất lượng.** Luồng Q-27 theo câu mới có0lượt live.11ca âm của profile4e4ebb được giữ ở baseline cùng nguồn/nhóm/hash:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật, cả11UNKNOWN. Chưa có lượt dương VSL hoặc thử cuối. Không gộp kết quả cũ vào cấu hình mới, không coi ca âm của1người là kiểm chứng nhận diện.
+**Mức B cho sân khấu.** Diễn tập bằng landmark công khai với worker thật đã đi hết hai màn hình. Chạm là luồng chính. **Chưa đóng băng chất lượng.** Luồng Q-27 theo câu mới có0lượt live.11ca âm của profile4e4ebb được giữ ở baseline cùng nguồn/nhóm/hash:5tay nghỉ,5cử động thông thường và1vẫy chào kỹ thuật, cả11UNKNOWN. Chưa có lượt dương VSL hoặc thử cuối. Không gộp kết quả cũ vào cấu hình mới, không coi ca âm của1người là kiểm chứng nhận diện.
 ## Phiên bản kỹ thuật
 
 Profile kỹ thuật hiện tại được ghi trong `frontend/public/vsl-validation-profile.json` và snapshot `profiles/`. Profile4e4ebb cũ giữ riêng11lượt; pilotC52 riêng1lượt không đạt đầu vào. Q-27 thay ánh xạ gợi ý cả câu và UI, giữ weights. Fingerprint ràng buộc code và policy; chưa đưa ra quyết định đóng băng.
@@ -14,7 +14,7 @@ Profile kỹ thuật hiện tại được ghi trong `frontend/public/vsl-valida
 
 ## Phạm vi dự kiến
 
-Chỉ xem xét đau đầu (symptom), đau ngực (location), khó thở (symptom) ở điều kiện bình thường sau khi đạt phép thử. **Hiện chưa có ý nào được chứng minh chạy ổn định trên camera người thật.** Sốt giữ ca kiểm lỗi, không quảng bá nhận tốt; mức đau/thời gian dùng Chạm. Context intake: kiểm cả gợi ý → Dùng thông tin này → bổ sung bằng Chạm → bệnh nhân xác nhận toàn phiếu → điều dưỡng duyệt. Context symptom/location ở trang thử giữ Nhận → Lưu. Chạm là luồng thi chính D-017.
+Chỉ xem xét đau đầu (PAIN+HEAD), đau ngực (PAIN+CHEST), khó thở (BREATH_DIFFICULTY) ở điều kiện bình thường sau khi đạt phép thử. **Hiện chưa có ý nào được chứng minh chạy ổn định trên camera người thật.** Sốt giữ ca kiểm lỗi, không quảng bá nhận tốt; mức đau/thời gian dùng Chạm. Context intake: kiểm cả gợi ý → Dùng thông tin này → bổ sung bằng Chạm → bệnh nhân xác nhận toàn phiếu → điều dưỡng duyệt. Trang thử dùng cùng context intake. Chạm là luồng thi chính D-017.
 
 ## Điều kiện đổi trạng thái
 
@@ -70,6 +70,6 @@ Người dùng gửi đầy đủT0001–T0005 cùng profile4e4ebb. Kiểm T0001
 Đã đối chiếu1CSV vẫy chào:92frame,4646,50ms,UNKNOWN,response198,10ms,worker ready. Snapshot nguồn riêng ngoài nhóm rest/motion, giữ mãT0001 gốc và hash nguồn. Tổng11ca âm hợp lệ,0gợi ý sai trong nhóm,0dương/0cuối,p95gợi ý null. Đây là vẫy chào thông thường của người đang học, không phải tậpVSL OOD được kiểm tra. CANDIDATE.
 
 
-## Kỹ thuật Q-27 hiện tại
+## Lịch sử kỹ thuật Q-27 ngày 19/11
 
 Profile mới: `509264a98b707ebdb6c80c1656dcaa075e3ce5e7afd38a7c36fa1ce5e96105dd`.173test backend+96frontend,8runtime,build và18E2E qua; có luồng gợi ý cả câu, patch đồng thời, hỏi bổ sung và xác nhận hai phía. E2E camera mô phỏng không điền vào số người/lượt thật. Model giữ nguyên checkpoint; trạng thái CANDIDATE, metrics mới0live. Baseline4e4ebb giữ nguyên11ca âm cùng provenance, không bị xóa hoặc chuyển thành bằng chứng cho bản mới.

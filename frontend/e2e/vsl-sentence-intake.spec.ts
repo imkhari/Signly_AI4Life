@@ -93,7 +93,7 @@ test('synthetic full sentence writes pain and chest together, then completes bot
 });
 
 test('synthetic sentence can be discarded at 720px and an incomplete bundle never becomes a complaint',async ({context})=>{
-  const {patient}=await pair(context);await patient.setViewportSize({width:720,height:900});
+  const {patient,nurse}=await pair(context);await patient.setViewportSize({width:720,height:900});
   let full=true;
   await patient.route('**/api/vsl/predict',route=>route.fulfill({json:full ? chest : {...chest,intake_suggestion:null}}));
   await capture(patient);
@@ -103,6 +103,7 @@ test('synthetic sentence can be discarded at 720px and an incomplete bundle neve
   await patient.screenshot({path:'test-results/vsl-sentence-synthetic-720.png',fullPage:true});
   await patient.getByRole('button',{name:'Bỏ gợi ý / Ký lại'}).click();
   await expect(patient.getByRole('button',{name:'Dùng thông tin này'})).toHaveCount(0);
+  await expect(nurse.getByText('Ngực',{exact:true})).toHaveCount(0);
   full=false;await capture(patient);
   await expect(patient.getByText(/Chưa nhận rõ/)).toBeVisible();
   await expect(patient.getByRole('button',{name:'Dùng thông tin này'})).toHaveCount(0);
