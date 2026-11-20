@@ -142,6 +142,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const candidateKeyRef = useRef<string | undefined>();
   const [isAiLoading, setIsAiLoading] = useState<boolean>(true);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [detectorAttempt,setDetectorAttempt]=useState(0);
 
   const detectorRef = useRef<HolisticDetector | null>(null);
   const requestRef = useRef<AbortController|null>(null);
@@ -289,7 +290,10 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
     setIsAiLoading(true);
     setAiError(null);
     detector.initialize().then(() => {
-      if (active) setIsAiLoading(false);
+      if (active) {
+        setIsAiLoading(false);
+        if (videoRef.current?.srcObject && videoRef.current.readyState>=2) detector.start(videoRef.current);
+      }
     }).catch(() => {
       if (active) {
         stop();
@@ -303,7 +307,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       detectorRef.current = null;
       clearSequence();
     };
-  }, [clearSequence, stop]);
+  }, [clearSequence, stop,detectorAttempt]);
 
   useEffect(() => {
     const detector = detectorRef.current;
@@ -316,7 +320,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
     setLivePrediction(null);
     setCaptureState('idle'); setCaptureMessage(vi.camera.ready);
     return () => { unsubscribe?.(); clearSequence(); };
-  }, [handleObservation, clearSequence, contextStep, draftKey, connected]);
+  }, [handleObservation, clearSequence, contextStep, draftKey, connected,detectorAttempt]);
 
   useEffect(() => { start(); return stop; }, [start, stop]);
   useEffect(() => {
@@ -332,6 +336,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       detectorRef.current?.stop?.();
       return;
     }
+    if (videoRef.current) detectorRef.current?.start(videoRef.current);
     const timer=setInterval(() => {
       const latest=lastObservationRef.current;
       const now=performance.now();
@@ -508,14 +513,20 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                   {aiError || errorMessage || 'Đang chờ cấp quyền truy cập Camera'}
                 </h4>
                 <p className="text-base text-mute max-w-sm mb-3">
-                  Trình duyệt cần quyền truy cập webcam để nhận dạng câu ký hiệu ngắn.
+                  {aiError ? 'Bộ nhận diện chưa khởi động được. Bấm thử lại để nạp lại.' :
+                    'Trình duyệt cần quyền truy cập webcam để nhận dạng câu ký hiệu ngắn.'}
                 </p>
                 <button
                   type="button"
-                  onClick={() => start()}
+                  onClick={() => {
+                    if (aiError) {
+                      setAiError(null);setIsAiLoading(true);setDetectorAttempt(value=>value+1);
+                    }
+                    void start();
+                  }}
                   className="min-h-[64px] px-3.5 py-1.5 rounded-xl bg-action text-white font-bold text-base shadow-xs hover:bg-action-dark transition-colors cursor-pointer"
                 >
-                  Bật lại Camera
+                  {aiError ? 'Thử lại nhận diện' : 'Bật lại Camera'}
                 </button>
               </div>
             )}

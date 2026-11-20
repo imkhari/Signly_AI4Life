@@ -1,5 +1,15 @@
 # Kết quả camera V2
 
+## Lỗi khởi tạo trong trình duyệt của ứng dụng
+
+Ngày20/11/2026, người dùng gửi ảnh có webcam phía sau lớp lỗi “Không thể mở nhận diện”. Đọc console tab bệnh nhân thấy WebAssembly báo Module.arguments và Assertion failed. Nút Bật lại Camera khi đó chỉ gọi start của webcam, nên không khởi tạo lại detector đã lỗi.
+
+Đã tuần tự hóa các lần khởi tạo Emscripten, kiểm AbortSignal trước tạo graph và sau initialize, dọn lần bị hủy trước lần tiếp theo. UI có nút Thử lại nhận diện để tạo detector mới, đăng ký lại callback và mở lại stream. Nội dung lỗi phân biệt nạp nhận diện với cấp quyền webcam.
+
+make check186backend+112frontend, build và9E2E camera qua. E2E kiểm khởi tạo rồi đóng ngay/chồng với lần mới. Một bộ thử tạm bằng canvas trống đã chạy ngay trong trình duyệt IAB của người dùng: hiện “Nạp thành công411tọa độ”, console không có warn/error trong phép thử. Trang thử tạm đã được gỡ. Agent không mở webcam hoặc tạo lượt ký thật.
+
+Profile `7537ba3f6f6d867590635bf1018667544340706a956dc4d38671443b75dd470a` có0CSV. Người dùng cần tải lại tab bệnh nhân để bỏ trạng thái WASM lỗi cũ rồi thử webcam. Kết quả khung trống chứng minh khởi tạo trong trình duyệt đó, chưa chứng minh nhận đúng câu người ký.
+
 ## Camera Web legacy đã tích hợp
 
 Theo Q-32, camera dùng Holistic Web legacy0.5.1675471629 với toàn bộ JS/WASM/model cục bộ. Profile `0663da036379803b7c9bfd76caa9b4a36ebdb6ec623f739758bf509f1bf9a2c5` có0lượtCSV. Adapter xử lý gửi bất đồng bộ một lần, bỏ callback cũ sau stop, chờ send hoàn tất trước close và dọn canvas.

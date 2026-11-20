@@ -21,3 +21,26 @@ it('releases resources when local initialization fails',async ()=>{
   await expect(createLegacyHolistic()).rejects.toThrow('missing local asset');
   expect(close).toHaveBeenCalledOnce();
 });
+
+it('serializes initialization and closes a cancelled attempt before starting another',async ()=>{
+  let complete!:()=>void;
+  initialize.mockImplementationOnce(()=>new Promise<void>(resolve=>{complete=resolve;}));
+  const controller=new AbortController();
+  const first=createLegacyHolistic(controller.signal);
+  await vi.waitFor(()=>expect(initialize).toHaveBeenCalledTimes(1));
+  controller.abort();
+  const second=createLegacyHolistic();
+  await Promise.resolve();
+  expect(initialize).toHaveBeenCalledTimes(1);
+  complete();
+  await expect(first).rejects.toMatchObject({name:'AbortError'});
+  await second;
+  expect(close).toHaveBeenCalledOnce();
+  expect(initialize).toHaveBeenCalledTimes(2);
+});
+
+it('skips cancelled attempts before creating a graph',async ()=>{
+  const controller=new AbortController();controller.abort();
+  await expect(createLegacyHolistic(controller.signal)).rejects.toMatchObject({name:'AbortError'});
+  expect(initialize).not.toHaveBeenCalled();
+});

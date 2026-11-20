@@ -30,6 +30,7 @@ export function toObservation(result: Record<
 
 export class HolisticDetector {
   private task:Holistic|null=null;
+  private initializationController=new AbortController();
   private closed=false;
   private busy=false;
   private generation=0;
@@ -43,7 +44,7 @@ export class HolisticDetector {
 
   async initialize():Promise<void> {
     this.canvas.width=this.canvas.height=360;
-    const task=await createLegacyHolistic();
+    const task=await createLegacyHolistic(this.initializationController.signal);
     if (this.closed) {await task.close();return;}
     this.task=task;
     task.onResults(result=>{
@@ -91,7 +92,7 @@ export class HolisticDetector {
     if (!this.busy) this.canvas.getContext('2d')?.clearRect(0,0,360,360);
   }
   close():void {
-    this.closed=true;this.stop();this.callbacks.clear();
+    this.closed=true;this.initializationController.abort();this.stop();this.callbacks.clear();
     if (!this.busy) this.releaseTask();
   }
   private releaseTask():void {

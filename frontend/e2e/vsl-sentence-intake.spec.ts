@@ -24,6 +24,11 @@ async function prepareCamera(page: Page) {
 
 async function pair(context: BrowserContext) {
   const nurse=await context.newPage(), patient=await context.newPage();
+  let modeAcknowledged=false;
+  patient.on('websocket',socket=>socket.on('framereceived',frame=>{
+    const message=JSON.parse(String(frame.payload));
+    if (message.event==='INPUT_UPDATED' && message.payload.step==='choose_mode') modeAcknowledged=true;
+  }));
   await prepareCamera(patient);
   await nurse.goto('/nurse');await patient.goto('/patient');
   const code=nurse.getByTestId('nurse-pairing-code');await expect(code).toHaveText(/^[A-Z0-9]{6}$/);
@@ -31,6 +36,7 @@ async function pair(context: BrowserContext) {
   await patient.keyboard.press('Enter');
   await expect(patient.getByText('Đã kết nối',{exact:true})).toBeVisible();
   await patient.getByRole('button',{name:/Ký hiệu VSL/}).click();
+  await expect.poll(()=>modeAcknowledged).toBe(true);
   await patient.getByRole('button',{name:'Tiếp tục',exact:true}).click();
   await expect(patient.getByRole('button',{name:'Bắt đầu ký',exact:true})).toBeEnabled();
   return {patient,nurse};

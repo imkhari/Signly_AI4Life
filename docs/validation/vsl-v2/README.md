@@ -88,3 +88,7 @@ Sau Bắt đầu ký, tiêu điểm chuyển tới vùng điều khiển mà kh�
 ## Đọc thông báo sau suy luận — Q-29
 
 Chuyển động tay chưa đủ rõ nghĩa là guard đã từ chối trước decoder. Điểm nhận diện chưa đạt ngưỡng nghĩa là model đã chạy nhưng điểm token dưới0,7. Đầu ra nhận diện chưa khớp câu được hỗ trợ nghĩa là câu model tạo ra chưa khớp allowlist. Dòng cuối chưa xác định người ký thực hiện đúng hay sai. Khi cần chẩn lỗi, ghi nguyên dòng hướng dẫn sau lượt thử. CSV vẫn ghi UNKNOWN/unknown để tương thích định dạng hiện có; hướng dẫn cụ thể chỉ nằm trong UI. Kết quả của phiên trước khi sửa API giữ theo snapshot profile cũ.
+
+## Khi webcam có hình nhưng bộ nhận diện chưa mở được
+
+Lỗi “Không thể mở nhận diện” thuộc bước nạp detector. Bấm Thử lại nhận diện để tạo lại detector và webcam. Lần khởi tạo bị hủy được dọn trước khi bắt đầu lần mới; không chấp nhận kết quả cũ sau đóng màn hình. Sau bản sửa khởi tạo, tải lại tab một lần để bỏ runtime WASM đang lỗi từ bản trước. Khi chỉ lỗi quyền hoặc thiết bị camera, giao diện giữ nút Bật lại Camera và hướng dẫn quyền truy cập.

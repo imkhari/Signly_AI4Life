@@ -3,6 +3,7 @@ import type {Holistic} from '@mediapipe/holistic';
 type LegacyConstructor = new (config:{locateFile:(file:string)=>string}) => Holistic;
 declare global { interface Window { Holistic?:LegacyConstructor } }
 let scriptLoading:Promise<void>|null=null;
+let initialization:Promise<void>=Promise.resolve();
 
 async function loadScript():Promise<void> {
   if (window.Holistic) return;
@@ -26,11 +27,24 @@ async function loadScript():Promise<void> {
   await scriptLoading;
 }
 
-export async function createLegacyHolistic():Promise<Holistic> {
-  await loadScript();
-  const task=new window.Holistic!({locateFile:file=>'/models/holistic-legacy/'+file});
-  task.setOptions({selfieMode:false,modelComplexity:1,smoothLandmarks:true,
-    minDetectionConfidence:.5,minTrackingConfidence:.5});
-  try {await task.initialize();return task;}
-  catch(error) {await task.close().catch(()=>{});throw error;}
+// Emscripten initialization touches shared globals; serialize attempts, including cleanup.
+export function createLegacyHolistic(signal?:AbortSignal):Promise<Holistic> {
+  const pending=initialization.then(async ()=>{
+    if (signal?.aborted) throw new DOMException('Cancelled','AbortError');
+    await loadScript();
+    if (signal?.aborted) throw new DOMException('Cancelled','AbortError');
+    const task=new window.Holistic!({locateFile:file=>'/models/holistic-legacy/'+file});
+    task.setOptions({selfieMode:false,modelComplexity:1,smoothLandmarks:true,
+      minDetectionConfidence:.5,minTrackingConfidence:.5});
+    try {
+      await task.initialize();
+      if (signal?.aborted) throw new DOMException('Cancelled','AbortError');
+      return task;
+    } catch(error) {
+      await task.close().catch(()=>{});
+      throw error;
+    }
+  });
+  initialization=pending.then(()=>{},()=>{});
+  return pending;
 }

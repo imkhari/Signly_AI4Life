@@ -55,6 +55,7 @@ for (const width of [1024,720]) {
     await page.getByRole('button',{name:'Tiếp tục',exact:true}).click();
     await expect(page.getByRole('heading',{name:/Nhận một câu ký hiệu/})).toBeVisible();
     await expect(page.getByText('Đang mở nhận diện camera...',{exact:true})).not.toBeVisible({timeout:30000});
+    await expect(page.getByRole('heading',{name:'Không thể mở nhận diện. Bạn có thể chuyển sang Chạm.'})).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0,0));
     await page.screenshot({fullPage:true,path:`test-results/camera-v2-${width}.png`});
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -66,3 +67,22 @@ for (const width of [1024,720]) {
     })).toBe(true);
   });
 }
+
+test('legacy initialization survives an immediate close and overlapping remount',async ({page})=>{
+  test.setTimeout(60000);
+  await page.route('https://**/*',route=>route.abort());
+  await page.goto('/');
+  const result=await page.evaluate(async ()=>{
+    const {HolisticDetector}=await import('/src/services/vsl/HolisticDetector.ts');
+    const first=new HolisticDetector();
+    const cancelled=first.initialize();first.close();
+    const second=new HolisticDetector();
+    const attempts=await Promise.allSettled([cancelled,second.initialize()]);
+    try {
+      const canvas=document.createElement('canvas');canvas.width=canvas.height=360;
+      const observation=await second.detectFrame(canvas,100);
+      return {first:attempts[0].status,second:attempts[1].status,width:observation.frame.landmarks.length};
+    } finally {second.close();}
+  });
+  expect(result).toEqual({first:'rejected',second:'fulfilled',width:411});
+});

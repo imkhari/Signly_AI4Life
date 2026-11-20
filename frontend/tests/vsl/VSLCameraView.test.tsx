@@ -204,4 +204,16 @@ it('does not begin a new sentence using stale tracking readiness',async () => {
       reason:'unknown',candidate_latency_ms:null}));
   });
 
+  it('reinitializes the detector and clears the error after retrying recognition',async ()=>{
+    detector.initialize.mockRejectedValueOnce(new Error('WASM initialization aborted'));
+    render(view());await act(async ()=>{});
+    expect(screen.getByText('Bộ nhận diện chưa khởi động được. Bấm thử lại để nạp lại.')).toBeVisible();
+    await act(async ()=>{fireEvent.click(screen.getByRole('button',{name:'Thử lại nhận diện'}));});
+    expect(detector.initialize).toHaveBeenCalledTimes(2);
+    expect(detector.close).toHaveBeenCalled();
+    expect(screen.queryByText('Không thể mở nhận diện. Bạn có thể chuyển sang Chạm.')).not.toBeInTheDocument();
+    await emit(0,0);
+    expect(screen.getByRole('button',{name:'Bắt đầu ký'})).toBeEnabled();
+  });
+
 });
