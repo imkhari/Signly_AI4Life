@@ -54,7 +54,7 @@ Danh sách seed (cần chuyên gia y tế rà soát — Q-07): `BREATH_DIFFICULT
 | Không lưu lâu dài | Backend giữ dữ liệu trong `dict` RAM theo `session_id`; không ghi đĩa, không DB, log không chứa nội dung bệnh nhân |
 | Frontend | Chỉ `sessionStorage`; không `localStorage`, không cookie theo dõi |
 | Xóa sạch | `SESSION_RESET` (hoàn tất / idle 10 phút / thủ công) → xóa RAM, sessionStorage, dừng camera + TTS, revoke object URL |
-| Camera | Xử lý khung hình **trên trình duyệt**; không upload video; chỉ gửi gloss + confidence |
+| Camera | MediaPipe xử lý khung hình **trên trình duyệt**. Camera tùy chọn gửi tọa độ 3D bàn tay tới backend LAN để gợi ý cử chỉ. Với V2 theo Q-23, chuỗi **411 tọa độ thân, mặt và hai tay** được gửi qua LAN; không gửi ảnh/video, không đưa tọa độ/câu decoder vào LLM, không lưu vào phiên hoặc log. Q-16 giữ tương thích cho client tay cũ; Q-23 duyệt mở rộng ngày 19/11/2026. |
 | LLM | Chỉ gửi `SemanticFrame` đã ẩn danh; `free_text` bị loại hoặc che (`[REDACTED]`) nếu chứa số điện thoại/CCCD/email (regex) |
 | Log | Chỉ ghi: `session_id` băm, event, thời gian, kết quả validator. Không ghi payload |
 | Hiển thị | Hiển thị rõ cho bệnh nhân: "Thông tin sẽ bị xóa khi kết thúc" |
@@ -73,3 +73,51 @@ Danh sách seed (cần chuyên gia y tế rà soát — Q-07): `BREATH_DIFFICULT
 - [ ] Không log nội dung bệnh nhân; không `localStorage`.
 - [ ] Test an toàn mới được thêm cho mọi quy tắc mới.
 - [ ] Đường thoát "Gọi phiên dịch/nhân viên" vẫn hiện ở mọi bước.
+
+## 8. Kiểm tra bổ sung B0/B1 ngày 19/11/2026
+
+Chủ dự án duyệt triển khai B0+B1 trong Q-20. Backend kiểm critical ack trước duyệt, chặn xác nhận PAIN_FALSE_BUT_SEVERITY, và chặn cập nhật dữ liệu sau duyệt. Phiếu đã duyệt cần phiên mới nếu sửa. Mỗi phiên có một câu hỏi dị ứng tổng quát đang chờ, chỉ nhận câu trả lời gắn đúng question_id và cần xác nhận lại toàn phiếu.
+
+Các thẻ rà soát có biểu tượng, nhãn và giá trị chưa rõ. Chọn riêng vị trí không tự khẳng định có đau; Q-27 cho phép cả câu khẳng định đau và vùng đi cùng nhau sau khi người bệnh nhận gợi ý. Giữ lời khai bổ sung xuyên suốt dữ liệu cấu trúc, diễn đạt và bàn giao. Test bổ sung kiểm tra bỏ sót/phủ định triệu chứng đi kèm để kích hoạt fallback. Các quy tắc cảnh báo y tế và ngưỡng severity giữ theo cấu hình đã chốt.
+
+## 9. Review V2 và ngoại lệ skill — Q-23
+
+File skill `safety-review` mà tài liệu nhắc tới không có tại `.claude/skills/safety-review/SKILL.md` hoặc nơi đã tìm. Chủ dự án duyệt **review bằng checklist docs07 + tests** thay thế cho đợt V2 ngày 19/11/2026 (D-024), không miễn các ranh giới y tế.
+
+- Không hiển thị trực tiếp câu decoder. Allowlist toàn câu, kiểm ngữ cảnh và điểm hữu hạn; phủ định/đa ý/chẩn đoán/lời khuyên/không biết vùng cụ thể → từ chối, không suy diễn.
+- V2 không dùng LLM sinh văn bản y tế. Sau khi bệnh nhân nhập/xác nhận, tóm tắt vẫn đi qua validator và fallback hiện có; không bỏ bước xác nhận/duyệt/cảnh báo critical.
+- Các guard chuyển động và điểm ≥ 0,7 là ngưỡng kỹ thuật **chưa hiệu chỉnh**. Tay nghỉ/ngoài danh mục người thật chưa được kiểm chứng. Có lỗi sốt → ho/đau đầu trong replay, vì vậy không công bố đã sẵn sàng lâm sàng.
+- Theo Q-24, buffer của một câu Bắt đầu ký/Xong câu tối đa6giây/180frame; tối thiểu24frame/800ms. Quá giới hạn, mất tay/vai hoặc gap>500ms thì từ chối cả lượt; không tự gửi prefix/câu ghép. Xóa buffer khi đổi câu hỏi, dừng camera, reset hoặc unmount. Chỉ một HTTP chờ; abort + generation guard chặn kết quả cũ. Camera được cấp quyền muộn sau đóng màn hình phải dừng track ngay.
+- Worker chỉ giữ model lâu dài, không giữ request cuối trong vòng chờ. Reset kết thúc worker và tăng generation chặn kết quả đang chạy. Không ghi raw input, tọa độ, tên file bệnh nhân hoặc câu dịch vào log. Tệp đánh giá công khai và fixture không phải dữ liệu phiên.
+- Review dùng test mapping phủ định/đa ý/chẩn đoán, malformed input, unavailable runtime, reset/cancellation, UI Nhận/Áp dụng và E2E luồng xác nhận/critical/fallback. Các quyền riêng tư LAN/HTTPS và thử người dùng thật vẫn cần diễn tập trên thiết bị mục tiêu.
+
+## 10. Thử nội bộ Q-24/Q-25
+
+Chủ dự án duyệt capture theo câu và trang `/vsl-validation`, dữ liệu thử giả lập. Chỉ mở camera sau khi người tham gia tự nguyện bấm bắt đầu. Hai vai ở mọi frame phải có dữ liệu hợp lệ để tránh chia cho độ rộng gần0; failure vẫn UNKNOWN. Điểm0,7/allowlist/weights không đổi. Nhận/Áp dụng/xác nhận hai chiều và các guard y tế giữ nguyên.
+
+Trang thử không tạo phiên bệnh nhân. Chỉ lưu nhãn kiểm soát, mã P01/P02/P03-D01/D02, split/điều kiện và timing trong RAM; xuất CSV theo yêu cầu người thử, không video/ảnh/landmark/câu decoder/tên/tình trạng sức khỏe thật. Kết quả thử rời rạc tách khỏi dữ liệu phiên y tế và không gửi LLM; bản xuất cá nhân để thư mục local Git ignore. Không tự bật webcam bằng agent hoặc ghi kết quả mô phỏng thành người thật. Q-26 xác nhận nhóm chưa biết VSL; lượt dương chưa có reference ký được kiểm tra giữ pending.
+
+Lượt E2E có `evidence=synthetic` được ghi nhãn và loại khỏi gate người thật. Không công bố đạt tiêu chí chỉ vì test tự động qua. CLI không tự đóng băng; cần kết quả đúng split và xác nhận đánh giá cuối chưa dùng để tune. Từ chối nhiều hơn là trade-off cần ghi, không che lượt lỗi.
+
+
+## 11. Review luồng nhận cả câu V2 — Q-27
+
+Chủ dự án chọn giữ V2 theo câu, kế hoạch14. Không đổi checkpoint, extractor, điểm0,7, giới hạn capture hoặc quy tắc cảnh báo y tế. Chỉ context intake mới tạo gợi ý nhiều trường từ toàn câu trong allowlist. Không mở dịch hội thoại hoặc suy luận lâm sàng. Câu không đủ thông tin vẫn hỏi bổ sung bằng Chạm; không biến câu ho thành “không đau”, không đoán vị trí cụ thể từ bụng/lưng chung chung.
+
+Một gợi ý được kiểm tra như một đơn vị, không có giỏ ghép các từ từ nhiều câu. Trước khi nhận không ghi bản nháp hoặc server. Sau khi nhận, patch đồng thời các trường liên quan và xóa detail cũ nếu ý thay đổi, có thông báo trước; chưa xác nhận toàn phiếu. Ngắt kết nối hoặc phiếu đổi làm hủy gợi ý/request cũ. Mọi bước patient confirmation, Post-LLM Validator/fallback, critical ack và khóa sau duyệt tiếp tục tại backend như trước.
+
+Review bằng checklist và tests theo Q-23: ánh xạ toàn câu, từ chối phủ định/đa ý, nhận/sửa/bỏ, patch đồng thời, xóa detail cũ, không phủ định dữ liệu chưa hỏi, stale response, đồng bộ hai màn và xác nhận/duyệt/reset. Các lượt tự động dùng đầu vào mô phỏng, không tính thành lượt VSL thật. Profile mới tách khỏi11ca âm profile4e4ebb; các kết quả cũ vẫn giữ baseline. Chưa có lượt dương được người biết VSL xác minh, trạng thái model vẫn CANDIDATE.
+
+Theo Q-28, lỗi worker ở luồng intake phải hiển thị lựa chọn thử lại hoặc Chạm. Một phản hồi HTTP thành công có thể mang lỗi xử lý và không được tính là ca âm đạt. Chỉ báo mặt, vai và từng tay dùng các nhóm landmark của khung hình hiện tại để người thử chỉnh tư thế. Điều kiện bắt đầu và ngưỡng nhận diện giữ theo Q-24.
+
+Q-29 đã được chủ dự án duyệt ngày20/11/2026. Lý do từ chối intake được ánh xạ sang mã kiểm soát và lời nhắc cố định. Câu decoder/điểm token không trả thêm ra UI, không ghi log hoặc vào phiếu. Điểm thiếu/không hợp lệ không được diễn giải thành model_score_low. Thông báo phrase_not_supported mô tả đầu ra nhận diện; chưa quy lỗi cho người ký. Ngưỡng0,7, guard chuyển động/vai/capture và bước Nhận/Sửa tiếp tục áp dụng.
+
+Q-32 ngày20/11/2026 đã được duyệt. Camera dùng Holistic Web legacy0.5.1675471629, modelComplexity1, smoothLandmarks và confidence0,5 theo recipe. JS/WASM/model chỉ nạp từ /models/holistic-legacy tại máy nội bộ. Chỉ một send đang chờ. stop tăng generation và bỏ kết quả cũ; close chờ send hiện tại hoàn tất trước giải phóng graph. Ảnh resize360×360 ở canvas chỉ tồn tại trong trình duyệt; backend tiếp tục chỉ nhận411tọa độ của câu đã thu. Giữ ngưỡng0,7, capture/guard và xác nhận hai phía. Nạp lỗi hiển thị đường Chạm. Phải thử lại theo profile mới trước khi kết luận chất lượng.
+
+## 12. Review chặn thiếu mặt toàn lượt — Q-33
+
+Chủ dự án duyệt20/11/2026 theo kế hoạch15. Sau guard chuyển động hiện có, chuỗi hoàn toàn thiếu face70 (mọi giá trị trong nhóm ở mọi frame bằng0 sau resampling) bị từ chối trước decoder. Intake nhận mã face_not_tracked; các context cũ UNKNOWN. Không đặt tỷ lệ frame mới hoặc chặn một frame mất mặt, không đổi model/normalization/điểm0,7/capture/allowlist/xác nhận.
+
+Mã hướng dẫn cố định được hiển thị và có thể xuất cùng nhãn/timing thử nội bộ theo yêu cầu người thử, trong cột diagnostic_code. Không thêm media, landmark, câu decoder, điểm token, PII hoặc dữ liệu phiên y tế. Ca âm tracking hợp lệ thiếu toàn mặt không được tính đạt; lượt dương từ chối vẫn nằm trong mẫu số. CSV cũ không có mã vẫn giữ nguyên ý nghĩa.
+
+Review theo ngoại lệ Q-23: gate không gọi decoder cho chuỗi thiếu toàn mặt; giữ đầu vào có mặt hoặc chỉ mất tạm thời; mapping chỉ mã cố định/null; UI không có nút nhận gợi ý; CSV cấm văn bản tự do và loại đầu vào thiếu khỏi ca âm hợp lệ. Kiểm định này không xác nhận nguyên nhân ca nhầm Sốt, không chữa lỗi model sốt→ho và chưa chứng minh dùng bệnh viện.

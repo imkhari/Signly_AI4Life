@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "model_name": "",
+  "provenance": "",
+  "license_or_permission": "",
+  "preprocessing": "",
+  "artifacts": [
+    {"role": "checkpoint", "path": "model/checkpoint_best.pt", "sha256": ""},
+    {"role": "model_source", "path": "AI/source/models/slt_model.py", "sha256": ""},
+    {"role": "vocab_source", "path": "AI/source/utils/vocab.py", "sha256": ""},
+    {"role": "config", "path": "AI/source/config/config_phase2.yaml", "sha256": ""},
+    {"role": "gloss_vocab", "path": "AI/data/gloss_vocab.txt", "sha256": ""},
+    {"role": "trans_vocab", "path": "AI/data/trans_vocab.txt", "sha256": ""},
+    {"role": "ood_bank", "path": "model/ood_reference_bank.pt", "sha256": ""}
+  ]
+}

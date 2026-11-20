@@ -58,6 +58,17 @@ describe('useCamera hook', () => {
     expect(mockTrack.stop).toHaveBeenCalled();
   });
 
+  it('releases a stream granted after the hook was unmounted', async () => {
+    let resolve!: (stream: MediaStream) => void;
+    vi.mocked(navigator.mediaDevices.getUserMedia).mockReturnValue(new Promise(r => {resolve = r;}));
+    const {result, unmount} = renderHook(() => useCamera(), {wrapper:SessionProvider});
+    let pending!: Promise<void>;
+    act(() => {pending = result.current.start();});
+    unmount();
+    await act(async () => {resolve(mockStream as unknown as MediaStream); await pending;});
+    expect(mockTrack.stop).toHaveBeenCalled();
+  });
+
   it('handles permission denied error cleanly', async () => {
     (navigator.mediaDevices.getUserMedia as ReturnType<typeof vi.fn>).mockRejectedValueOnce({
       name: 'NotAllowedError',

@@ -31,6 +31,8 @@ check: check-backend check-frontend
 check-backend:
 	@echo "==> [Backend] Linting with ruff..."
 	$(VENV)/bin/ruff check backend
+	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/evaluation
+	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/vsl_v2
 	@echo "==> [Backend] Type checking with mypy..."
 	$(VENV)/bin/mypy backend/app backend/tests
 	@echo "==> [Backend] Running unit tests with pytest..."
@@ -73,3 +75,33 @@ demo-https:
 
 clean:
 	rm -rf backend/.venv frontend/node_modules frontend/dist
+
+.PHONY: evaluate-vsl
+evaluate-vsl:
+	$(PYTHON) -m AI_model.evaluation.evaluate --synthetic --output AI_model/evaluation/reports/synthetic.json
+
+.PHONY: evaluate-vsl-stability inspect-vsl-package
+MODEL_MANIFEST ?= AI_model/evaluation/model-package.template.json
+evaluate-vsl-stability:
+	$(PYTHON) -m AI_model.evaluation.stability_suite --output AI_model/evaluation/reports/stability.json
+
+inspect-vsl-package:
+	@test -n "$(MODEL_PACKAGE)" || (echo "Cần MODEL_PACKAGE=/đường/dẫn/bộ-model"; exit 2)
+	$(PYTHON) -m AI_model.evaluation.model_package --package "$(MODEL_PACKAGE)" --manifest "$(MODEL_MANIFEST)" --output AI_model/evaluation/reports/model-package.json
+
+.PHONY: check-v2 setup-v2
+setup-v2:
+	python3 -m venv AI_model/runtime/.venv
+	AI_model/runtime/.venv/bin/python -m pip install -r AI_model/runtime/requirements-lock.txt
+
+check-v2:
+	$(VENV)/bin/ruff check --config backend/pyproject.toml AI_model/vsl_v2
+	AI_model/runtime/.venv/bin/python -m unittest discover -s AI_model/vsl_v2/tests -v
+
+.PHONY: prepare-vsl-validation summarize-vsl-trials
+prepare-vsl-validation:
+	$(PYTHON) -m AI_model.vsl_v2.trials profile --output frontend/public/vsl-validation-profile.json
+
+VSL_TRIALS ?= docs/validation/vsl-v2/TRIALS.csv
+summarize-vsl-trials:
+	$(PYTHON) -m AI_model.vsl_v2.trials summarize --input "$(VSL_TRIALS)" --output docs/validation/vsl-v2/metrics.json

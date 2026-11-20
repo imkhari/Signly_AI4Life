@@ -50,6 +50,8 @@ wheels/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+# Owner-supplied original model bundle is retained locally.
+VSL_Checkpoints_v2/
 .coverage
 .coverage.*
 htmlcov/
@@ -70,3 +72,9 @@ Thumbs.db
 *.swp
 *.swo
 
+
+# Anonymous individual trial exports stay local; only empty template/aggregate evidence is tracked.
+docs/validation/vsl-v2/local/
+
+# Private slide authoring and validation intermediates.
+.ai4life-build/

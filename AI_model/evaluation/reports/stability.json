@@ -1,0 +1,157 @@
+{
+  "kind": "synthetic_prediction_replay",
+  "cases": 12,
+  "matched": 11,
+  "stabilizer_options": {
+    "minStabilityDurationMs": 500,
+    "minConfidence": 0.7,
+    "minStableFrames": 3,
+    "cooldownMs": 2000
+  },
+  "fixture_sha256": "ed2ad829ffec55011a131e618bbfd96a6eee5bc30a92d1bf56a3b1270202451c",
+  "source_sha256": {
+    "frontend/src/services/vsl/GestureStabilizer.ts": "c040138fc42118e0a0a5c628f00c9a611185d5955ba1c15759b0504a5dcdf6a2",
+    "AI_model/evaluation/replay_stabilizer.cjs": "eded55de1f7dc8235461874aeb1817128141e6ec359b833b642c30bdd5497804"
+  },
+  "results": [
+    {
+      "case_id": "stable_hold",
+      "expected": [
+        "NGỰC"
+      ],
+      "actual": [
+        "NGỰC"
+      ],
+      "matches_expectation": true,
+      "emissions": [
+        {
+          "gloss": "NGỰC",
+          "timestamp_ms": 540
+        }
+      ]
+    },
+    {
+      "case_id": "short_hold",
+      "expected": [],
+      "actual": [],
+      "matches_expectation": true,
+      "emissions": []
+    },
+    {
+      "case_id": "too_few_frames",
+      "expected": [],
+      "actual": [],
+      "matches_expectation": true,
+      "emissions": []
+    },
+    {
+      "case_id": "low_confidence",
+      "expected": [],
+      "actual": [],
+      "matches_expectation": true,
+      "emissions": []
+    },
+    {
+      "case_id": "waving",
+      "expected": [],
+      "actual": [],
+      "matches_expectation": true,
+      "emissions": []
+    },
+    {
+      "case_id": "transitioning",
+      "expected": [],
+      "actual": [],
+      "matches_expectation": true,
+      "emissions": []
+    },
+    {
+      "case_id": "lost_hand",
+      "expected": [],
+      "actual": [],
+      "matches_expectation": true,
+      "emissions": []
+    },
+    {
+      "case_id": "changing_gloss",
+      "expected": [],
+      "actual": [],
+      "matches_expectation": true,
+      "emissions": []
+    },
+    {
+      "case_id": "cooldown",
+      "expected": [
+        "NGỰC"
+      ],
+      "actual": [
+        "NGỰC"
+      ],
+      "matches_expectation": true,
+      "emissions": [
+        {
+          "gloss": "NGỰC",
+          "timestamp_ms": 600
+        }
+      ]
+    },
+    {
+      "case_id": "repeat_after_cooldown",
+      "expected": [
+        "NGỰC",
+        "NGỰC"
+      ],
+      "actual": [
+        "NGỰC",
+        "NGỰC"
+      ],
+      "matches_expectation": true,
+      "emissions": [
+        {
+          "gloss": "NGỰC",
+          "timestamp_ms": 600
+        },
+        {
+          "gloss": "NGỰC",
+          "timestamp_ms": 2600
+        }
+      ]
+    },
+    {
+      "case_id": "numeric_one_frame_jitter",
+      "expected": [
+        "MỨC-1"
+      ],
+      "actual": [
+        "MỨC-1"
+      ],
+      "matches_expectation": true,
+      "emissions": [
+        {
+          "gloss": "MỨC-1",
+          "timestamp_ms": 540
+        }
+      ]
+    },
+    {
+      "case_id": "delivery_gap",
+      "expected": [],
+      "actual": [
+        "NGỰC"
+      ],
+      "matches_expectation": false,
+      "emissions": [
+        {
+          "gloss": "NGỰC",
+          "timestamp_ms": 11000
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Authored predictions, no camera, landmarks, trained model or human signer.",
+    "Each case starts a new stabilizer; tests emissions, not patient acceptance.",
+    "delivery_gap encodes a desired behavior absent from current max-gap-free tracking.",
+    "Pass count is not sign-recognition accuracy or a production readiness threshold."
+  ]
+}

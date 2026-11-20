@@ -1,7 +1,9 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSession } from '../state/SessionContext';
 import { socketClient } from '../services/ws/socketClient';
+import { requestRecordExport } from '../services/ws/requestExport';
 import {
+  ErrorPayload,
   InputUpdatedServerPayload,
   InterpreterStatusPayload,
   NurseVerifiedPayload,
@@ -12,6 +14,7 @@ import {
 export function useSessionSocket() {
   const { state, dispatch } = useSession();
   const { sessionId, role, token } = state;
+  const [socketError, setSocketError] = useState<ErrorPayload | null>(null);
 
   useEffect(() => {
     if (!sessionId || !role || !token) return;
@@ -20,11 +23,17 @@ export function useSessionSocket() {
       sessionId,
       role,
       token,
-      lastSeq: socketClient.getLastSeq(),
+      lastSeq: 0,
     });
 
     const unsubStatus = socketClient.onStatusChange((status) => {
       dispatch({ type: 'SET_SOCKET_STATUS', payload: status });
+    });
+
+    setSocketError(null);
+    const unsubError = socketClient.on<ErrorPayload>('ERROR', setSocketError);
+    const unsubJoined = socketClient.on<{role:string}>('SESSION_JOINED',payload=>{
+      if (payload.role==='patient') dispatch({type:'PATIENT_JOINED'});
     });
 
     const unsubInput = socketClient.on<InputUpdatedServerPayload>(
@@ -41,6 +50,10 @@ export function useSessionSocket() {
         });
       }
     );
+
+    const unsubQuestion = socketClient.on('NURSE_QUESTION', () => {
+      dispatch({ type: 'PATIENT_CONFIRMED', payload: { status: 'collecting' } });
+    });
 
     const unsubSummary = socketClient.on<SummaryReadyPayload>(
       'SUMMARY_READY',
@@ -87,8 +100,11 @@ export function useSessionSocket() {
 
     return () => {
       unsubStatus();
+      unsubError();
+      unsubJoined();
       unsubInput();
       unsubSummary();
+      unsubQuestion();
       unsubConfirm();
       unsubVerified();
       unsubInterpreter();
@@ -98,17 +114,20 @@ export function useSessionSocket() {
   }, [sessionId, role, token, dispatch]);
 
   const sendInput = useCallback(
-    (step: string, patch: Record<string, unknown>, modality: string = 'touch') => {
-      socketClient.send('INPUT_UPDATED', {
+    (step: string, patch: Record<string, unknown>, modality: string = 'touch', rawInput?: { type: string; text: string }, replyTo?: string) => {
+      return socketClient.send('INPUT_UPDATED', {
         step,
         modality,
         patch,
+        raw_input: rawInput,
+        reply_to: replyTo,
       });
     },
     []
   );
 
   const requestSummary = useCallback(() => {
+    setSocketError(null);
     socketClient.send('SUMMARY_REQUESTED', {
       language: 'vi',
       reading_level: 'simple',
@@ -117,7 +136,8 @@ export function useSessionSocket() {
 
   const confirmPatient = useCallback(
     (decision: 'confirmed' | 'needs_edit' | 'unsure', confirmedFields: string[]) => {
-      socketClient.send('PATIENT_CONFIRMED', {
+      setSocketError(null);
+    socketClient.send('PATIENT_CONFIRMED', {
         decision,
         confirmed_fields: confirmedFields,
       });
@@ -127,7 +147,8 @@ export function useSessionSocket() {
 
   const verifyNurse = useCallback(
     (intakeCode: string, queueNumber: number, acknowledgedAlerts: string[] = []) => {
-      socketClient.send('NURSE_VERIFIED', {
+      setSocketError(null);
+    socketClient.send('NURSE_VERIFIED', {
         intake_code: intakeCode,
         queue_number: queueNumber,
         verified_by: 'nurse-kiosk',
@@ -170,24 +191,23 @@ export function useSessionSocket() {
 
   const exportRecord = useCallback(
     (format: 'pdf' | 'print' | 'json' = 'print') => {
-      socketClient.send('RECORD_EXPORTED', {
-        format,
-        include: ['queue_number', 'intake_code', 'confirmed_symptoms', 'alerts'],
-        target: 'doctor',
-      });
+      return requestRecordExport(socketClient,format);
     },
     []
   );
 
   const resetSession = useCallback((reason: string = 'completed') => {
-    socketClient.send('SESSION_RESET', {
+    const sent=socketClient.send('SESSION_RESET', {
       reason,
       wipe: true,
     });
-  }, []);
+    if (reason==='timeout') dispatch({type:'RESET_SESSION'});
+    return sent;
+  }, [dispatch]);
 
   return {
     socketStatus: state.socketStatus,
+    socketError,
     sendInput,
     requestSummary,
     confirmPatient,

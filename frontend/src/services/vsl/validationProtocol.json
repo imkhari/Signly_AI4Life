@@ -1,0 +1,120 @@
+{
+  "version": "vsl-v2-intake-2",
+  "criteria_approval": "Q-25/D-026",
+  "cohort": "internal",
+  "participants": {
+    "P01": "development",
+    "P02": "development",
+    "P03": "final"
+  },
+  "conditions": [
+    "normal",
+    "low_light",
+    "off_axis",
+    "distance"
+  ],
+  "familiarities": [
+    "learning",
+    "fluent",
+    "unknown"
+  ],
+  "devices": [
+    "D01",
+    "D02"
+  ],
+  "expected_per_intent_final": 5,
+  "required_correct_per_intent": 4,
+  "expected_per_negative_final": 5,
+  "candidate_p95_ms_limit": 5000,
+  "intents": [
+    {
+      "id": "HEAD_SYMPTOM",
+      "label": "Đau đầu",
+      "kind": "positive",
+      "context": "intake",
+      "expected": "PAIN+HEAD"
+    },
+    {
+      "id": "CHEST_LOCATION",
+      "label": "Tôi bị đau ngực",
+      "kind": "positive",
+      "context": "intake",
+      "expected": "PAIN+CHEST"
+    },
+    {
+      "id": "BREATH_SYMPTOM",
+      "label": "Khó thở",
+      "kind": "positive",
+      "context": "intake",
+      "expected": "BREATH_DIFFICULTY"
+    },
+    {
+      "id": "FEVER_DIAGNOSTIC",
+      "label": "Sốt — kiểm lỗi đã biết",
+      "kind": "diagnostic",
+      "context": "intake",
+      "expected": "FEVER"
+    },
+    {
+      "id": "NEG_REST",
+      "label": "Tay nghỉ trong khung",
+      "kind": "negative_valid",
+      "context": "intake",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_MOTION",
+      "label": "Động tác thông thường",
+      "kind": "negative_valid",
+      "context": "intake",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_OUTSIDE",
+      "label": "Ý ngoài danh mục thử",
+      "kind": "negative_valid",
+      "context": "intake",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_MISSING",
+      "label": "Mất landmark / rời khung",
+      "kind": "negative_invalid",
+      "context": "intake",
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "NEG_GAP",
+      "label": "Gián đoạn tracking",
+      "kind": "negative_invalid",
+      "context": "intake",
+      "expected": "UNKNOWN"
+    }
+  ],
+  "reasons": [
+    "accepted",
+    "unknown",
+    "missing_shoulders",
+    "tracking_gap",
+    "sequence_limit",
+    "insufficient_frames",
+    "invalid_landmarks",
+    "network_error",
+    "worker_unavailable",
+    "inference_timeout",
+    "cancelled"
+  ],
+  "allowed_labels": [
+    "UNKNOWN",
+    "PAIN",
+    "PAIN+HEAD",
+    "PAIN+CHEST",
+    "PAIN+ABDOMEN_UPPER",
+    "PAIN+ABDOMEN_LOWER",
+    "PAIN+NECK",
+    "PAIN+LOWER_BACK",
+    "COUGH",
+    "FEVER",
+    "BREATH_DIFFICULTY"
+  ]
+}

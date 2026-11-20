@@ -39,3 +39,17 @@ Phiên bản: dùng **bản ổn định mới nhất tại thời điểm P0**,
 
 ## Quyết định "web hay app?" (từ ghi chú tay)
 Chọn **Web App responsive (PWA-ready)**: một codebase chạy trên tablet/kiosk/máy tính/điện thoại, không cần cài đặt, dễ demo. App native chỉ xét sau MVP (Q-04).
+
+## Runtime camera V2 — được duyệt Q-22/Q-23
+
+PyTorch 2.15.0 + NumPy 2.5.5 và dependency pin tại `AI_model/runtime/requirements-lock.txt`, môi trường **riêng** `AI_model/runtime/.venv` (máy kiểm thử Python 3.15.2 ARM64). Backend dùng stdlib subprocess/JSON-lines, không cài torch vào backend để tránh kích hoạt nhánh model cũ. `make setup-v2`, `make check-v2`; máy/OS/Python khác phải kiểm wheel tương thích, không tự đổi lockfile.
+
+HolisticLandmarker dùng `@mediapipe/tasks-vision` hiện có, model task và WASM phục vụ tại `/models` và `/wasm`. Không fallback CDN. GPU không được thì thử CPU cục bộ. Kiến trúc MIT và nguồn/hash ở `AI_model/vsl_v2/vendor/` và model manifest; weights V2 do chủ dự án cung cấp giữ ngoài Git.
+
+## Môi trường kiểm extractor — Q-30/Q-31
+
+MediaPipe Python0.10.21, OpenCV contrib4.11.0.86 và NumPy1.26.4 trong AI_model/extractor-runtime/.venv (Python3.12). Dependency đầy đủ pin trong requirements-lock.txt cùng thư mục. @mediapipe/holistic0.5.1675471629 được tải vào AI_model/extractor-runtime/web để kiểm thêm bản Web legacy. Chỉ chạy offline trên video tham chiếu công khai. Công cụ Playwright tận dụng dependency frontend hiện có và HolisticDetector.detectFrame của app.
+
+## Camera production sau Q-32
+
+@mediapipe/holistic0.5.1675471629 đã được duyệt tích hợp. HolisticDetector dùng adapter LegacyHolistic, script/model/WASM cục bộ trong frontend/public/models/holistic-legacy. Các tệp và giấy phép Apache-2.0 có SHA256 trong asset-manifest.json. TasksHolisticDetector giữ cho công cụ so sánh. Thiết lập không dùng CDN. E2E kiểm bằng cách chặn toàn bộ HTTPS bên ngoài khi nạp và suy luận. Khả năng khởi tạo phụ thuộc trình duyệt/WebGL; lỗi đi theo thông báo dùng Chạm đã có.

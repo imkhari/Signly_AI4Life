@@ -1,0 +1,38 @@
+{
+  "AI4Care_AI4Life.pptx": {
+    "bytes": 1650461,
+    "sha256": "b1695b2aba5b739cb3c521b4c30403f4c7fe644765cea0113abfa849760bc9fa"
+  },
+  "AI4Care_AI4Life.pdf": {
+    "bytes": 2061385,
+    "sha256": "7f555657c7d9461e84917840bcb589118655216790aacb24093c14d89ec840c7"
+  },
+  "THUYET-TRINH.md": {
+    "bytes": 5585,
+    "sha256": "f8acf24d879737be5d22f63f8cda309e4e0618e628c74e63eb78733401e9e93b"
+  },
+  "NOI-DUNG-CHI-TIET.md": {
+    "bytes": 20634,
+    "sha256": "0ae2f32919737035a1d6d92a8fae257c67df2b3dd0b0f978f9648b80015f6e8e"
+  },
+  "QA.md": {
+    "bytes": 7565,
+    "sha256": "46eb2fff2a227b994cb9894815e60e962ed4d55e0c48c3b84ff4155a01085a80"
+  },
+  "EVIDENCE.md": {
+    "bytes": 6594,
+    "sha256": "a020b59d18ed26f03eb6ee698d1c96b2c7d0f508ea10d1e960368af89fa385f0"
+  },
+  "README.md": {
+    "bytes": 3412,
+    "sha256": "bd83ebd6584f39c03d30f432ef6d3d806c170690dd440483c273cefad9d89485"
+  },
+  "VERIFICATION.md": {
+    "bytes": 3091,
+    "sha256": "e0b73c43570ce35124c96ba3e7cd74a4ba6eaac6aabe887d7d847333f81ed015"
+  },
+  "screenshots/PROVENANCE-SENTENCE.json": {
+    "bytes": 869,
+    "sha256": "d418450e587ca6c1f4a49c01160369952534c1f198f551e1e6a3ebd8bd42bda8"
+  }
+}

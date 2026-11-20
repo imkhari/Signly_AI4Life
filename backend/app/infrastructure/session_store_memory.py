@@ -36,6 +36,8 @@ class SessionData:
         self.current_seq: int = 0
         self.event_buffer: list[dict[str, Any]] = []
 
+        self.pending_question: dict[str, Any] | None = None
+
         self.force_fallback: bool = False
         self.interpreter_requested: bool = False
         self.queue_number: int | None = None
@@ -123,6 +125,9 @@ class InMemorySessionStore:
         session = self._sessions.pop(session_id, None)
         if session and session.pairing_code in self._pairing_map:
             del self._pairing_map[session.pairing_code]
+
+    def session_ids(self) -> set[str]:
+        return set(self._sessions)
 
     async def cleanup_idle_sessions(self, max_idle_seconds: float = 600.0) -> list[str]:
         expired_ids: list[str] = []

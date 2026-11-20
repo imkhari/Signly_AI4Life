@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from app.ai.orchestrator import orchestrate_summary
+from app.api.rest.vsl import clear_vsl_motion_buffer
 from app.api.ws.envelope import make_envelope, make_error_envelope
 from app.application.nurse_view_builder import build_nurse_view
 from app.application.session_service import session_service
@@ -55,9 +56,36 @@ async def handle_ws_message(
             await hub.send_to_role(session.session_id, role, err)
             return
 
+        if session.status in ["nurse_verified", "exported", "reset"]:
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Phiếu đã đóng chỉnh sửa. Vui lòng tạo phiên mới nếu cần sửa.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
+        reply_to = payload.get("reply_to")
+        if reply_to:
+            pending = session.pending_question
+            answer = payload.get("patch", {}).get("allergy", {}).get("has_allergy")
+            if (
+                role != "patient"
+                or not pending
+                or reply_to != pending["question_id"]
+                or pending["template_code"] != "ASK_DRUG_ALLERGY"
+                or (answer is not True and answer is not False and answer != "unsure")
+                or set(payload.get("patch", {})) != {"allergy"}
+            ):
+                err = make_error_envelope(
+                    session.session_id, session.current_seq, "VALIDATION_ERROR",
+                    "Câu trả lời chưa khớp câu hỏi hiện tại. Vui lòng hỏi lại điều dưỡng.",
+                )
+                await hub.send_to_role(session.session_id, role, err)
+                return
+
         patch = payload.get("patch", {})
         raw_input = payload.get("raw_input")
-        step = payload.get("step", "")
+        step = "nurse_reply" if reply_to else payload.get("step", "")
         modality = payload.get("modality", "touch")
 
         if modality not in session.frame.modality:
@@ -70,11 +98,15 @@ async def handle_ws_message(
             session_id=session.session_id,
         )
         session.frame = parse_result.frame
+        if reply_to:
+            session.pending_question = None
 
         try:
             session.state_machine.on_input_updated()
         except InvalidStateTransitionError:
             pass
+        if session.status == "collecting":
+            session.summary = None
 
         server_payload = {
             "frame": session.frame.model_dump(),
@@ -105,17 +137,25 @@ async def handle_ws_message(
             await hub.send_to_role(session.session_id, role, err)
             return
 
-        try:
-            session.state_machine.on_summary_ready()
-        except InvalidStateTransitionError:
-            pass
-
-        # Điều phối AI (LLM / Validator / Fallback)
+        frame = session.frame
         result = await orchestrate_summary(
-            session.frame,
+            frame,
             get_llm_client(),
             force_fallback=session.force_fallback,
         )
+        try:
+            if session.frame is not frame:
+                raise InvalidStateTransitionError(session.status, "SUMMARY_READY")
+            session.state_machine.on_summary_ready()
+        except InvalidStateTransitionError:
+            err = make_error_envelope(
+                session.session_id,
+                session.current_seq,
+                "VALIDATION_ERROR",
+                "Thông tin phiên đã thay đổi. Vui lòng mở lại bước tóm tắt.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
 
         nurse_view = build_nurse_view(session.frame)
         emergency_flag = any(a.level == "critical" for a in session.frame.conflicts)
@@ -175,10 +215,28 @@ async def handle_ws_message(
             return
 
         decision = payload.get("decision", "confirmed")
+        if decision == "confirmed" and (
+            any(a.code == "PAIN_FALSE_BUT_SEVERITY" for a in session.frame.conflicts)
+            or session.pending_question is not None
+        ):
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Cần trả lời câu hỏi và sửa thông tin chưa khớp trước khi xác nhận.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
         try:
             session.state_machine.on_patient_confirmed(decision)
         except InvalidStateTransitionError:
-            pass
+            err = make_error_envelope(
+                session.session_id,
+                session.current_seq,
+                "VALIDATION_ERROR",
+                "Bản tóm tắt chưa sẵn sàng. Vui lòng kiểm tra lại thông tin.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
 
         if decision == "confirmed":
             if session.summary:
@@ -212,6 +270,30 @@ async def handle_ws_message(
             )
             await hub.send_to_role(session.session_id, role, err)
             return
+
+        if (
+            session.status in ["nurse_verified", "exported", "reset"]
+            or session.pending_question is not None
+            or payload.get("template_code") not in ["ASK_DRUG_ALLERGY", "ASK_DRUG"]
+            or not payload.get("question_id")
+        ):
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Câu hỏi chưa sẵn sàng. Hãy hoàn tất câu hỏi dị ứng hiện tại trước.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+        payload = {
+            "question_id": payload["question_id"],
+            "template_code": "ASK_DRUG_ALLERGY",
+            "text_vi": "Bạn có dị ứng nào không?",
+            "answer_type": "yes_no_unsure",
+            "icon": "pill",
+        }
+        session.pending_question = payload
+        if session.status in ["summary_ready", "patient_confirmed"]:
+            session.state_machine.on_input_updated()
+            session.summary = None
 
         envelope = make_envelope(
             event="NURSE_QUESTION",
@@ -248,6 +330,22 @@ async def handle_ws_message(
             await hub.send_to_role(session.session_id, role, err)
             return
 
+        acknowledged = payload.get("acknowledged_alerts", [])
+        if not isinstance(acknowledged, list) or any(
+            not isinstance(code, str) for code in acknowledged
+        ):
+            acknowledged = []
+        if session.pending_question is not None or any(
+            alert.level == "critical" and alert.code not in acknowledged
+            for alert in session.frame.conflicts
+        ):
+            err = make_error_envelope(
+                session.session_id, session.current_seq, "VALIDATION_ERROR",
+                "Cần giải quyết câu hỏi và xác nhận đã biết cảnh báo trước khi duyệt.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
         session.intake_code = payload.get("intake_code")
         session.queue_number = payload.get("queue_number")
         try:
@@ -280,6 +378,16 @@ async def handle_ws_message(
                 session.current_seq,
                 "FORBIDDEN_ROLE",
                 "Bạn không có quyền xuất hồ sơ",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
+        if session.status not in ("nurse_verified", "exported") or session.summary is None:
+            err = make_error_envelope(
+                session.session_id,
+                session.current_seq,
+                "VALIDATION_ERROR",
+                "Chỉ xuất phiếu sau khi bệnh nhân xác nhận và điều dưỡng duyệt.",
             )
             await hub.send_to_role(session.session_id, role, err)
             return
@@ -339,6 +447,8 @@ async def handle_ws_message(
             return
 
         session.state_machine.on_session_reset()
+        clear_vsl_motion_buffer()
+        session.pending_question = None
         reset_payload = {
             "reason": payload.get("reason", "completed"),
             "wipe": True,

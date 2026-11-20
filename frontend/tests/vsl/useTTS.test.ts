@@ -105,4 +105,42 @@ describe('useTTS hook', () => {
     expect(result.current.subtitle).toBeNull();
     vi.useRealTimers();
   });
+
+it('ignores late callbacks from a cancelled utterance while a new one is speaking',()=>{
+  const {result,unmount}=renderHook(()=>useTTS());
+  const ended=vi.fn();
+  act(()=>result.current.speak('Câu trước',ended));
+  const old=(window.speechSynthesis.speak as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
+  act(()=>result.current.speak('Câu mới'));
+  act(()=>{old.onend?.();old.onerror?.();});
+  expect(result.current.isSpeaking).toBe(true);
+  expect(result.current.subtitle).toBe('Câu mới');
+  expect(ended).not.toHaveBeenCalled();unmount();
+});
+
+it('switches ownership between buttons and does not cancel another button on unmount',()=>{
+  const first=renderHook(()=>useTTS()),second=renderHook(()=>useTTS());
+  act(()=>first.result.current.speak('Câu thứ nhất'));
+  act(()=>second.result.current.speak('Câu thứ hai'));
+  expect(first.result.current.isSpeaking).toBe(false);
+  expect(second.result.current.isSpeaking).toBe(true);
+  const cancel=window.speechSynthesis.cancel as ReturnType<typeof vi.fn>;
+  const calls=cancel.mock.calls.length;
+  first.unmount();expect(cancel).toHaveBeenCalledTimes(calls);
+  second.unmount();expect(cancel).toHaveBeenCalledTimes(calls+1);
+});
+
+it('keeps voice listeners independent and removes them on unmount',()=>{
+  const bus=new EventTarget();
+  Object.assign(window.speechSynthesis,{addEventListener:bus.addEventListener.bind(bus),removeEventListener:bus.removeEventListener.bind(bus)});
+  const first=renderHook(()=>useTTS()),second=renderHook(()=>useTTS());
+  first.unmount();
+  const voices=window.speechSynthesis.getVoices as ReturnType<typeof vi.fn>;
+  voices.mockReturnValue([]);const before=voices.mock.calls.length;
+  act(()=>bus.dispatchEvent(new Event('voiceschanged')));
+  expect(second.result.current.hasViVoice).toBe(false);
+  expect(voices).toHaveBeenCalledTimes(before+1);
+  second.unmount();bus.dispatchEvent(new Event('voiceschanged'));
+  expect(voices).toHaveBeenCalledTimes(before+1);
+});
 });

@@ -1,136 +1,76 @@
-# HƯỚNG DẪN TRIỂN KHAI & DEMO QUA MẠNG LAN (AI4Care)
+# Triển khai và kiểm tra trước buổi thi
 
-Tài liệu hướng dẫn cấu hình và vận hành hệ thống AI4Care trong môi trường trình diễn thực tế (Demo Day), hỗ trợ mô hình 2 thiết bị độc lập (Kiosk Bệnh nhân trên iPad/Máy tính bảng và Màn hình Điều dưỡng trên Laptop) kết nối qua mạng cục bộ (LAN/Wi-Fi).
+Cập nhật ngày 19/11/2026. Luồng thi chính dùng Chạm + LLM mock. Mỗi phiên có một màn bệnh nhân và một màn điều dưỡng. Dùng dữ liệu giả lập khi diễn tập.
 
----
+## 1. Chạy cục bộ
 
-## 1. Nguyên tắc cốt lõi (Privacy & Local First)
+Chạy `make setup`, rồi `make demo`. Mở /nurse và /patient trên http://localhost:5173. Điều dưỡng tạo mã sáu ký tự, bệnh nhân nhập mã. Chờ cả hai màn Đã kết nối. Xem docs/PLANS/01-DEMO-SCRIPT.md để thao tác.
 
-1. **Quyền riêng tư tuyệt đối (Privacy-by-Design)**: Không dùng các dịch vụ tunnel công cộng (như ngrok, cloudflared) làm luồng mặc định để tránh truyền dữ liệu hay hình ảnh ra máy chủ bên ngoài. Mọi giao tiếp diễn ra 100% trong mạng LAN nội bộ.
-2. **Quy định Camera trên trình duyệt**: Các trình duyệt hiện đại (Chrome, Safari, Edge) chỉ cho phép API `navigator.mediaDevices.getUserMedia` hoạt động trên `localhost` hoặc kết nối bảo mật **HTTPS**. Khi mở ứng dụng từ thiết bị di động (iPad/Tablet) qua IP mạng LAN, **bắt buộc phải bật HTTPS local**.
-3. **Mô hình AI Hybrid (VSL Engine)**:
-   - Mặc định MVP: Chạy Động cơ Nhận diện Hình học Không gian 3D & Chuỗi chuyển động 16-frame tối ưu hoá cho Edge (<1ms độ trễ), nhận diện 35 từ vựng/cử chỉ y tế.
-   - Server Tier: Sẵn sàng tải trọng số PyTorch Deep Learning (VTN Checkpoint 208MB) khi môi trường server có cài đặt `torch`.
+## 2. Hai thiết bị qua LAN
 
----
+Chạy `make demo-https`. Frontend HTTPS cổng 5173, backend cổng 8000. Hai thiết bị cùng Wi-Fi. Lấy IP bằng `ipconfig getifaddr en0`, mở https://<IP>:5173/nurse và https://<IP>:5173/patient. Chấp nhận chứng chỉ thử nghiệm nếu trình duyệt và chính sách thiết bị cho phép.
 
-## 2. Cách chạy Demo Local & Demo HTTPS qua LAN
+Camera cần secure context. Thử đúng tablet, trình duyệt và mạng buổi thi. Nếu thiết bị từ chối camera, chọn Chạm.
 
-### Cách 1: Chạy 1 máy tính cục bộ (Localhost)
-Phù hợp khi test nhanh trên máy tính phát triển:
-```bash
-make setup      # Cài dependencies backend & frontend
-make dev        # Backend :8000 (HTTP) và Frontend :5173 (HTTP)
-```
-- Mở bệnh nhân: `http://localhost:5173/patient`
-- Mở điều dưỡng: `http://localhost:5173/nurse`
+## 3. Checklist có bằng chứng
 
----
+### Tự động trên localhost
 
-### Cách 2: Chạy 2 thiết bị qua mạng LAN bằng HTTPS (Kịch bản Demo chính)
-Sử dụng 1 máy tính làm Server điều phối (Laptop) và 1 iPad/Tablet làm Kiosk Bệnh nhân.
+- [x] make check qua.
+- [x] Frontend npm run build qua.
+- [x] Playwright npm run test:e2e qua. Tự chạy backend mock :18080 và frontend :15173.
+- [x] Bấm nhanh dị ứng tạo tóm tắt chứa lựa chọn mới nhất.
+- [x] Sửa → tóm tắt mới → xác nhận → duyệt → STT phía bệnh nhân.
+- [x] Mâu thuẫn dị ứng qua /demo trong tab bệnh nhân có cảnh báo phía điều dưỡng.
+- [x] Ép mẫu cố định có phản hồi SUMMARY_READY.
+- [x] Test backend mock độc hại có validator_blocked.
+- [x] Không chắc → hỗ trợ mô phỏng → giữ khóa duyệt.
+- [x] WebSocket kết nối lại sau khi bị đóng.
+- [x] Reset đưa bệnh nhân về nhập mã, xóa sessionStorage bệnh nhân, mã cũ không ghép được.
+- [x] Backend integration xác nhận kho phiên RAM đã xóa.
+- [x] Xem ảnh UI 1024×768 và 720×768 với chữ lớn.
+- [x] Tách click → DOM điều dưỡng khỏi RTT HTTP /health.
 
-#### Bước 1: Lấy địa chỉ IP mạng LAN của máy chủ
-- **Trên macOS**:
-  ```bash
-  ipconfig getifaddr en0
-  # hoặc nếu dùng Wi-Fi phụ:
-  ipconfig getifaddr en1
-  # Ví dụ output: 192.168.1.15
-  ```
-- **Trên Linux**: `hostname -I | awk '{print $1}'`
-- **Trên Windows**: `ipconfig` (tìm dòng IPv4 Address của Wireless LAN)
+Kết quả ngày 19/11/2026 được ghi trong 99-PROGRESS-LOG.md. Bộ E2E còn chạy máy chủ mock độc hại riêng trên cổng 18081 và frontend 15174. Trên macOS có thể chạy E2E bằng Chrome đã cài với biến SIGNLY_CHROMIUM_PATH trỏ tới /Applications/Google Chrome.app/Contents/MacOS/Google Chrome. Ảnh UI và trace nằm trong frontend/test-results.
 
-#### Bước 2: Cấu hình file môi trường backend
-Mở `backend/.env` (hoặc tạo từ `backend/.env.example`):
-```env
-ENV=demo
-HOST=0.0.0.0
-PORT=8000
-CORS_ORIGINS=["http://localhost:5173","https://localhost:5173","https://192.168.1.15:5173"]
-```
-*(Thay `192.168.1.15` bằng IP thực tế của máy chủ)*.
+Lần kiểm tra Gói E trên mốc ee95fb0: make check qua 112 backend + 73 frontend, build qua và 8/8 E2E qua. Đây là hai trang trên cùng máy, chưa phải hai thiết bị LAN. Xem `docs/PLANS/08-PACKAGE-DE-HANDOFF.md` để biết phạm vi bằng chứng và checklist nhóm cần ký nhận. Bộ thử nội bộ ở `docs/validation/INTERNAL-TRIAL-PROTOCOL.md`, hiện chưa có lượt quan sát.
 
-#### Bước 3: Khởi chạy Backend & Frontend HTTPS
-Chạy lệnh demo HTTPS tích hợp sẵn:
-```bash
-# Terminal 1: Chạy Backend lắng nghe toàn mạng LAN
-make dev-backend
+### Thiết bị thật cần người thao tác xác nhận
 
-# Terminal 2: Chạy Frontend hỗ trợ HTTPS tự ký (qua @vitejs/plugin-basic-ssl)
-cd frontend && npm run dev:https
-# Hoặc dùng make target:
-make demo-https
-```
-Terminal sẽ hiển thị đường dẫn truy cập mạng LAN:
-```
-➜  Local:   https://localhost:5173/
-➜  Network: https://192.168.1.15:5173/
-```
+- [ ] Ba lần liên tiếp trọn luồng ba phút trên đúng hai thiết bị.
+- [ ] Ngắt Internet bên ngoài, giữ LAN và chạy lại.
+- [ ] HTTPS và quyền camera trên tablet, nếu chọn camera.
+- [ ] Camera thật và TTS dừng khi đổi chế độ hoặc kết thúc phiên.
+- [ ] Điền bảng cử chỉ dưới đây trước khi chọn camera live.
+- [ ] Video dự phòng đã quay và mở thử trên máy trình chiếu.
 
-#### Bước 4: Mở trên thiết bị Bệnh nhân (iPad/Tablet)
-1. Kết nối iPad vào **cùng mạng Wi-Fi** với máy chủ.
-2. Mở trình duyệt Safari hoặc Chrome trên iPad, truy cập:
-   `https://192.168.1.15:5173/patient`
-3. **Xử lý cảnh báo chứng chỉ tự ký (Self-signed Certificate)**:
-   - Trên **Chrome**: Bấm **Nâng cao (Advanced)** ➔ Bấm **Tiếp tục truy cập 192.168.1.15 (không an toàn)**.
-   - Trên **Safari (iOS)**: Bấm **Hiển thị chi tiết (Show Details)** ➔ Bấm **truy cập trang web này (visit this website)** ➔ Bấm xác nhận **Truy cập trang web**.
-4. **Cấp quyền Camera**:
-   - Trình duyệt sẽ hiện popup: *"https://192.168.1.15:5173 muốn sử dụng Camera của bạn"*.
-   - Bấm **Cho phép (Allow)**.
-   - Màn hình camera VSL sẽ xuất hiện cùng khung xương ngón tay MediaPipe được xử lý hoàn toàn trên thiết bị (Offline 100%).
+Ghi ngày và người diễn tập cho từng mục. Hạng mục chưa có bằng chứng giữ trạng thái chờ kiểm tra.
 
-#### Bước 5: Mở trên màn hình Điều dưỡng (Laptop/PC)
-1. Mở tab mới trên máy chủ: `https://localhost:5173/nurse` (hoặc `http://localhost:5173/nurse`).
-2. Nhấn nút **Tạo phiên mới** (hoặc nhận mã ghép Kiosk tự động).
-3. Nhập mã Kiosk vào iPad hoặc xác nhận phiên để bắt đầu đồng bộ thời gian thực qua WebSocket.
+## 4. Camera và dữ liệu đánh giá
 
----
+Camera V2 dùng holistic 411 tọa độ thân/mặt/tay qua backend LAN theo Q-23, không gửi video. Runtime Torch riêng `AI_model/runtime/.venv`, checkpoint `AI_model/checkpoints/vsl_v2.pt`; `make check-v2` kiểm model cục bộ. Máy mới làm theo `AI_model/vsl_v2/README.md`. GET `/api/vsl/status` kiểm `v2_runtime_available` và `v2_worker_ready`; các field hình học cũ chỉ dành request `hands` cũ.
 
-## 3. Cơ chế dự phòng khi lỗi mạng hoặc lỗi Camera (Fallback Strategy)
+Chỉ gợi ý nhãn thuộc allowlist theo câu hỏi, phải Nhận/Áp dụng/xác nhận hai chiều; mức đau/thời gian dùng Chạm. 300 replay NPY đã tái hiện đúng output của người cung cấp, 256 câu khớp reference, WER từ 9,27%, có sốt → ho/đau đầu. Đây không phải đánh giá webcam. Chưa có test người ký mới/tay nghỉ/ngoài danh mục trên thiết bị thật, không công bố accuracy bệnh viện. Không dùng hướng dẫn động tác hình học cũ như chuẩn VSL.
 
-| Tình huống sự cố | Cách hệ thống tự động xử lý | Thao tác của người thuyết trình |
-|---|---|---|
-| **iPad không cấp được quyền Camera** (hoặc camera bị hỏng) | Giao diện hiện banner cảnh báo rõ ràng và hiển thị nút lớn **"Chuyển sang Chạm"**. | Bấm **"Chuyển sang Chạm"** ➔ Tiếp tục khai báo bằng Chạm màn hình (Body Map + Trắc nghiệm) mà không gián đoạn demo. |
-| **Chứng chỉ HTTPS bị chặn bởi chính sách MDM của công ty** | Chạy màn hình `/patient` ngay trên chính máy chủ Laptop qua `https://localhost:5173/patient` (localhost được trình duyệt miễn trừ HTTPS). | Thao tác camera trực tiếp trên webcam máy chủ. |
-| **Mất kết nối WebSocket tới Backend** | Frontend tự động chuyển sang chế độ lưu trữ cục bộ (`sessionStorage`), hiển thị badge "Chờ Kiosk kết nối" và nút "Thử lại". | Bấm "Thử lại" hoặc kiểm tra backend terminal. |
-| **Mất kết nối Internet** | Toàn bộ mô hình Mock LLM, Ontology y tế cục bộ và MediaPipe WASM nội bộ (`public/wasm`) tiếp tục hoạt động bình thường 100% offline. | Không cần làm gì, hệ thống được thiết kế Offline-first. |
+| Cử chỉ | Người ký / đã tập? | Thiết bị, ánh sáng, khoảng cách | Nhãn mong đợi | Số lượt | Đúng | Nhầm | Từ chối |
+|---|---|---|---|---|---|---|---|
+| Câu VSL đau ngực | Chờ diễn tập | Chờ diễn tập | NGỰC / ĐAU theo ca | — | — | — | — |
+| Câu VSL sốt | Chờ diễn tập | Chờ diễn tập | SỐT | — | — | — | — |
+| Tay nghỉ | Chờ diễn tập | Chờ diễn tập | UNKNOWN | — | — | — | — |
+| Ngoài danh mục / rời khung | Chờ diễn tập | Chờ diễn tập | UNKNOWN | — | — | — | — |
 
----
+Thêm người chưa tập trước, nhờ người dùng hoặc phiên dịch viên VSL kiểm tra cách gọi cử chỉ. Ghi từng lượt nhận nhầm. Camera live tiếp tục chờ diễn tập.
 
-## 4. Kiểm tra sức khỏe hệ thống (Health Check API)
+## 5. Khôi phục khi có lỗi
 
-Hệ thống cung cấp endpoint chuyên dụng để kiểm tra trạng thái engine VSL:
-```bash
-curl -X GET http://localhost:8000/api/vsl/status
-```
-Phản hồi mẫu:
-```json
-{
-  "status": "ready",
-  "has_torch": false,
-  "is_model_loaded": false,
-  "model_source": "heuristic",
-  "active_engine": "3D_Spatial_Geometry_16Frame",
-  "checkpoint_path": ".../AI_model/weights/vsl_model.pt",
-  "checkpoint_exists": true,
-  "checkpoint_size_mb": 208.57,
-  "supported_gestures_count": 35,
-  "latency_ms_benchmark": 0.06,
-  "note": "MVP uses high-precision edge 3D geometry engine (<1ms). PyTorch checkpoint (208MB) is optional for server tier."
-}
-```
+- Mất WebSocket. Chờ Đã kết nối, kiểm tra lại tóm tắt mới. Bản nháp chờ gửi được giữ trong bộ nhớ trang để thử lại.
+- Lỗi xác nhận. Đọc thông báo, bấm Sửa lại, rà soát dữ liệu rồi mở tóm tắt lại.
+- Nút /demo khóa. Dùng chính tab bệnh nhân đã ghép cho dữ liệu mẫu, tab điều dưỡng để reset.
+- Camera lỗi. Chọn Chuyển sang Chạm.
+- Backend dừng. Khởi chạy lại, tạo phiên và ghép cặp mới.
 
----
+## 6. Thao tác B0/B1 sau cập nhật
 
-## 5. Checklist kiểm tra trước giờ Demo (T-30 phút)
+Trong triệu chứng, chọn tab theo mục muốn khai. Lý do chính giữ nguyên khi thêm mục trong tab Triệu chứng đi kèm. Tab vị trí yêu cầu bệnh nhân trả lời Có đau trước khi chọn trên body map. Mức đau và thời gian có mục Chưa rõ. Số từ camera chỉ áp dụng vào tab đang mở, đơn vị thời gian chọn bằng Chạm.
 
-- [x] Chạy `make check` xanh hoàn toàn (100% test backend & frontend passed, 0 error, 0 warning).
-- [x] Chạy `npm run build` trong `frontend/` thành công.
-- [x] Kiểm tra IP mạng LAN bằng `ipconfig getifaddr en0`.
-- [x] Chạy thử `npm run dev:https` trên máy chủ và truy cập thử từ iPad/điện thoại qua HTTPS.
-- [x] Xác nhận quyền Camera được cấp trên iPad; kiểm tra khung xương bàn tay MediaPipe hiển thị mượt mà.
-- [x] Thử nghiệm bộ lọc ổn định cử chỉ: Giữ tay yên trước camera $\ge 0.8$s để xuất hiện candidate và thanh tiến trình giữ cử chỉ.
-- [x] Bấm nút **"Chuyển sang Chạm"** để kiểm tra tính năng dọn dẹp sạch MediaStream (camera tắt đèn, không bị leak track).
-- [x] Kiểm tra nút **Reset phiên** trên màn hình Điều dưỡng: Xóa sạch bộ nhớ RAM backend, reset camera và xóa sạch session ID.
-- [x] Chuẩn bị sẵn bản ghi video demo dự phòng của luồng tiếp nhận hoàn chỉnh.
+Phiếu rà soát có sáu thẻ và nút Sửa mục này. Sửa trước duyệt cần xem lại tóm tắt và xác nhận lại. Điều dưỡng hỏi dị ứng tổng quát bằng nút hiện có, người bệnh trả lời tại hộp thoại. Sau duyệt, sửa dữ liệu bị backend từ chối và cần tạo phiên mới. B2 về phủ định từng triệu chứng và revision từng trường còn là đề xuất.

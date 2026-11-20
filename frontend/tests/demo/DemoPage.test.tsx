@@ -41,7 +41,7 @@ describe('DemoPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Bảng Điều Khiển Demo Giám Khảo')).toBeInTheDocument();
+    expect(screen.getByText('Điều khiển demo')).toBeInTheDocument();
     expect(screen.getByText('ENV=demo')).toBeInTheDocument();
 
     await waitFor(() => {
@@ -50,7 +50,7 @@ describe('DemoPage', () => {
     });
   });
 
-  it('triggers emergency chest pain scenario on button click', async () => {
+  it('keeps session actions disabled in a standalone demo tab', async () => {
     render(
       <MemoryRouter>
         <SessionProvider>
@@ -59,78 +59,13 @@ describe('DemoPage', () => {
       </MemoryRouter>
     );
 
-    const btn = screen.getByTestId('btn-demo-scenario-emergency');
-    fireEvent.click(btn);
-
-    expect(socketClient.send).toHaveBeenCalledWith(
-      'INPUT_UPDATED',
-      expect.objectContaining({
-        step: 'pain_details',
-        patch: expect.objectContaining({
-          pain: expect.objectContaining({ severity: 8, body_regions: ['CHEST'] }),
-        }),
-      })
-    );
-  });
-
-  it('triggers allergy conflict scenario on button click', async () => {
-    render(
-      <MemoryRouter>
-        <SessionProvider>
-          <DemoPage />
-        </SessionProvider>
-      </MemoryRouter>
-    );
-
-    const btn = screen.getByTestId('btn-demo-scenario-allergy');
-    fireEvent.click(btn);
-
-    expect(socketClient.send).toHaveBeenCalledWith(
-      'INPUT_UPDATED',
-      expect.objectContaining({
-        step: 'allergy',
-        patch: expect.objectContaining({
-          raw_input: expect.objectContaining({
-            text: expect.stringContaining('penicillin'),
-          }),
-        }),
-      })
-    );
-  });
-
-  it('toggles force-fallback API on button click', async () => {
-    render(
-      <MemoryRouter>
-        <SessionProvider>
-          <DemoPage />
-        </SessionProvider>
-      </MemoryRouter>
-    );
-
-    const btn = screen.getByTestId('btn-demo-force-fallback');
-    fireEvent.click(btn);
-
-    await waitFor(() => {
-      expect(restApi.forceFallback).toHaveBeenCalledWith(expect.any(String), true);
-      expect(socketClient.send).toHaveBeenCalledWith('SUMMARY_REQUESTED', expect.anything());
-    });
-  });
-
-  it('triggers quick reset on button click', async () => {
-    render(
-      <MemoryRouter>
-        <SessionProvider>
-          <DemoPage />
-        </SessionProvider>
-      </MemoryRouter>
-    );
-
-    const btn = screen.getByTestId('btn-demo-quick-reset');
-    fireEvent.click(btn);
-
-    expect(socketClient.send).toHaveBeenCalledWith(
-      'SESSION_RESET',
-      expect.objectContaining({ reason: 'manual', wipe: true })
-    );
+    await screen.findByText('Chế độ AI: mock');
+    for (const id of ['scenario-emergency', 'scenario-allergy', 'force-fallback', 'quick-reset']) {
+      const button = screen.getByTestId(`btn-demo-${id}`);
+      expect(button).toBeDisabled();
+      fireEvent.click(button);
+    }
+    expect(socketClient.send).not.toHaveBeenCalled();
+    expect(restApi.forceFallback).not.toHaveBeenCalled();
   });
 });

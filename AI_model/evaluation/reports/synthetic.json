@@ -1,0 +1,449 @@
+{
+  "audit": {
+    "vocabulary_count": 60,
+    "voya_label_count": 4363,
+    "voya_linked_count": 31,
+    "torch_importable_by_engine": false,
+    "checkpoints": [
+      {
+        "filename": "best_checkpoints.pth",
+        "exists": true,
+        "bytes": 208375131,
+        "sha256": "ef7c0098a5afa29769bba8816f206502039468d3c17433ecbbdd80f8c7a77e9f",
+        "tensor_shapes": {
+          "bottle_mm.weight": [
+            1024,
+            1130
+          ],
+          "classifier.fc.weight": [
+            199,
+            1024
+          ],
+          "classifier.fc.bias": [
+            199
+          ]
+        },
+        "tensor_count": 265,
+        "metadata_status": "read"
+      },
+      {
+        "filename": "checkpoints.pth",
+        "exists": true,
+        "bytes": 208375131,
+        "sha256": "ef7c0098a5afa29769bba8816f206502039468d3c17433ecbbdd80f8c7a77e9f",
+        "tensor_shapes": {
+          "bottle_mm.weight": [
+            1024,
+            1130
+          ],
+          "classifier.fc.weight": [
+            199,
+            1024
+          ],
+          "classifier.fc.bias": [
+            199
+          ]
+        },
+        "tensor_count": 265,
+        "metadata_status": "read"
+      }
+    ],
+    "label_selection": "geometry rules; optional checkpoint adjusts confidence by at most 0.04",
+    "training_data": "not supplied",
+    "independent_test_data": "not supplied",
+    "checkpoint_source_license_and_199_class_order": "unverified"
+  },
+  "evaluation": {
+    "kind": "synthetic",
+    "scope": "offline landmarks and actual frontend stabilizer",
+    "independent_signer_evaluation": false,
+    "labels": [
+      "BỤNG",
+      "MỨC-1",
+      "MỨC-2",
+      "MỨC-5",
+      "NGỰC",
+      "SỐT"
+    ],
+    "stabilizer_options": {
+      "minStabilityDurationMs": 500,
+      "minConfidence": 0.7,
+      "minStableFrames": 3,
+      "cooldownMs": 2000
+    },
+    "raw_final_frame": {
+      "clips": 11,
+      "correct": 9,
+      "accepted": 8,
+      "coverage": 0.7272727272727273,
+      "rejection_rate": 0.2727272727272727,
+      "accuracy": 0.8181818181818182,
+      "negative_clips": 5,
+      "false_accepts": 2,
+      "false_accept_rate": 0.4,
+      "macro_f1": 0.75,
+      "scored_labels": [
+        "BỤNG",
+        "MỨC-1",
+        "MỨC-2",
+        "MỨC-5",
+        "NGỰC",
+        "SỐT",
+        "TAI",
+        "ĐAU"
+      ],
+      "per_label": {
+        "BỤNG": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "MỨC-1": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "MỨC-2": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "MỨC-5": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "NGỰC": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SỐT": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TAI": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "support": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ĐAU": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "support": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "errors": [
+        {
+          "clip_id": "synthetic-rest_proxy",
+          "expected": "UNKNOWN",
+          "predicted": "ĐAU",
+          "negative_kind": "authored_rest_proxy"
+        },
+        {
+          "clip_id": "synthetic-unlisted_proxy",
+          "expected": "UNKNOWN",
+          "predicted": "TAI",
+          "negative_kind": "authored_out_of_scope"
+        }
+      ]
+    },
+    "stabilized_first_candidate": {
+      "clips": 11,
+      "correct": 9,
+      "accepted": 8,
+      "coverage": 0.7272727272727273,
+      "rejection_rate": 0.2727272727272727,
+      "accuracy": 0.8181818181818182,
+      "negative_clips": 5,
+      "false_accepts": 2,
+      "false_accept_rate": 0.4,
+      "macro_f1": 0.75,
+      "scored_labels": [
+        "BỤNG",
+        "MỨC-1",
+        "MỨC-2",
+        "MỨC-5",
+        "NGỰC",
+        "SỐT",
+        "TAI",
+        "ĐAU"
+      ],
+      "per_label": {
+        "BỤNG": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "MỨC-1": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "MỨC-2": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "MỨC-5": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "NGỰC": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SỐT": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "support": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TAI": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "support": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "ĐAU": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 0,
+          "support": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "errors": [
+        {
+          "clip_id": "synthetic-rest_proxy",
+          "expected": "UNKNOWN",
+          "predicted": "ĐAU",
+          "negative_kind": "authored_rest_proxy",
+          "first_emission_ms": 540,
+          "first_candidate_delay_ms": 540,
+          "emitted_candidates": [
+            "ĐAU"
+          ]
+        },
+        {
+          "clip_id": "synthetic-unlisted_proxy",
+          "expected": "UNKNOWN",
+          "predicted": "TAI",
+          "negative_kind": "authored_out_of_scope",
+          "first_emission_ms": 540,
+          "first_candidate_delay_ms": 540,
+          "emitted_candidates": [
+            "TAI"
+          ]
+        }
+      ]
+    },
+    "offline_frame_latency_ms": {
+      "median": 0.026374997105449438,
+      "max": 0.0694170012138784
+    },
+    "accepted_candidate_delays_ms": [
+      540,
+      540,
+      540,
+      540,
+      540,
+      540,
+      540,
+      540
+    ],
+    "limitations": [
+      "Synthetic results measure fixture behavior only.",
+      "Camera capture, MediaPipe, HTTP, UI context filters and patient acceptance are excluded.",
+      "Raw final frame and first stable candidate use different clip decision policies.",
+      "No learned classifier is evaluated by this baseline.",
+      "Macro-F1 includes unexpected predicted labels, excludes UNKNOWN; false accepts are reported separately.",
+      "Offline frame timing includes clock instrumentation overhead."
+    ],
+    "clip_results": [
+      {
+        "clip_id": "synthetic-chest",
+        "expected": "NGỰC",
+        "predicted": "NGỰC",
+        "negative_kind": null,
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "NGỰC"
+        ]
+      },
+      {
+        "clip_id": "synthetic-belly",
+        "expected": "BỤNG",
+        "predicted": "BỤNG",
+        "negative_kind": null,
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "BỤNG"
+        ]
+      },
+      {
+        "clip_id": "synthetic-fever",
+        "expected": "SỐT",
+        "predicted": "SỐT",
+        "negative_kind": null,
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "SỐT"
+        ]
+      },
+      {
+        "clip_id": "synthetic-one",
+        "expected": "MỨC-1",
+        "predicted": "MỨC-1",
+        "negative_kind": null,
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "MỨC-1"
+        ]
+      },
+      {
+        "clip_id": "synthetic-two",
+        "expected": "MỨC-2",
+        "predicted": "MỨC-2",
+        "negative_kind": null,
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "MỨC-2"
+        ]
+      },
+      {
+        "clip_id": "synthetic-five",
+        "expected": "MỨC-5",
+        "predicted": "MỨC-5",
+        "negative_kind": null,
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "MỨC-5"
+        ]
+      },
+      {
+        "clip_id": "synthetic-collapsed",
+        "expected": "UNKNOWN",
+        "predicted": "UNKNOWN",
+        "negative_kind": "collapsed",
+        "first_emission_ms": null,
+        "first_candidate_delay_ms": null,
+        "emitted_candidates": []
+      },
+      {
+        "clip_id": "synthetic-outside",
+        "expected": "UNKNOWN",
+        "predicted": "UNKNOWN",
+        "negative_kind": "out_of_frame",
+        "first_emission_ms": null,
+        "first_candidate_delay_ms": null,
+        "emitted_candidates": []
+      },
+      {
+        "clip_id": "synthetic-rest_proxy",
+        "expected": "UNKNOWN",
+        "predicted": "ĐAU",
+        "negative_kind": "authored_rest_proxy",
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "ĐAU"
+        ]
+      },
+      {
+        "clip_id": "synthetic-unlisted_proxy",
+        "expected": "UNKNOWN",
+        "predicted": "TAI",
+        "negative_kind": "authored_out_of_scope",
+        "first_emission_ms": 540,
+        "first_candidate_delay_ms": 540,
+        "emitted_candidates": [
+          "TAI"
+        ]
+      },
+      {
+        "clip_id": "synthetic-empty",
+        "expected": "UNKNOWN",
+        "predicted": "UNKNOWN",
+        "negative_kind": "no_hands",
+        "first_emission_ms": null,
+        "first_candidate_delay_ms": null,
+        "emitted_candidates": []
+      }
+    ],
+    "source_sha256": {
+      "AI_model/inference.py": "8cb0e76e8030059caa23fb173268a1b1f407249ffedab19f1febe4a82d64083a",
+      "frontend/src/services/vsl/GestureStabilizer.ts": "c040138fc42118e0a0a5c628f00c9a611185d5955ba1c15759b0504a5dcdf6a2"
+    }
+  },
+  "dataset_sha256": "8830e493116e380247c93a15322c2bec7957e1f64968cdac22848a0ed85209f0"
+}

@@ -1,3 +1,4 @@
+import { vi } from '../../i18n/vi';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -16,12 +17,13 @@ import {
 import { useSession } from '../../state/SessionContext';
 import { useSessionSocket } from '../../hooks/useSessionSocket';
 import { restApi } from '../../services/api/rest';
-import { mockRecognizer } from '../../services/vsl/MockRecognizer';
+import { socketClient } from '../../services/ws/socketClient';
+import { SummaryReadyPayload } from '../../types';
 import { Button } from '../../ui/Button';
 
 export const DemoPage: React.FC = () => {
-  const { state, dispatch } = useSession();
-  const { sendInput, requestSummary, resetSession } = useSessionSocket();
+  const { state } = useSession();
+  const { sendInput, requestSummary, resetSession, socketStatus, socketError } = useSessionSocket();
 
   const [healthStatus, setHealthStatus] = useState<{ status: string; llm_mode: string } | null>(
     null
@@ -30,6 +32,26 @@ export const DemoPage: React.FC = () => {
   const [isTestingLatency, setIsTestingLatency] = useState(false);
   const [isForceFallbackActive, setIsForceFallbackActive] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
+
+  const [pending, setPending] = useState<'input' | 'fallback' | 'reset' | null>(null);
+  const connected = socketStatus === 'connected' && healthStatus?.llm_mode === 'mock';
+  const patientControls = connected && state.role === 'patient';
+  const nurseControls = connected && state.role === 'nurse';
+
+  useEffect(() => {
+    if (!pending) return;
+    const timeout = setTimeout(() => {
+      setPending(null);
+      setNotification('Chưa nhận được phản hồi. Kiểm tra trạng thái phiên rồi thử lại.');
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [pending]);
+
+  useEffect(() => {
+    if (!pending || !socketError) return;
+    setPending(null);
+    setNotification(socketError.message_vi);
+  }, [pending, socketError]);
 
   // Lấy trạng thái backend
   useEffect(() => {
@@ -67,7 +89,7 @@ export const DemoPage: React.FC = () => {
 
   // Kịch bản 1: Cấp cứu Đau Ngực (Cờ đỏ Red-flag)
   const handleScenarioEmergencyChestPain = () => {
-    sendInput(
+    if (sendInput(
       'pain_details',
       {
         chief_complaint: { code: 'PAIN', label_vi: 'Đau / Nhức', free_text: null },
@@ -80,60 +102,67 @@ export const DemoPage: React.FC = () => {
         allergy: { has_allergy: false, items: [] },
       },
       'touch'
-    );
-    showToast('Đã kích hoạt kịch bản: Cấp cứu Đau Ngực 8/10 (Nháy đỏ cờ khẩn cấp)');
+    )) waitForResult('input');
   };
 
   // Kịch bản 2: Mâu thuẫn Dị Ứng (Rule 10)
   const handleScenarioAllergyConflict = () => {
-    sendInput(
+    if (sendInput(
       'allergy',
       {
         allergy: { has_allergy: false, items: [] },
-        raw_input: { text: 'Tôi từng bị sốc thuốc khi uống penicillin lúc nhỏ' },
       },
-      'text'
-    );
-    showToast('Đã kích hoạt kịch bản: Mâu thuẫn dị ứng (Khai: Không, nhưng nhắc tên thuốc)');
+      'text',
+      { type: 'text', text: 'Tôi từng bị sốc thuốc khi uống penicillin lúc nhỏ' }
+    )) waitForResult('input');
   };
 
-  // Kịch bản 3: Ép lỗi LLM / Minh họa Fallback Template
+  function waitForResult(kind: 'input' | 'fallback' | 'reset') {
+    setNotification(null);
+    setPending(kind);
+  }
+
+  useEffect(() => {
+    if (!pending) return;
+    const event = pending === 'input' ? 'INPUT_UPDATED' :
+      pending === 'fallback' ? 'SUMMARY_READY' : 'SESSION_RESET';
+    return socketClient.on<SummaryReadyPayload>(event, (payload) => {
+      setPending(null);
+      setNotification(pending === 'input' ? 'Điều phối đã cập nhật dữ liệu mẫu của phiên.' :
+        pending === 'reset' ? 'Điều phối đã kết thúc phiên.' :
+        payload.summary.nl_source === 'fallback_template'
+          ? 'Điều phối đã tạo bản tóm tắt bằng mẫu cố định.'
+          : 'Điều phối đã trả bản tóm tắt từ LLM.');
+    });
+  }, [pending]);
+
   const handleToggleForceFallback = async () => {
+    if (!state.sessionId) return;
     const nextState = !isForceFallbackActive;
-    const targetSessionId = state.sessionId || 'demo-session';
     try {
-      await restApi.forceFallback(targetSessionId, nextState);
+      await restApi.forceFallback(state.sessionId, nextState);
       setIsForceFallbackActive(nextState);
       if (nextState) {
+        waitForResult('fallback');
         requestSummary();
-        showToast('Đã BẬT ép lỗi LLM -> Post-LLM Validator kích hoạt Fallback Template');
       } else {
-        showToast('Đã TẮT ép lỗi LLM -> Trở lại chế độ bình thường');
+        showToast('Đã tắt chế độ ép mẫu cố định cho phiên này.');
       }
     } catch {
-      showToast('Không thể kết nối API force-fallback');
+      showToast('Không thể đổi cấu hình mẫu cố định của phiên.');
     }
   };
 
-  // Kịch bản 4: Ký hiệu VSL rời rạc (Mock Recognizer)
-  const handleScenarioVSL = () => {
-    mockRecognizer.start();
-    mockRecognizer.runScenario('chest_pain_2h');
-    showToast('Đang phát chuỗi ký hiệu VSL: [ĐAU] -> [NGỰC] -> [HAI] -> [GIỜ] -> [NẶNG]');
-  };
-
-  // Reset toàn bộ phiên làm việc
   const handleQuickReset = () => {
+    waitForResult('reset');
     resetSession('manual');
-    dispatch({ type: 'RESET_SESSION' });
-    showToast('Đã xóa sạch bộ nhớ phiên (RAM & sessionStorage)');
   };
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
       {/* Header */}
       <header className="bg-paper border-b border-gray-200 px-6 py-4 shadow-sm">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <div className="max-w-6xl mx-auto flex flex-wrap gap-4 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               to="/"
@@ -143,14 +172,14 @@ export const DemoPage: React.FC = () => {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-extrabold text-ink">Bảng Điều Khiển Demo Giám Khảo</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xl font-extrabold text-ink">{vi.presentation.demoTitle}</span>
                 <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-brand text-white">
                   ENV=demo
                 </span>
               </div>
               <p className="text-xs text-mute mt-0.5">
-                Các thao tác 1 chạm để minh họa trực quan mọi tính năng an toàn y tế và trợ năng
+                {vi.presentation.demoDescription}
               </p>
             </div>
           </div>
@@ -181,7 +210,7 @@ export const DemoPage: React.FC = () => {
       <main className="flex-1 max-w-6xl w-full mx-auto p-6 space-y-6">
         {/* Toast Notification */}
         {notification && (
-          <div className="p-3.5 rounded-xl bg-status-success/15 border border-status-success/40 text-status-success text-sm font-semibold flex items-center gap-2 shadow-sm animate-fade-in">
+          <div role="status" className="p-3.5 rounded-xl border bg-paper text-ink text-sm font-semibold flex items-center gap-2">
             <CheckCircle className="w-4 h-4 shrink-0" />
             <span>{notification}</span>
           </div>
@@ -219,7 +248,7 @@ export const DemoPage: React.FC = () => {
           <div className="p-4 rounded-2xl bg-paper border border-gray-200 shadow-sm space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-mute uppercase tracking-wider">
-                Độ trễ LAN (RTT)
+                RTT kiểm tra /health
               </span>
               <button
                 type="button"
@@ -233,10 +262,10 @@ export const DemoPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-status-warning" />
               <span className="text-lg font-bold text-ink">
-                {latencyMs !== null ? `${latencyMs} ms` : '< 20 ms'}
+                {latencyMs !== null ? `${latencyMs} ms` : 'Chưa đo'}
               </span>
             </div>
-            <p className="text-xs text-mute">Mục tiêu: &lt; 200 ms trong mạng nội bộ</p>
+            <p className="text-xs text-mute">Thời gian hỏi đáp HTTP với backend.</p>
           </div>
         </div>
 
@@ -248,7 +277,7 @@ export const DemoPage: React.FC = () => {
               <span>Kịch Bản Trình Diễn Trước Ban Giám Khảo (1 Chạm)</span>
             </h2>
             <p className="text-xs text-mute mt-0.5">
-              Nhấn nút để kích hoạt các tình huống lâm sàng đặc biệt và quan sát phản ứng tức thì trên hai màn hình.
+              Mở /demo trong chính tab bệnh nhân đã ghép cặp để gửi dữ liệu mẫu. Giữ màn điều dưỡng ở tab khác. Dùng tab điều dưỡng để kết thúc phiên.
             </p>
           </div>
 
@@ -267,6 +296,7 @@ export const DemoPage: React.FC = () => {
               <Button
                 variant="danger"
                 onClick={handleScenarioEmergencyChestPain}
+                disabled={!patientControls || !!pending}
                 className="min-h-[44px] py-2 text-sm font-bold w-full"
                 data-testid="btn-demo-scenario-emergency"
               >
@@ -288,6 +318,7 @@ export const DemoPage: React.FC = () => {
               <Button
                 variant="secondary"
                 onClick={handleScenarioAllergyConflict}
+                disabled={!patientControls || !!pending}
                 className="min-h-[44px] py-2 text-sm font-bold w-full border-status-warning text-status-warning hover:bg-status-warning/10"
                 data-testid="btn-demo-scenario-allergy"
               >
@@ -300,21 +331,22 @@ export const DemoPage: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-brand-dark font-bold text-sm">
                   <ShieldAlert className="w-4 h-4" />
-                  <span>3. Ép Lỗi LLM &rarr; Minh Họa Fallback Template</span>
+                  <span>3. Ép dùng mẫu cố định</span>
                 </div>
                 <p className="text-xs text-ink/80 leading-relaxed">
-                  Mô phỏng trường hợp mạng chập chờn, LLM timeout (&gt;4s) hoặc câu trả lời vi phạm guardrails. Hệ thống tự động chuyển sang Mẫu cố định an toàn.
+                  Yêu cầu bản tóm tắt theo mẫu cố định. Dùng riêng ca kiểm thử mock độc hại để kiểm chứng validator.
                 </p>
               </div>
               <Button
                 variant={isForceFallbackActive ? 'danger' : 'secondary'}
                 onClick={handleToggleForceFallback}
+                disabled={!patientControls || !!pending || !['collecting', 'summary_ready'].includes(state.status)}
                 className={`min-h-[44px] py-2 text-sm font-bold w-full ${
                   isForceFallbackActive ? '' : 'border-brand text-brand hover:bg-brand-light/30'
                 }`}
                 data-testid="btn-demo-force-fallback"
               >
-                {isForceFallbackActive ? 'Tắt Ép Lỗi LLM' : 'Bật Ép Lỗi LLM (Minh họa Fallback)'}
+                {isForceFallbackActive ? 'Tắt ép mẫu cố định' : 'Bật ép mẫu cố định'}
               </Button>
             </div>
 
@@ -323,20 +355,13 @@ export const DemoPage: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-ink font-bold text-sm">
                   <Hand className="w-4 h-4 text-brand" />
-                  <span>4. Mô Phỏng Ký Hiệu VSL Rời Rạc</span>
+                  <span>4. Thử gợi ý cử chỉ qua camera</span>
                 </div>
-                <p className="text-xs text-ink/80 leading-relaxed">
-                  Phát chuỗi nhận dạng cử chỉ VSL mẫu: [ĐAU] &rarr; [NGỰC] &rarr; [HAI] &rarr; [GIỜ] &rarr; [NẶNG] cho người bệnh xác nhận.
+                <p className="text-sm text-ink">
+                  Mở màn bệnh nhân để thử camera. Nếu chưa diễn tập với người ký và thiết bị thật,
+                  dùng Chạm cho buổi thi.
                 </p>
               </div>
-              <Button
-                variant="secondary"
-                onClick={handleScenarioVSL}
-                className="min-h-[44px] py-2 text-sm font-bold w-full border-gray-300 text-ink hover:bg-canvas"
-                data-testid="btn-demo-scenario-vsl"
-              >
-                Phát Chuỗi Ký hiệu VSL Mẫu
-              </Button>
             </div>
           </div>
         </div>
@@ -356,6 +381,7 @@ export const DemoPage: React.FC = () => {
           <Button
             variant="danger"
             onClick={handleQuickReset}
+            disabled={!nurseControls || !!pending}
             className="min-h-[48px] py-2 px-6 text-sm font-bold shrink-0"
             data-testid="btn-demo-quick-reset"
           >

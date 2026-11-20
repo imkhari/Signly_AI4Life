@@ -1,0 +1,79 @@
+{
+  "kind": "localhost_http_public_replay_not_webcam",
+  "records": [
+    {
+      "clip_id": "SENT101_S06_R01_F",
+      "public_npy_sha256": "61c608e4dfa44e3c7c14434155689f94d7edfa8f694bacfe084f7266a3eee94b",
+      "http_response_ms": 1300.3088749828748,
+      "model_source": "vsl_v2_learned_translation",
+      "success": true,
+      "intake_suggestion": {
+        "chief_complaint_code": "PAIN",
+        "pain_present": true,
+        "body_regions": [
+          "HEAD"
+        ]
+      },
+      "suggested_next_step": null
+    },
+    {
+      "clip_id": "SENT103_S06_R01_F",
+      "public_npy_sha256": "8f73c2603bc609b9c363d475090371850039c00698c57ed4a47223d1445afd88",
+      "http_response_ms": 42.6832499797456,
+      "model_source": "vsl_v2_learned_translation",
+      "success": true,
+      "intake_suggestion": {
+        "chief_complaint_code": "PAIN",
+        "pain_present": true,
+        "body_regions": [
+          "CHEST"
+        ]
+      },
+      "suggested_next_step": null
+    },
+    {
+      "clip_id": "SENT105_S06_R01_F",
+      "public_npy_sha256": "6947526d85c193808bc3a3543a3de04c307fe1ce7ad039330fe4ea9b043d23cd",
+      "http_response_ms": 38.00820803735405,
+      "model_source": "vsl_v2_learned_translation",
+      "success": true,
+      "intake_suggestion": {
+        "chief_complaint_code": "COUGH",
+        "pain_present": null,
+        "body_regions": []
+      },
+      "suggested_next_step": null
+    },
+    {
+      "clip_id": "SENT115_S06_R01_F",
+      "public_npy_sha256": "3cd5dea26cca8f665ae2bf7e4aa8ccdbc4ebc0e5e0a9f04668c62ec349c28612",
+      "http_response_ms": 76.83525001630187,
+      "model_source": "vsl_v2_learned_translation",
+      "success": true,
+      "intake_suggestion": {
+        "chief_complaint_code": "BREATH_DIFFICULTY",
+        "pain_present": null,
+        "body_regions": []
+      },
+      "suggested_next_step": null
+    },
+    {
+      "kind": "synthetic_static_endpoint_control",
+      "success": false,
+      "intake_suggestion": null,
+      "suggested_next_step": "hand_motion_unclear"
+    },
+    {
+      "kind": "synthetic_no_face_public_chest_control",
+      "success": false,
+      "intake_suggestion": null,
+      "suggested_next_step": "face_not_tracked"
+    }
+  ],
+  "limitations": [
+    "No RGB extraction or participant signing",
+    "Timestamps assume30FPS",
+    "Worker state before each request not recorded; not a cold/warm or phone benchmark.",
+    "Does not create a patient session or trial record"
+  ]
+}

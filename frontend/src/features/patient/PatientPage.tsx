@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { PairingScreen } from './components/PairingScreen';
 import { ChooseModeStep } from './components/ChooseModeStep';
-import { SymptomsStep } from './components/SymptomsStep';
+import { SymptomsStep, type SymptomTab } from './components/SymptomsStep';
 import { AllergyStep } from './components/AllergyStep';
 import { ConfirmStep } from './components/ConfirmStep';
 import { WaitingStep } from './components/WaitingStep';
@@ -18,13 +18,26 @@ import { ConnectionBadge } from '../../ui/ConnectionBadge';
 import { StepProgress } from '../../ui/StepProgress';
 import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
-import { NurseQuestionPayload } from '../../types';
+import { NurseQuestionPayload, InputUpdatedServerPayload } from '../../types';
 import { vi } from '../../i18n/vi';
 
 export const PatientPage: React.FC = () => {
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  useEffect(() => {
+    const header=headerRef.current;
+    if (!header) return;
+    const measure=()=>setHeaderHeight(header.getBoundingClientRect().height);
+    measure();
+    if (typeof ResizeObserver==='undefined') return;
+    const observer=new ResizeObserver(measure);observer.observe(header);
+    return ()=>observer.disconnect();
+  },[]);
   const { state } = useSession();
+  const hasPatientSession=Boolean(state.sessionId && state.role==='patient');
   const {
     socketStatus,
+    socketError,
     sendInput,
     requestSummary,
     confirmPatient,
@@ -41,33 +54,56 @@ export const PatientPage: React.FC = () => {
     nextStep,
     prevStep,
     goToStep,
+    flushInput,
+    resetWizard,
+    receiveFrame,
   } = useWizard(sendInput);
 
+  const [editTab, setEditTab] = useState<SymptomTab>('complaint');
   const [isInterpreterModalOpen, setIsInterpreterModalOpen] = useState(false);
   const [nurseQuestion, setNurseQuestion] = useState<NurseQuestionPayload | null>(null);
 
   // Lắng nghe câu hỏi bổ sung từ y tá
   useEffect(() => {
+    if (!hasPatientSession) return;
     const unsub = socketClient.on<NurseQuestionPayload>('NURSE_QUESTION', (payload) => {
       setNurseQuestion(payload);
     });
-    return () => unsub();
-  }, []);
+    const unsubAnswer = socketClient.on<InputUpdatedServerPayload>('INPUT_UPDATED', (payload) => {
+      if (payload.step === 'nurse_reply') {
+        receiveFrame(payload.frame);
+        setNurseQuestion(null);
+        if (step === 4) requestSummary();
+        if (step === 5) goToStep(4);
+      }
+    });
+    return () => { unsub(); unsubAnswer(); };
+  }, [hasPatientSession, receiveFrame, step, requestSummary, goToStep]);
 
   // Idle reset: tự động kết thúc sau 10 phút, cảnh báo trước 60 giây
   const { showWarning: showIdleWarning, secondsRemaining, dismissWarning } = useIdleReset({
     idleTimeoutMs: 600000,
     warningDurationMs: 60000,
     onTimeout: () => resetSession('timeout'),
-    enabled: Boolean(state.sessionId),
+    enabled: hasPatientSession,
   });
 
   // Khi chuyển sang Bước 4 (Xác nhận), tự động gọi backend tóm tắt LLM
   useEffect(() => {
-    if (step === 4) {
-      requestSummary();
+    if (step === 4 && socketStatus === 'connected') {
+      if (flushInput()) requestSummary();
     }
-  }, [step, requestSummary]);
+  }, [step, requestSummary, flushInput, socketStatus]);
+
+  useEffect(() => {
+    if (!hasPatientSession) resetWizard();
+  }, [hasPatientSession, resetWizard]);
+
+  useEffect(() => {
+    if (step === 4 && (state.status === 'patient_confirmed' || state.status === 'nurse_verified')) {
+      goToStep(5);
+    }
+  }, [step, state.status, goToStep]);
 
   const stepsList = [
     { id: '1', label: 'Cách nói' },
@@ -77,21 +113,25 @@ export const PatientPage: React.FC = () => {
   ];
 
   const handleCallInterpreter = (urgent: boolean = false) => {
-    requestInterpreter(urgent ? 'emergency_flag' : 'patient_request', urgent ? 'urgent' : 'normal');
+    if (hasPatientSession) requestInterpreter(urgent ? 'emergency_flag' : 'patient_request', urgent ? 'urgent' : 'normal');
     setIsInterpreterModalOpen(true);
   };
 
   const handleNurseAnswer = (ans: string) => {
     if (nurseQuestion) {
-      sendInput('nurse_reply', { answer: ans }, draft.selectedMode);
-      setNurseQuestion(null);
+      if (!flushInput() || socketStatus !== 'connected') return;
+      const value = ans === 'Có' ? true : ans === 'Không' ? false : 'unsure';
+      sendInput('nurse_reply', {
+        allergy: { has_allergy: value, items: value === true ? draft.allergy.items : [] },
+      }, 'touch', undefined, nurseQuestion.question_id);
     }
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col">
+    <div className="patient-shell min-h-screen bg-canvas flex flex-col"
+      style={{'--patient-header-height':`${headerHeight}px`} as React.CSSProperties}>
       {/* Header điều hướng Kiosk */}
-      <header className="bg-paper border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
+      <header ref={headerRef} className="bg-paper border-b border-gray-200 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <Link
             to="/"
@@ -106,21 +146,21 @@ export const PatientPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <ConnectionBadge status={socketStatus} />
+        <div className="flex flex-wrap items-center gap-3">
+          <>{hasPatientSession ? <ConnectionBadge status={socketStatus} /> : <span className="text-sm font-semibold text-mute">{vi.presentation.unpaired}</span>}</>
           <A11yControls onCallHelp={() => handleCallInterpreter(false)} />
         </div>
       </header>
 
       {/* Nội dung chính */}
-      <main
-        className={`flex-1 w-full mx-auto flex flex-col justify-start transition-all duration-200 ${
+      <main lang="vi"
+        className={`flex-1 w-full mx-auto flex flex-col justify-start ${
           step === 2 && draft.selectedMode === 'vsl_gloss'
             ? 'max-w-[1360px] px-3 py-2 md:px-6 md:py-3'
             : 'max-w-5xl p-4 md:p-8'
         }`}
       >
-        {!state.sessionId ? (
+        {!hasPatientSession ? (
           <PairingScreen onPaired={() => goToStep(1)} />
         ) : (
           <div className={`w-full ${step === 2 && draft.selectedMode === 'vsl_gloss' ? 'space-y-3' : 'space-y-8'}`}>
@@ -143,12 +183,15 @@ export const PatientPage: React.FC = () => {
             {/* Bước 2: Triệu chứng */}
             {step === 2 && (
               <SymptomsStep
+                initialTab={editTab}
                 data={draft.symptoms}
                 selectedMode={draft.selectedMode}
                 onChange={updateSymptoms}
                 onBack={prevStep}
                 onNext={nextStep}
                 onSwitchMode={updateMode}
+                connected={socketStatus === 'connected'}
+                frameKey={JSON.stringify(state.frame)}
               />
             )}
 
@@ -167,17 +210,28 @@ export const PatientPage: React.FC = () => {
               <ConfirmStep
                 summary={state.summary}
                 loadingSummary={!state.summary}
+                error={socketError?.message_vi}
+                connected={socketStatus === 'connected'}
                 onConfirm={() => {
-                  confirmPatient('confirmed', ['chief_complaint', 'pain', 'allergy']);
-                  goToStep(5);
+                  confirmPatient('confirmed', ['chief_complaint', 'pain', 'extra_symptoms', 'allergy']);
+                }}
+                onEditField={(target) => {
+                  confirmPatient('needs_edit', []);
+                  if (target === 'allergy') goToStep(3);
+                  else {
+                    setEditTab(['pain_scale', 'onset'].includes(target) && draft.symptoms.hasPain !== true ? 'pain_body' : target);
+                    goToStep(2);
+                  }
                 }}
                 onEdit={() => {
                   confirmPatient('needs_edit', []);
+                  setEditTab('complaint');
                   goToStep(2);
                 }}
                 onUnsure={() => {
                   confirmPatient('unsure', []);
                   handleCallInterpreter(false);
+                  goToStep(2);
                 }}
               />
             )}
@@ -197,6 +251,8 @@ export const PatientPage: React.FC = () => {
       <NurseQuestionModal
         question={nurseQuestion}
         onAnswer={handleNurseAnswer}
+        connected={socketStatus === 'connected'}
+        error={socketError?.message_vi}
         onClose={() => setNurseQuestion(null)}
       />
 
@@ -208,11 +264,11 @@ export const PatientPage: React.FC = () => {
       >
         <div className="space-y-4">
           <p className="text-base text-ink leading-relaxed">
-            Hệ thống đã nhận yêu cầu và đang kết nối tới phiên dịch viên ngôn ngữ ký hiệu (VSL) trực tuyến.
+            Bản thử nghiệm mô phỏng yêu cầu hỗ trợ phiên dịch. Nếu cần trợ giúp ngay, hãy ra hiệu cho nhân viên tại quầy.
           </p>
           <div className="p-4 bg-warn-bg text-warn rounded-xl font-bold flex items-center gap-3">
             <HelpCircle className="w-6 h-6 flex-shrink-0" />
-            <span>{vi.interpreter.statusConnecting}</span>
+            <span>{state.interpreterRequested ? 'Điều phối đã nhận yêu cầu mô phỏng.' : 'Chưa có xác nhận từ điều phối.'}</span>
           </div>
           <div className="pt-4 flex justify-end gap-3">
             <Button variant="secondary" onClick={() => setIsInterpreterModalOpen(false)}>

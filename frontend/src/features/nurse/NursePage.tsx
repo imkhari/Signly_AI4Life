@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Check, CheckCircle, ShieldCheck } from 'lucide-react';
 import { useSession } from '../../state/SessionContext';
 import { useSessionSocket } from '../../hooks/useSessionSocket';
@@ -11,12 +11,14 @@ import { ExportRecordModal } from './components/ExportRecordModal';
 import { SessionResetModal } from './components/SessionResetModal';
 import { Button } from '../../ui/Button';
 import { Modal } from '../../ui/Modal';
+import { socketClient } from '../../services/ws/socketClient';
 import { vi } from '../../i18n/vi';
 
 export const NursePage: React.FC = () => {
   const { state, dispatch } = useSession();
   const {
     socketStatus,
+    socketError,
     verifyNurse,
     sendNurseQuestion,
     exportRecord,
@@ -24,6 +26,7 @@ export const NursePage: React.FC = () => {
     resetSession,
   } = useSessionSocket();
 
+  const [questionPending, setQuestionPending] = useState(false);
   const [queueNumber, setQueueNumber] = useState<number>(42);
   const [acknowledgedAlerts, setAcknowledgedAlerts] = useState<Set<string>>(new Set());
   const [audioAlertEnabled, setAudioAlertEnabled] = useState<boolean>(true);
@@ -33,8 +36,12 @@ export const NursePage: React.FC = () => {
   const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
 
+  const creatingSession = useRef(false);
+
   // Khởi tạo phiên làm việc cho điều dưỡng
   const handleCreateSession = useCallback(() => {
+    if (creatingSession.current) return;
+    creatingSession.current = true;
     setIsLoadingSession(true);
     setSessionError(null);
     restApi
@@ -50,13 +57,13 @@ export const NursePage: React.FC = () => {
           },
         });
       })
-      .catch((err) => {
-        console.error('Failed to create session:', err);
+      .catch(() => {
         setSessionError(
-          'Không thể kết nối máy chủ điều phối Backend (:8000). Vui lòng khởi động backend bằng lệnh: make demo hoặc make dev'
+          vi.web.sessionFailed
         );
       })
       .finally(() => {
+        creatingSession.current = false;
         setIsLoadingSession(false);
       });
   }, [dispatch]);
@@ -66,6 +73,18 @@ export const NursePage: React.FC = () => {
       handleCreateSession();
     }
   }, [state.sessionId, state.role, handleCreateSession]);
+
+  useEffect(() => {
+    const unsubQuestion = socketClient.on('NURSE_QUESTION', () => setQuestionPending(true));
+    const unsubInput = socketClient.on('INPUT_UPDATED', () => {
+      setAcknowledgedAlerts(new Set());
+    });
+    const unsubReply = socketClient.on<{ step: string }>('INPUT_UPDATED', payload => {
+      if (payload.step === 'nurse_reply') setQuestionPending(false);
+    });
+    const unsubReset = socketClient.on('SESSION_RESET', () => setQuestionPending(false));
+    return () => { unsubQuestion(); unsubInput(); unsubReply(); unsubReset(); };
+  }, []);
 
   // Intake code: ưu tiên từ summary/state, fallback AC-0042
   const intakeCode =
@@ -80,7 +99,8 @@ export const NursePage: React.FC = () => {
   );
 
   const isVerified = state.status === 'nurse_verified';
-  const canVerify = isPatientConfirmed && unacknowledgedCritical.length === 0 && !isVerified;
+  const canExport = isVerified && state.summary !== null && socketStatus === 'connected';
+  const canVerify = !questionPending && isPatientConfirmed && unacknowledgedCritical.length === 0 && !isVerified && socketStatus === 'connected';
 
   // Xử lý xác nhận alert (Acknowledge)
   const handleAcknowledgeAlert = (code: string) => {
@@ -113,35 +133,15 @@ export const NursePage: React.FC = () => {
 
   // Xử lý xuất hồ sơ
   const handleConfirmExport = () => {
-    exportRecord('print');
+    return canExport ? exportRecord('print') : Promise.resolve(false);
   };
 
   // Xử lý kết thúc và làm mới phiên
   const handleConfirmReset = () => {
+    if (socketStatus !== 'connected') return;
     resetSession('completed');
     setAcknowledgedAlerts(new Set());
     setQueueNumber((prev) => prev + 1);
-    // Tự động tạo phiên mới cho bệnh nhân tiếp theo
-    setIsLoadingSession(true);
-    restApi
-      .createSession()
-      .then((res) => {
-        dispatch({
-          type: 'INIT_SESSION',
-          payload: {
-            sessionId: res.session_id,
-            role: 'nurse',
-            token: res.token_nurse,
-            pairingCode: res.pairing_code,
-          },
-        });
-      })
-      .catch((err) => {
-        console.error('Failed to create new session after reset:', err);
-      })
-      .finally(() => {
-        setIsLoadingSession(false);
-      });
   };
 
   if (isLoadingSession && !state.sessionId) {
@@ -157,7 +157,7 @@ export const NursePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col">
+    <div className="nurse-shell min-h-screen bg-canvas flex flex-col">
       {/* Top Header */}
       <NurseHeader
         queueNumber={queueNumber}
@@ -169,10 +169,14 @@ export const NursePage: React.FC = () => {
         audioAlertEnabled={audioAlertEnabled}
         onToggleAudioAlert={() => setAudioAlertEnabled((prev) => !prev)}
         onRequestInterpreter={handleRequestInterpreter}
-        onOpenExport={() => setIsExportOpen(true)}
+        onOpenExport={() => {if(canExport)setIsExportOpen(true);}}
         onOpenReset={() => setIsResetOpen(true)}
-        onCreateNewSession={handleCreateSession}
+        onCreateNewSession={() => {
+          if (state.sessionId) setIsResetOpen(true);
+          else handleCreateSession();
+        }}
         isLoadingSession={isLoadingSession}
+        canExport={canExport}
       />
 
       {/* Main Board */}
@@ -188,7 +192,7 @@ export const NursePage: React.FC = () => {
               <div>
                 <p className="font-extrabold text-sm">{sessionError}</p>
                 <p className="text-xs text-ink/70 mt-0.5">
-                  Vui lòng kiểm tra Terminal và chạy: <code>make demo</code> hoặc <code>make dev</code>
+                  {vi.presentation.retryConnection}
                 </p>
               </div>
             </div>
@@ -215,13 +219,15 @@ export const NursePage: React.FC = () => {
                   {vi.nurse.verifiedBadge} — STT: {queueNumber} ({intakeCode})
                 </p>
                 <p className="text-xs text-status-success/80">
-                  Màn hình Kiosk bệnh nhân đã nhận được số thứ tự và hướng dẫn vào phòng khám.
+                  {vi.presentation.verifiedDetail}
                 </p>
               </div>
             </div>
             <Button
               variant="secondary"
-              onClick={() => setIsExportOpen(true)}
+              disabled={!canExport}
+              title={!canExport ? vi.web.exportBlocked : undefined}
+              onClick={() => {if(canExport)setIsExportOpen(true);}}
               className="min-h-[44px] py-1.5 px-3 text-sm bg-paper text-ink border-status-success/40"
             >
               {vi.nurse.exportAction}
@@ -251,17 +257,20 @@ export const NursePage: React.FC = () => {
 
             <QuestionPicker
               onSendQuestion={handleSendQuestion}
-              disabled={socketStatus !== 'connected'}
+              disabled={socketStatus !== 'connected' || questionPending || isVerified}
             />
           </section>
         </div>
 
         {/* Verification Action Bar (Bottom Sticky) */}
-        <div className="bg-paper border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className=" bg-paper border border-gray-200 rounded-2xl p-3 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="space-y-0.5 text-center sm:text-left">
-            <h3 className="text-sm font-bold text-ink">Quyết định tiếp nhận & Cấp STT</h3>
+            <h3 className="text-sm font-bold text-ink">{vi.presentation.decision}</h3>
+            {socketError && <p role="alert" className="font-semibold text-danger">{socketError.message_vi} Kiểm tra lại trạng thái xác nhận rồi thử lại.</p>}
             <p className="text-xs text-mute">
-              {!isPatientConfirmed
+              {socketStatus !== 'connected'
+                ? 'Đang chờ kết nối lại để duyệt phiếu.'
+                : !isPatientConfirmed
                 ? 'Đang chờ người bệnh xác nhận toàn bộ thông tin tại Kiosk...'
                 : unacknowledgedCritical.length > 0
                 ? vi.nurse.verifyDisabledReason
@@ -307,6 +316,7 @@ export const NursePage: React.FC = () => {
         intakeCode={intakeCode}
         frame={state.frame}
         summary={state.summary}
+        canExport={canExport}
         onConfirmExport={handleConfirmExport}
       />
 
@@ -328,11 +338,11 @@ export const NursePage: React.FC = () => {
             <div className="w-6 h-6 border-3 border-brand border-t-transparent rounded-full animate-spin" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-ink">{vi.interpreter.statusConnecting}</h3>
+            <h3 className="text-base font-bold text-ink">{state.interpreterRequested ? 'Điều phối đã nhận yêu cầu mô phỏng.' : 'Chưa có xác nhận từ điều phối.'}</h3>
             <p className="text-xs text-mute mt-1">{vi.interpreter.waitEstimate}</p>
           </div>
           <div className="p-3 rounded-xl bg-canvas text-xs text-mute border border-gray-200">
-            Hệ thống đang kết nối đường truyền video VRI tới phiên dịch viên ngôn ngữ ký hiệu VSL trực ban.
+            Bản thử nghiệm mô phỏng yêu cầu hỗ trợ phiên dịch.
           </div>
           <div className="pt-2 flex justify-center">
             <Button

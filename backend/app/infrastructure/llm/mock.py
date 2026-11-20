@@ -2,6 +2,7 @@ import asyncio
 import json
 from typing import Literal
 
+from app.domain.ontology.loader import find_body_region_by_code, find_chief_complaint_by_code
 from app.infrastructure.llm.base import LLMError, LLMTimeoutError
 
 MockMode = Literal["ok", "toxic", "timeout", "error", "malformed_json"]
@@ -41,14 +42,26 @@ class MockLLMClient:
             pain = data.get("pain", {})
             parts: list[str] = []
             if pain.get("present"):
-                regions = ", ".join(pain.get("body_regions", [])) or "vùng chưa rõ"
-                severity = pain.get("severity", "chưa rõ")
+                regions = ", ".join(
+                    item["label_vi"] for code in pain.get("body_regions", [])
+                    if (item := find_body_region_by_code(code)) is not None
+                ) or "vùng chưa rõ"
+                severity = pain.get("severity")
+                if severity is None:
+                    severity = "chưa rõ"
                 parts.append(f"Bạn bị đau ở {regions}, mức {severity}/10.")
             elif pain.get("present") is False:
                 parts.append("Bạn không bị đau.")
             else:
                 parts.append(f"Bạn đến khám vì {complaint}.")
 
+            extra_codes = data.get("extra_symptoms", [])
+            labels = [
+                item["label_vi"] for code in extra_codes
+                if (item := find_chief_complaint_by_code(code)) is not None
+            ]
+            if labels:
+                parts.append(f"Triệu chứng đi kèm: {', '.join(labels)}.")
             allergy = data.get("allergy", {})
             if allergy.get("has_allergy") is False:
                 parts.append("Bạn không bị dị ứng.")

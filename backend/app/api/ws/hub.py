@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from typing import Any, Literal
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
@@ -15,6 +16,17 @@ router = APIRouter(tags=["websocket"])
 class ConnectionManager:
     def __init__(self) -> None:
         self._connections: dict[str, dict[str, WebSocket]] = {}
+        self._disconnected_since: dict[str, float] = {}
+
+    def has_connections(self, session_id: str) -> bool:
+        return bool(self._connections.get(session_id))
+
+    def disconnected_since(self, session_id: str) -> float | None:
+        return self._disconnected_since.get(session_id)
+
+    def prune_disconnected(self, live_ids: set[str]) -> None:
+        for session_id in set(self._disconnected_since) - live_ids:
+            del self._disconnected_since[session_id]
 
     async def connect(self, session_id: str, role: str, websocket: WebSocket) -> None:
         role_map = self._connections.setdefault(session_id, {})
@@ -27,6 +39,7 @@ class ConnectionManager:
 
         await websocket.accept()
         role_map[role] = websocket
+        self._disconnected_since.pop(session_id, None)
 
     def disconnect(self, session_id: str, role: str, websocket: WebSocket) -> None:
         if session_id in self._connections:
@@ -34,6 +47,7 @@ class ConnectionManager:
                 del self._connections[session_id][role]
             if not self._connections[session_id]:
                 del self._connections[session_id]
+                self._disconnected_since[session_id] = time.monotonic()
 
     async def broadcast(self, session_id: str, message: dict[str, Any]) -> None:
         role_map = self._connections.get(session_id, {})
@@ -52,6 +66,7 @@ class ConnectionManager:
                 pass
 
     async def close_session(self, session_id: str, code: int = 1000) -> None:
+        self._disconnected_since.pop(session_id, None)
         role_map = self._connections.pop(session_id, {})
         for _, ws in role_map.items():
             try:

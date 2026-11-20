@@ -117,7 +117,8 @@ Client gửi **phần thay đổi** (patch). Server gộp vào frame hiện tạ
 }
 ```
 - `decision` ∈ `confirmed` | `needs_edit` | `unsure`.
-- `needs_edit` → server đặt `status = draft`, bệnh nhân quay lại wizard, `confirmed_fields` rỗng.
+- `needs_edit` → server đặt `status = collecting`, bệnh nhân quay lại wizard, `confirmed_fields` rỗng.
+- decision=confirmed bị từ chối khi có PAIN_FALSE_BUT_SEVERITY hoặc câu hỏi đang chờ.
 - `unsure` → server tự sinh alert `PATIENT_UNSURE` + gợi ý bật `REQUEST_INTERPRETER` phía y tá.
 
 ### 4.5 `NURSE_QUESTION` (nurse → server → patient)
@@ -133,7 +134,9 @@ Client gửi **phần thay đổi** (patch). Server gộp vào frame hiện tạ
   }
 }
 ```
-Bệnh nhân trả lời bằng `INPUT_UPDATED` có `reply_to: "q-allergy-drug"`.
+Bệnh nhân trả lời bằng `INPUT_UPDATED` có `reply_to: "q-allergy-drug"` và patch allergy.has_allergy mang true, false hoặc "unsure". Backend kiểm question_id còn hiệu lực, chỉ nhận câu trả lời một lần và trả step=nurse_reply. Wizard nhận lại frame để cập nhật bản nháp.
+
+Bản B1 hiện chỉ mở template ASK_DRUG_ALLERGY cho câu hỏi tiền sử dị ứng tổng quát “Bạn có dị ứng nào không?”. ASK_DRUG được giữ như alias tương thích. Mỗi phiên có tối đa một câu hỏi đang chờ. Gửi câu mới khi đang chờ hoặc sau duyệt trả ERROR. Câu hỏi làm hủy xác nhận và summary cũ, cần tóm tắt và xác nhận lại sau trả lời. Các template thời gian, sốt, khó thở và thai kỳ đang chờ mapping/schema tương ứng trước khi mở lại.
 
 ### 4.6 `NURSE_VERIFIED` (nurse → server → all)
 ```json
@@ -148,7 +151,8 @@ Bệnh nhân trả lời bằng `INPUT_UPDATED` có `reply_to: "q-allergy-drug"`
   }
 }
 ```
-- Chỉ hợp lệ khi `status == patient_confirmed`. Nếu chưa → `ERROR: VALIDATION_ERROR`.
+- Chỉ hợp lệ khi `status == patient_confirmed`, không còn câu hỏi đang chờ và acknowledged_alerts chứa đủ các mã critical hiện tại. Backend kiểm các điều kiện này. Vi phạm trả ERROR với VALIDATION_ERROR.
+- INPUT_UPDATED ở nurse_verified, exported hoặc reset bị từ chối trước khi đổi frame. Muốn sửa phiếu đã duyệt, tạo phiên mới.
 - `queue_number` = **STT (số thứ tự)** do y tá nhập hoặc server gán tự tăng trong demo.
 
 ### 4.7 `RECORD_EXPORTED` (NEEDS-CONFIRM Q-03)
@@ -198,3 +202,64 @@ created → paired → collecting → summary_ready → patient_confirmed → nu
 ```
 - Mọi `INPUT_UPDATED` sau `patient_confirmed` đưa trạng thái về `collecting` và xóa dấu xác nhận.
 - `REQUEST_INTERPRETER` không đổi trạng thái chính; thêm cờ `interpreter_requested = true`.
+
+## 7. Camera V2 tùy chọn — Q-23 duyệt 19/11/2026
+
+`POST /api/vsl/predict` nhận **đúng một** trong hai dạng, không nhận ảnh/video:
+
+```typescript
+// Camera hiện tại: chuỗi holistic, chỉ RAM.
+{ frames: { timestamp_ms: number; landmarks: number[] }[], context_step?: string }
+// Tương thích client cũ; chỉ nhánh này mới dùng hình học.
+{ hands: HandInput[], context_step?: string }
+```
+
+- `frames`: 8–300 frame, mỗi frame đúng 411 số hữu hạn trong [-10,10], không ép boolean/string thành số. Timestamp hữu hạn ≥ 0, tăng nghiêm ngặt, toàn cửa sổ ≤ 10 giây. Layout: pose25×3 + face70×3 + tay trái21×3 + tay phải21×3; nhóm thiếu điền 0, vai tại subset 9/10. Chỉ số theo `HolisticDetector.ts` và nguồn VSL-GH trong README V2.
+- `hands`: 0–2 bàn tay như client cũ; hai trường đều có hoặc đều thiếu trả 422. Không tự chuyển lỗi V2 sang heuristic.
+- Theo Q-27, camera mở đầu lý do khám dùng `intake` cho cả câu; `symptom`/`location` giữ cho câu hỏi đích và trang thử lịch sử. **Mức đau và thời gian chỉ dùng Chạm**; context khác ở V2 trả UNKNOWN. `intake` với `hands` trả422.
+- V2 chạy PyTorch/NumPy trong tiến trình riêng. Theo Q-24, client chỉ gửi sau Bắt đầu ký → Xong câu, một inference/câu, không lặp cửa sổ. Tối đa6giây/180frame, ít nhất24frame và800ms; quá dài/gap>500ms/mất vai thì từ chối cả lượt. Chỉ một HTTP đang chờ, hủy khi đổi bước; worker nội suy gần30FPS, không xếp hàng. Mỗi frame phải có hai điểm vai hợp lệ, width>1e-5; không đổi norm2 cho đầu vào hợp lệ. Timeout 15 giây/mất runtime/lỗi/không đủ chuyển động → `success:false, gloss:"UNKNOWN", confidence:0`.
+- Response giữ `VSLPredictionResponse`: `success`, `gloss`, `label_vi`, `tokens`, `confidence`, `latency_ms`, `model_source` và các trường tương thích có mặc định. `model_source="vsl_v2_learned_translation"`. Confidence là điểm token chưa hiệu chỉnh, **không phải accuracy**. Không gửi câu decoder tự do về UI.
+- Chỉ ánh xạ toàn câu nằm trong allowlist ở `backend/app/ai/vsl_v2.py`; câu phủ định/đa ý/ngoài danh mục bị từ chối. Ngữ cảnh cũ giữ **Nhận → Áp dụng → xác nhận toàn phiếu**; `intake` dùng **Dùng thông tin này → bổ sung bằng Chạm → xác nhận toàn phiếu**. Bộ ổn định cửa sổ rời rạc cũ không quyết định nhãn camera câu V2. Không thay `PATIENT_CONFIRMED` hoặc `NURSE_VERIFIED`.
+
+`GET /api/vsl/status`: `primary_camera_engine`, `v2_runtime_available`, `v2_status`, `v2_worker_ready`, `v2_supported_contexts`, `v2_probability_calibrated:false`. Các field cũ `model_source/is_model_loaded/supported_gestures_count/...` chỉ mô tả nhánh `hands`, được ghi rõ ở `legacy_fields_describe`; 60 mục ontology không phải số ký hiệu V2 nhận đúng. `GET /vocab` tiếp tục trả danh mục chung.
+
+`SESSION_RESET` xóa bộ đệm client, hủy HTTP, giải phóng camera/detector và kết thúc worker. Worker cũng được dọn khi backend shutdown; không lưu tọa độ/câu nhận diện vào file hay log.
+
+Trang `/vsl-validation` là công cụ nội bộ riêng, dùng cùng component camera và request trên; không tạo phiếu/session y tế. Đáp án/mã người chỉ đi vào bộ chấm sau response, không có trong request model. CSV do người thử tự tải chỉ chứa trường rời rạc/timing theo protocol, không thêm endpoint lưu dữ liệu backend.
+
+
+### Bổ sung nhận cả câu — Q-27 / D-028
+
+Response thêm `intake_suggestion?: IntakeSuggestion | null`. Chỉ `context_step="intake"` với câu thuộc allowlist và điểm hợp lệ mới có giá trị; các nhánh cũ và UNKNOWN trả null. Đây là gợi ý, chưa phải lời khai đã xác nhận.
+
+```typescript
+interface IntakeSuggestion {
+  chief_complaint_code: 'PAIN' | 'COUGH' | 'FEVER' | 'BREATH_DIFFICULTY';
+  pain_present: true | null;
+  body_regions: ('HEAD' | 'CHEST' | 'ABDOMEN_UPPER' | 'ABDOMEN_LOWER' | 'NECK' | 'LOWER_BACK')[];
+}
+// “tôi bị đau ngực” → PAIN, true, ['CHEST']
+// “tôi bị ho” → COUGH, null, [] (không phủ định đau)
+```
+
+Danh sách vùng tối đa1. PAIN bắt buộc true; các lý do còn lại bắt buộc pain_present=null và vùng rỗng. Không có severity/onset/free_text trong gợi ý. Câu bụng/lưng không cụ thể chỉ cho PAIN/true/[], không chọn vùng trên/dưới. UI kiểm code/gloss và quan hệ giữa trường, hiển thị nhãn từ danh mục cố định, không dùng câu decoder hoặc label tự do.
+
+Trước khi bấm Dùng thông tin này không gửi INPUT_UPDATED cho gợi ý. Khi bấm, một patch chứa đủ chief_complaint + pain; không đổi schema_version1.0, event hay cơ chế duyệt. Giữ dị ứng và triệu chứng không liên quan; loại lý do chính mới khỏi extra_symptoms. Nếu lý do/đau/vùng đổi, severity và onset cũ về null. Có thông báo thay thế trước khi nhận; giữ giá trị cũ nếu cùng thông tin. Kết quả đang chờ/đang hiện bị hủy khi draft/frame thay đổi, ngắt kết nối, đổi context, reset/unmount; không tự nhận lại khi kết nối phục hồi.
+
+Theo Q-28, khi worker bận, không khả dụng hoặc không hoàn tất xử lý, request V2 ở context `intake` trả `success=false`, `gloss="UNKNOWN"`, `intake_suggestion=null` và `suggested_next_step="worker_unavailable"`. Người dùng có thể thử lại hoặc chuyển sang Chạm. Khi pipeline xử lý thành công nhưng không đưa ra gợi ý, trường này để null. Guard chuyển động có thể từ chối trước decoder.
+
+Theo Q-29, phản hồi intake với success=false và gloss=UNKNOWN có thể dùng suggested_next_step như sau. Các mã được chọn theo thứ tự xử lý. Các context cũ giữ phản hồi hiện có.
+
+| Giá trị | Điều kiện | Hướng dẫn |
+|---|---|---|
+| face_not_tracked | Q-33, sau guard chuyển động, tất cả210giá trị face70 đều0 ở mọi frame; từ chối trước decoder | Đưa mặt vào khung, thử lại hoặc Chạm |
+| hand_motion_unclear | Worker trả reason no_clear_hand_motion, guard từ chối trước decoder | Giữ tay rõ trong hình và thử lại cả câu |
+| model_score_low | Điểm token trung bình hữu hạn trong [0;0,7), sau khi qua guard | Ký lại hoặc Chạm |
+| phrase_not_supported | Điểm qua ngưỡng nhưng toàn câu giải mã không có trong allowlist | Ký lại hoặc Chạm |
+| worker_unavailable | Q-28, worker không trả kết quả xử lý | Thử lại hoặc Chạm |
+
+Các nhánh khác tiếp tục dùng UNKNOWN chung. Mã hướng dẫn không chứa câu decoder, landmark hoặc giải thích tự do. Điểm model chưa được hiệu chỉnh xác suất. phrase_not_supported mô tả đầu ra của model, chưa xác định người dùng ký sai hoặc có ý nằm ngoài phạm vi.
+
+Theo Q-33 được duyệt20/11/2026, worker chỉ từ chối vì thiếu mặt khi toàn bộ nhóm face70 trống suốt chuỗi sau resampling. Mất mặt tạm thời không tự kích hoạt gate này. Context cũ giữ UNKNOWN mà không thêm hướng dẫn. Không đổi request, schema SemanticFrame hoặc ngưỡng token.
+
+Bản xuất thử nội bộ bổ sung cột cuối diagnostic_code tùy chọn, chỉ trống hoặc hand_motion_unclear/model_score_low/phrase_not_supported/face_not_tracked. Đây là mã cố định từ phản hồi đã duyệt, không câu decoder hoặc dữ liệu camera. CSV cũ vẫn đọc được; không hồi suy lý do. Ca âm tracking hợp lệ bị face_not_tracked ghi unmeasurable, không được tính là ca âm đạt; lượt dương vẫn ghi từ chối trong mẫu số. reason unknown giữ để tương thích.

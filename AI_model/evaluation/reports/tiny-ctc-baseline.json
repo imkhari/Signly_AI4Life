@@ -1,0 +1,2311 @@
+{
+  "status": "baseline_completed_offline_only",
+  "run": "AI_model/training/runs/baseline-01",
+  "summary": {
+    "architecture": "TinyTemporalCTC",
+    "classes": 232,
+    "width": 128,
+    "layers": 2,
+    "seed": 42,
+    "device": "cpu",
+    "batch_size": 4,
+    "max_epochs": 30,
+    "patience": 5,
+    "learning_rate": 0.001,
+    "preprocessing": "holistic411-shoulders9-10-mask-velocity-v1",
+    "parameters": 284520,
+    "train_clips": 1800,
+    "validation_clips": 150,
+    "smoke_only": false,
+    "torch_version": "2.15.0",
+    "numpy_version": "2.5.5",
+    "completed_epochs": 30,
+    "best_validation_wer": 0.4721254355400697,
+    "checkpoint_sha256": "87bbd12bbd36d803ba7606c62c82bdd6b79f4e2aee58f20f2b453d62a4457b5e",
+    "test_evaluated": true
+  },
+  "dataset": {
+    "source_commit": "6c351e63c0b2cf1b5e2e8056bb3bf2d6f31dc90a",
+    "metadata_sha256": "d54f48cc8ea8a3df2644fec27567e3f7be4511d4ec867911e3a8c0b72537a380",
+    "preprocessing": "holistic411-shoulders9-10-mask-velocity-v1",
+    "counts": {
+      "train": 1800,
+      "val": 150,
+      "test": 150
+    },
+    "signer_splits": {
+      "01": "train",
+      "02": "train",
+      "03": "train",
+      "04": "train",
+      "05": "val",
+      "06": "test"
+    },
+    "min_frames": 40,
+    "max_frames": 523,
+    "input_clips": 4200,
+    "rejected_clips": 2100,
+    "canonicalized_ids": [],
+    "scope": "landmark integrity; not independent consent or linguistic validation"
+  },
+  "test": {
+    "clips": 150,
+    "exact_matches": 26,
+    "reference_tokens": 573,
+    "edits": 312,
+    "substitutions": 200,
+    "deletions": 102,
+    "insertions": 10,
+    "wer": 0.5445026178010471,
+    "negative_clips": 0,
+    "hallucinated_negative_clips": 0,
+    "limitations": "Exact gloss tokens; not a measure of clinical facts or sentence safety.",
+    "batched_cpu_ms_per_clip_mean": 1.9729026860563623,
+    "scope": "offline recorded landmarks; no webcam or patient acceptance"
+  },
+  "token_metrics": {
+    "token_alignment_macro_f1": 0.22678992451872818,
+    "per_label": {
+      "0": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "1": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1": 0.5
+      },
+      "120": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "2": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "reference_tokens": 4,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "22": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "3": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "4": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "5": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "55": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "60": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "70": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "9": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "BAO-LÂU": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "BAO-NHIÊU": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "BIA-RƯỢU": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "BIÊN-LAI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "BMI": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1": 0.5
+      },
+      "BÁC-SĨ": {
+        "tp": 1,
+        "fp": 4,
+        "fn": 4,
+        "reference_tokens": 5,
+        "precision": 0.2,
+        "recall": 0.2,
+        "f1": 0.2
+      },
+      "BÉO-PHÌ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "BÌNH-THƯỜNG": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "BẢO-HIỂM": {
+        "tp": 3,
+        "fp": 4,
+        "fn": 0,
+        "reference_tokens": 3,
+        "precision": 0.42857142857142855,
+        "recall": 1.0,
+        "f1": 0.6
+      },
+      "BỆNH": {
+        "tp": 8,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 9,
+        "precision": 0.8888888888888888,
+        "recall": 0.8888888888888888,
+        "f1": 0.8888888888888888
+      },
+      "BỤNG-ĐAU": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "CAO": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 3,
+        "precision": 0.5,
+        "recall": 0.6666666666666666,
+        "f1": 0.5714285714285714
+      },
+      "CCCD": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CHI-PHÍ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CHIỀU-CAO": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CHÂN": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CHÂN-RĂNG": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "CHÓNG-MẶT": {
+        "tp": 1,
+        "fp": 3,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.25,
+        "recall": 1.0,
+        "f1": 0.4
+      },
+      "CHƯA": {
+        "tp": 2,
+        "fp": 5,
+        "fn": 2,
+        "reference_tokens": 4,
+        "precision": 0.2857142857142857,
+        "recall": 0.5,
+        "f1": 0.36363636363636365
+      },
+      "CHẢY-MÁU": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "CHẬM": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CHỜ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CHỮ": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.3333333333333333,
+        "recall": 1.0,
+        "f1": 0.5
+      },
+      "CON": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CÂN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CÂN-NẶNG": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "CÒN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CÓ": {
+        "tp": 3,
+        "fp": 6,
+        "fn": 6,
+        "reference_tokens": 9,
+        "precision": 0.3333333333333333,
+        "recall": 0.3333333333333333,
+        "f1": 0.3333333333333333
+      },
+      "CÓ-KHÔNG": {
+        "tp": 6,
+        "fp": 12,
+        "fn": 3,
+        "reference_tokens": 9,
+        "precision": 0.3333333333333333,
+        "recall": 0.6666666666666666,
+        "f1": 0.4444444444444444
+      },
+      "CÓ-THẾ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CÙNG": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CƠ-BẢN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CẠO-RĂNG": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "CẢM-THẤY": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 3,
+        "reference_tokens": 5,
+        "precision": 0.5,
+        "recall": 0.4,
+        "f1": 0.4444444444444444
+      },
+      "CẦM": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "CẦN": {
+        "tp": 5,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 6,
+        "precision": 0.7142857142857143,
+        "recall": 0.8333333333333334,
+        "f1": 0.7692307692307693
+      },
+      "CẦN-KHÔNG": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 5,
+        "reference_tokens": 7,
+        "precision": 1.0,
+        "recall": 0.2857142857142857,
+        "f1": 0.4444444444444444
+      },
+      "CẬN-THỊ": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      },
+      "CỞI": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 2,
+        "precision": 0.3333333333333333,
+        "recall": 0.5,
+        "f1": 0.4
+      },
+      "DA": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "DÙNG": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "reference_tokens": 0,
+        "precision": 0.0,
+        "recall": null,
+        "f1": 0.0
+      },
+      "DỊ-ỨNG": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "GIÀY": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GIÁO-VIÊN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GIÚP": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GIẤY": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 5,
+        "reference_tokens": 5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GIỚI-THIỆU": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GIỜ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GÌ": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GÓI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "GẦN-ĐÂY": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 2,
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5
+      },
+      "GẶP": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HEN-SUYỄN": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "HIỂU": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HUYẾT-ÁP": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 7,
+        "precision": 1.0,
+        "recall": 0.7142857142857143,
+        "f1": 0.8333333333333334
+      },
+      "HÍT-THỞ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HÓA-ĐƠN": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HÔM-NAY": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HÚT-THUỐC": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      },
+      "HẢI-SẢN": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "HẸN": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HẾT": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      },
+      "HỌNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HỒ-SƠ": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "HỒI-HỘP": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "IX": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 5,
+        "reference_tokens": 6,
+        "precision": 0.5,
+        "recall": 0.16666666666666666,
+        "f1": 0.25
+      },
+      "KHI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHI-NÀO": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHÁC": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHÁM": {
+        "tp": 5,
+        "fp": 4,
+        "fn": 10,
+        "reference_tokens": 15,
+        "precision": 0.5555555555555556,
+        "recall": 0.3333333333333333,
+        "f1": 0.4166666666666667
+      },
+      "KHÔNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHÔNG-CÓ": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHÔNG-CẦN": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHÔNG-NHẬN": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHÔNG-ĐƯỢC": {
+        "tp": 0,
+        "fp": 4,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KHỚP-GỐI": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "KINH-NGUYỆT": {
+        "tp": 2,
+        "fp": 10,
+        "fn": 0,
+        "reference_tokens": 2,
+        "precision": 0.16666666666666666,
+        "recall": 1.0,
+        "f1": 0.2857142857142857
+      },
+      "KÝ-TÊN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LÀM": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LÁI-XE": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LÂU": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 2,
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5
+      },
+      "LƯNG": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LƯỢT": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LẠI": {
+        "tp": 1,
+        "fp": 8,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 0.1111111111111111,
+        "recall": 0.3333333333333333,
+        "f1": 0.16666666666666666
+      },
+      "LẤY": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LẦN-ĐẦU": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LỊCH": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LỊCH-HẸN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "LỠ-MẤT": {
+        "tp": 0,
+        "fp": 5,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "MANG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "MUỐN": {
+        "tp": 3,
+        "fp": 7,
+        "fn": 3,
+        "reference_tokens": 6,
+        "precision": 0.3,
+        "recall": 0.5,
+        "f1": 0.375
+      },
+      "MÉT": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "MŨI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "MẠCH": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "reference_tokens": 4,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "MẮT": {
+        "tp": 1,
+        "fp": 4,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 0.2,
+        "recall": 0.3333333333333333,
+        "f1": 0.25
+      },
+      "MỆT": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "MỖI-NGÀY": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "MỘT-MÌNH": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "MỜ": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "MỤN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NAM": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NAY": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "NGAY": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NGHE": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NGHĨ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NGỒI": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 0.3333333333333333,
+        "recall": 0.3333333333333333,
+        "f1": 0.3333333333333333
+      },
+      "NGỦ-KHÓ": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "NGỰC-ĐAU": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.3333333333333333,
+        "recall": 1.0,
+        "f1": 0.5
+      },
+      "NHANH": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NHIỀU": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "NHÀ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NHẬN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NÀO": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NÀY": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NÍN-THỞ": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NÔN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NĂM-NGOÁI": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "NẤM-DA": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NẶNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "NỔI-MẪN": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "NỘP": {
+        "tp": 1,
+        "fp": 4,
+        "fn": 3,
+        "reference_tokens": 4,
+        "precision": 0.2,
+        "recall": 0.25,
+        "f1": 0.2222222222222222
+      },
+      "NỮ": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6666666666666666
+      },
+      "PHÒNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "reference_tokens": 3,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PHẢI": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PHẢI-KHÔNG": {
+        "tp": 2,
+        "fp": 7,
+        "fn": 4,
+        "reference_tokens": 6,
+        "precision": 0.2222222222222222,
+        "recall": 0.3333333333333333,
+        "f1": 0.26666666666666666
+      },
+      "PHẪU-THUẬT": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6666666666666666
+      },
+      "PHỤ-KHOA": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "QUÊ-QUÁN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "QUẦY": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "RĂNG": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 0.5,
+        "recall": 0.3333333333333333,
+        "f1": 0.4
+      },
+      "RỒI": {
+        "tp": 4,
+        "fp": 4,
+        "fn": 2,
+        "reference_tokens": 6,
+        "precision": 0.5,
+        "recall": 0.6666666666666666,
+        "f1": 0.5714285714285714
+      },
+      "SAI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SÀI-GÒN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SÁNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SÂU": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SƯNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SẮP": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SỐ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "reference_tokens": 5,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SỐ-MẤY": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SỐT": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SỨC-KHỎE": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6666666666666666
+      },
+      "SỬA": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TAI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THAI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THUỐC": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THÔNG-TIN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THẤP": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THẺ": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 3,
+        "reference_tokens": 3,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THỊ-LỰC": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THỞ-KHÓ": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "THỨ-TỰ": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 3,
+        "reference_tokens": 3,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "THỪA-RUỘT": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      },
+      "TIM": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TIÊU-CHẢY": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TIẾP": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TIỀN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TIỀN-SỬ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TIỂU": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "TIỂU-ĐƯỜNG": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TRƯỚC": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TRẢ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TUỔI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TÁO-BÓN": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.3333333333333333,
+        "recall": 1.0,
+        "f1": 0.5
+      },
+      "TÉ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TÊ-TAY": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "TÊN": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TÔI": {
+        "tp": 142,
+        "fp": 7,
+        "fn": 2,
+        "reference_tokens": 144,
+        "precision": 0.9530201342281879,
+        "recall": 0.9861111111111112,
+        "f1": 0.9692832764505119
+      },
+      "TĂNG-CÂN": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "TẠI-SAO": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TỐT": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "TỪNG": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "UỐNG": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "VIÊM-XOANG": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "VIẾT": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 3,
+        "reference_tokens": 4,
+        "precision": 0.3333333333333333,
+        "recall": 0.25,
+        "f1": 0.2857142857142857
+      },
+      "VIỆC": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "VÀO": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "VẾT-THƯƠNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "VỊ": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "VỪA": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "WC": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "XIN": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6666666666666666
+      },
+      "XONG": {
+        "tp": 1,
+        "fp": 3,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.25,
+        "recall": 1.0,
+        "f1": 0.4
+      },
+      "XUỐNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "Y-TẾ": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 3,
+        "reference_tokens": 3,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "YẾU": {
+        "tp": 1,
+        "fp": 7,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.125,
+        "recall": 1.0,
+        "f1": 0.2222222222222222
+      },
+      "ÁO-KHOÁC": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "Ù": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "ĂN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐANG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐAU": {
+        "tp": 1,
+        "fp": 4,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 0.2,
+        "recall": 0.3333333333333333,
+        "f1": 0.25
+      },
+      "ĐAU-BỤNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐEO-KÍNH": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "ĐI": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 2,
+        "reference_tokens": 3,
+        "precision": 0.3333333333333333,
+        "recall": 0.3333333333333333,
+        "f1": 0.3333333333333333
+      },
+      "ĐIỆN-THOẠI": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐO": {
+        "tp": 4,
+        "fp": 3,
+        "fn": 5,
+        "reference_tokens": 9,
+        "precision": 0.5714285714285714,
+        "recall": 0.4444444444444444,
+        "f1": 0.5
+      },
+      "ĐÂU": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐÂY": {
+        "tp": 1,
+        "fp": 4,
+        "fn": 4,
+        "reference_tokens": 5,
+        "precision": 0.2,
+        "recall": 0.2,
+        "f1": 0.2
+      },
+      "ĐÊM": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "ĐÓNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐÓNG-TIỀN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐÚNG-KHÔNG": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐĂNG-KÝ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐƯỢC-KHÔNG": {
+        "tp": 1,
+        "fp": 3,
+        "fn": 3,
+        "reference_tokens": 4,
+        "precision": 0.25,
+        "recall": 0.25,
+        "f1": 0.25
+      },
+      "ĐẦU-ĐAU": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      },
+      "ĐẬP": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐẶT": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "reference_tokens": 3,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐẾN": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 1,
+        "reference_tokens": 10,
+        "precision": 0.9,
+        "recall": 0.9,
+        "f1": 0.9
+      },
+      "ĐỀU": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "reference_tokens": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      },
+      "ĐỂ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "reference_tokens": 2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐỌC": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐỘC-THÂN": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐỢI": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 3,
+        "reference_tokens": 3,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ĐỨNG": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "Ở-ĐÂU": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "reference_tokens": 3,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "Ở-ĐÂY": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "reference_tokens": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "limitations": "Minimum-edit token alignment; not isolated-sign accuracy.",
+    "alignment_ties": "substitution, deletion, insertion"
+  },
+  "error_examples": [
+    {
+      "clip_id": "SENT001_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "ĐĂNG-KÝ",
+        "KHÁM",
+        "SỨC-KHỎE",
+        "MUỐN"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "YẾU",
+        "MUỐN"
+      ],
+      "edits": 3,
+      "substitutions": 1,
+      "deletions": 2,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT002_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "TUỔI",
+        "2",
+        "4"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "MỘT-MÌNH",
+        "CÓ-KHÔNG"
+      ],
+      "edits": 3,
+      "substitutions": 2,
+      "deletions": 1,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT003_S06_R01_F",
+      "expected_glosses": [
+        "IX",
+        "BÁC-SĨ",
+        "TÊN",
+        "GÌ"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "ĐO",
+        "CẦN"
+      ],
+      "edits": 4,
+      "substitutions": 3,
+      "deletions": 1,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT004_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "NỮ"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "CHÓNG-MẶT"
+      ],
+      "edits": 1,
+      "substitutions": 1,
+      "deletions": 0,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT005_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "NAM"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "120"
+      ],
+      "edits": 1,
+      "substitutions": 1,
+      "deletions": 0,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT006_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "ĐỘC-THÂN",
+        "CÒN"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "BÌNH-THƯỜNG"
+      ],
+      "edits": 2,
+      "substitutions": 1,
+      "deletions": 1,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT007_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "CON",
+        "2"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "CẢM-THẤY",
+        "BÌNH-THƯỜNG"
+      ],
+      "edits": 2,
+      "substitutions": 2,
+      "deletions": 0,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT008_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "QUÊ-QUÁN",
+        "SÀI-GÒN"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "XONG",
+        "RỒI"
+      ],
+      "edits": 2,
+      "substitutions": 2,
+      "deletions": 0,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT009_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "ĐIỆN-THOẠI",
+        "SỐ",
+        "1",
+        "2",
+        "3"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "CẢM-THẤY",
+        "BÌNH-THƯỜNG"
+      ],
+      "edits": 5,
+      "substitutions": 2,
+      "deletions": 3,
+      "insertions": 0
+    },
+    {
+      "clip_id": "SENT010_S06_R01_F",
+      "expected_glosses": [
+        "TÔI",
+        "ĐẶT",
+        "GÓI",
+        "KHÁM",
+        "CƠ-BẢN",
+        "MUỐN"
+      ],
+      "predicted_glosses": [
+        "TÔI",
+        "KHÁM",
+        "CHỮ",
+        "PHẢI-KHÔNG"
+      ],
+      "edits": 4,
+      "substitutions": 2,
+      "deletions": 2,
+      "insertions": 0
+    }
+  ],
+  "error_example_selection": "first ten error rows in dataset order",
+  "exact_rows_reconstruction": "complement of exhaustive error list, checked against counts",
+  "limitations": [
+    "One test signer, controlled recorded landmarks; not webcam or clinical validation.",
+    "Empty gloss annotations excluded with audit; not relabeled or treated as negatives.",
+    "No validated out-of-vocabulary/rest-hand rejection benchmark.",
+    "Not directly comparable with 11 geometric fixtures or integrated into app."
+  ]
+}

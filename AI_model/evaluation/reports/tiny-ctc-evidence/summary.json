@@ -1,0 +1,23 @@
+{
+  "architecture": "TinyTemporalCTC",
+  "classes": 232,
+  "width": 128,
+  "layers": 2,
+  "seed": 42,
+  "device": "cpu",
+  "batch_size": 4,
+  "max_epochs": 30,
+  "patience": 5,
+  "learning_rate": 0.001,
+  "preprocessing": "holistic411-shoulders9-10-mask-velocity-v1",
+  "parameters": 284520,
+  "train_clips": 1800,
+  "validation_clips": 150,
+  "smoke_only": false,
+  "torch_version": "2.15.0",
+  "numpy_version": "2.5.5",
+  "completed_epochs": 30,
+  "best_validation_wer": 0.4721254355400697,
+  "checkpoint_sha256": "87bbd12bbd36d803ba7606c62c82bdd6b79f4e2aee58f20f2b453d62a4457b5e",
+  "test_evaluated": true
+}

@@ -6,14 +6,16 @@ import { NurseQuestionPayload } from '../../../types';
 
 export interface NurseQuestionModalProps {
   question: NurseQuestionPayload | null;
+  connected?: boolean;
+  error?: string;
   onAnswer: (answer: string) => void;
   onClose: () => void;
 }
 
 export const NurseQuestionModal: React.FC<NurseQuestionModalProps> = ({
   question,
-  onAnswer,
-  onClose,
+  connected = true,
+  error,  onAnswer,
 }) => {
   if (!question) return null;
 
@@ -42,10 +44,13 @@ export const NurseQuestionModal: React.FC<NurseQuestionModalProps> = ({
           <TTSButton text={question.text_vi} label="Nghe câu hỏi" />
         </div>
 
+        {error && <p role="alert">{error}</p>}
+        {!connected && <p role="status">Đang chờ kết nối lại.</p>}
         {/* Các nút bấm trả lời chạm lớn */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
           <Button
             variant="primary"
+            disabled={!connected}
             onClick={() => onAnswer('Có')}
             className="min-h-[64px] text-xl font-bold bg-ok hover:opacity-90 border-ok"
           >
@@ -54,6 +59,7 @@ export const NurseQuestionModal: React.FC<NurseQuestionModalProps> = ({
 
           <Button
             variant="secondary"
+            disabled={!connected}
             onClick={() => onAnswer('Không')}
             className="min-h-[64px] text-xl font-bold"
           >
@@ -62,6 +68,7 @@ export const NurseQuestionModal: React.FC<NurseQuestionModalProps> = ({
 
           <Button
             variant="ghost"
+            disabled={!connected}
             onClick={() => onAnswer('Không chắc')}
             className="min-h-[64px] text-xl font-bold border-2 border-gray-300 hover:bg-canvas"
           >
@@ -72,10 +79,11 @@ export const NurseQuestionModal: React.FC<NurseQuestionModalProps> = ({
         <div className="pt-2">
           <button
             type="button"
-            onClick={onClose}
+            disabled={!connected}
+            onClick={() => onAnswer('Không chắc')}
             className="text-mute text-sm underline hover:text-ink cursor-pointer"
           >
-            Đóng câu hỏi này
+            Chưa rõ, cần hỏi lại
           </button>
         </div>
       </div>

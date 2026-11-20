@@ -53,3 +53,8 @@ Kiểm tra mọi cặp màu ≥ **WCAG AA (4.5:1)**; chữ lớn / thành phần
 
 ## 7. Phong cách hình ảnh
 Hình minh họa đơn giản, nét đều, một bộ icon thống nhất (Lucide). Sơ đồ cơ thể trung tính về giới/độ tuổi. Tránh ảnh chụp người thật và hình ảnh máu/me. Tránh các mẫu giao diện chung chung kiểu "thẻ giống hệt nhau + gradient"; để trọng tâm thị giác ở nơi bệnh nhân cần quyết định (sơ đồ cơ thể, thanh mức đau) và giữ phần còn lại tĩnh, yên.
+
+
+## 8. Áp dụng tokens và trợ năng đợt UI demo
+
+Các alias `brand`/`brand-dark`/`brand-light` ánh xạ lần lượt về action/ink/canvas; `status-success`/`status-warning`/`status-danger` ánh xạ ok/warn/danger. Đây là tên tương thích component cũ, không thêm bảng màu. Chế độ tương phản cao override bề mặt/chữ Tailwind và bỏ chuyển màu; không chỉ đổi CSS variables mà class màu bỏ qua. Kiosk dùng nút cao64px, keyboard chữ tự xuống hàng; màn điện thoại kiểm riêng tính dùng được.

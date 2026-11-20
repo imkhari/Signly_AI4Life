@@ -1,0 +1,21 @@
+{
+  "kind": "synthetic",
+  "camera": "canvas.captureStream",
+  "detector": "stub",
+  "inference_response": "stub",
+  "app_backend": "localhost actual app; LLM mock",
+  "patient_record": "fictional",
+  "source_commit": "0094d98",
+  "files": [
+    "sentence-candidate-synthetic.png",
+    "sentence-review-synthetic.png",
+    "sentence-candidate-fields-synthetic.png",
+    "sentence-review-pain-synthetic.png"
+  ],
+  "sha256": {
+    "sentence-candidate-synthetic.png": "b09bc0f8c4bcf8f69121a928512407391c1f82e2bf9f18e0b898f0ced8e96038",
+    "sentence-review-synthetic.png": "ab72de1f6241226bcb8dac18ea91f290ae1b8027bb355a7a8cc5d568ef189069",
+    "sentence-candidate-fields-synthetic.png": "9a166a15c2347787f4532b0cf49903bc2d0154b31f7d794e6b2e788831d22990",
+    "sentence-review-pain-synthetic.png": "4541b42aaddee4e97eca9c1586edf1978a6fb1e290223a6ee77d2c6ea691571e"
+  }
+}

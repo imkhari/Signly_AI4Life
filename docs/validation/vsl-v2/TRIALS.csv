@@ -1,0 +1,1 @@
+trial_id,participant_code,cohort,split,signing_familiarity,device_code,worker_state,intent_id,context,condition,expected_label,displayed_candidate,ever_wrong_candidate,outcome,candidate_latency_ms,response_latency_ms,frame_count,capture_duration_ms,reason,profile_id,evidence_kind

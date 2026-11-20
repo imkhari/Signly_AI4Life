@@ -5,7 +5,11 @@ import unicodedata
 from pydantic import BaseModel, Field
 
 from app.domain.models import SemanticFrame
-from app.domain.ontology.loader import load_body_regions, load_drug_names
+from app.domain.ontology.loader import (
+    find_chief_complaint_by_code,
+    load_body_regions,
+    load_drug_names,
+)
 
 
 class ValidatorReport(BaseModel):
@@ -107,6 +111,15 @@ def validate_summary_output(raw_output: str, frame: SemanticFrame) -> ValidatorR
 
     text_lower = text_vi.lower()
     text_unaccented = _strip_accents(text_lower)
+
+    for code in frame.extra_symptoms:
+        item = find_chief_complaint_by_code(code)
+        if item and (
+            not any(_matches_keyword(term, text_lower, text_unaccented)
+                    for term in [item["label_vi"], *item.get("synonyms_vi", [])])
+            or _matches_keyword(f"không {item['label_vi']}", text_lower, text_unaccented)
+        ):
+            violations.append(f"V6_EXTRA_SYMPTOM: Thiếu hoặc sai triệu chứng đi kèm {code}")
 
     # V2: Không chẩn đoán
     for kw in DIAGNOSIS_KEYWORDS:

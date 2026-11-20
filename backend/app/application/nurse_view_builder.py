@@ -4,6 +4,7 @@ from app.domain.models import (
     NurseView,
     SemanticFrame,
 )
+from app.domain.ontology.loader import find_chief_complaint_by_code
 
 
 def build_nurse_view(frame: SemanticFrame) -> NurseView:
@@ -41,6 +42,16 @@ def build_nurse_view(frame: SemanticFrame) -> NurseView:
         )
     elif frame.pain.present is False:
         confirmed.append(NurseConfirmedItem(label_vi="Triệu chứng đau", detail="Không có đau"))
+
+    extra_labels = [
+        item["label_vi"]
+        for code in frame.extra_symptoms
+        if (item := find_chief_complaint_by_code(code)) is not None
+    ]
+    if extra_labels:
+        confirmed.append(NurseConfirmedItem(
+            label_vi="Triệu chứng đi kèm", detail=", ".join(extra_labels)
+        ))
 
     # 3. Allergy
     if frame.allergy.has_allergy is True:

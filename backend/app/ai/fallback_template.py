@@ -48,6 +48,14 @@ def render_fallback_template(frame: SemanticFrame) -> str:
     else:
         sentences.append("Chưa rõ: tình trạng đau.")
 
+    extra_labels = [
+        item["label_vi"]
+        for code in frame.extra_symptoms
+        if (item := find_chief_complaint_by_code(code)) is not None
+    ]
+    if extra_labels:
+        sentences.append(f"Triệu chứng đi kèm: {', '.join(extra_labels)}.")
+
     # 3. Dị ứng
     if frame.allergy.has_allergy is False:
         sentences.append("Dị ứng: Không.")

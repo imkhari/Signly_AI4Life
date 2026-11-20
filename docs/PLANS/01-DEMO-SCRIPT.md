@@ -1,38 +1,52 @@
-# KỊCH BẢN DEMO (≈ 3 phút + Q&A)
+# Kịch bản demo AI4Care — 3 phút và 2 phút hỏi đáp
 
-**Chuẩn bị**: `ENV=demo`, hai màn hình (`/patient`, `/nurse`), LLM mock có kịch bản, đã ghép cặp sẵn một phiên "sạch".
+Cập nhật ngày 19/11/2026. Điều kiện chuẩn bị: hai màn hình đã ghép cặp, dữ liệu giả lập, ENV=demo, LLM_PROVIDER=mock. Luồng chính dùng Chạm. Camera tùy chọn cần diễn tập với người ký và thiết bị thật. Ba phút là thời lượng mục tiêu theo Q-11, chưa có ba lượt diễn tập trên hai thiết bị xác nhận đạt thời lượng. Xem bộ D/E ở `08-PACKAGE-DE-HANDOFF.md` và outline/Q&A ở `09-PITCH-OUTLINE.md`.
 
-| Thời gian | Hành động | Thông điệp |
+## Luồng chính
+
+| Mốc | Người thao tác | Lời dẫn |
 |---|---|---|
-| 0:00–0:20 | Giới thiệu vấn đề: người Điếc tại quầy tiếp nhận, thiếu phiên dịch | Bài toán thực tế |
-| 0:20–1:10 | Bệnh nhân: Mở camera VSL (hoặc chọn "Chạm") → Thử cử chỉ (áp tay ngực / sốt trán / khó thở) → Thanh tiến trình giữ yên $\ge 0.8$s hiển thị → Bấm "Nhận" ✔. Y tá thấy dữ liệu **hiện dần thời gian thực** (xám "Đang nhập…") | Nhận dạng VSL trực tiếp + Xác nhận chủ động |
-| 1:10–1:30 | Bệnh nhân khai dị ứng **Không** nhưng gõ ô ghi chú "penicillin" → y tá thấy **cảnh báo mâu thuẫn** (đỏ/vàng) | Parser phát hiện mâu thuẫn, không đoán |
-| 1:30–2:00 | Bấm "Xong" → bản tóm tắt tiếng Việt + 🔊 đọc to → bệnh nhân **Xác nhận** → mục chuyển **xanh** ở màn y tá | Xác nhận 2 chiều |
-| 2:00–2:20 | **Demo an toàn**: bật `force-fallback` / kịch bản LLM "độc hại" (có chẩn đoán) → Validator chặn → huy hiệu "Mẫu cố định" | Guardrail + fail-safe |
-| 2:20–2:40 | Y tá gửi câu hỏi bổ sung (icon) → bệnh nhân trả lời; bệnh nhân bấm "Không chắc" → **Gọi phiên dịch** | Con người luôn có đường thoát |
-| 2:40–3:00 | Y tá **Duyệt phiếu** → **Xuất hồ sơ** (STT, mã, triệu chứng) → **Kết thúc** → cả hai màn hình xóa sạch camera và phiên | Privacy-by-design |
+| 0:00–0:20 | Hiện màn bệnh nhân và điều dưỡng đã ghép. | AI4Care hỗ trợ khai triệu chứng tại quầy tiếp nhận. Hai bên kiểm tra thông tin trước khi duyệt. |
+| 0:20–1:05 | Chạm → Đau / Nhức → tab Vị trí đau, chọn Có đau và Bụng trên → tab Mức đau, chọn 3/10 → tab thời gian, chọn 2 giờ → tab Triệu chứng đi kèm, chọn Ho → Tiếp tục → Không dị ứng → Tiếp tục. | Thông tin xuất hiện phía điều dưỡng khi bệnh nhân khai. Trạng thái hiện tại là đang nhập. |
+| 1:05–1:40 | Chờ phiếu mới, chỉ vào thẻ lý do chính và Ho đi kèm. Bấm Sửa ở thẻ thời gian, đổi 2 giờ thành 1 giờ rồi đi lại tới phiếu và bấm Đúng, xác nhận. | Bệnh nhân kiểm tra lại trước khi xác nhận. Có thể bấm Sửa lại để điều chỉnh. |
+| 1:40–2:10 | Điều dưỡng kiểm tra và bấm Duyệt phiếu tiếp nhận. Chỉ vào STT phía bệnh nhân. Có thể mở bản in nếu còn thời gian. | Điều dưỡng duyệt rồi hệ thống hiển thị số thứ tự. |
+| 2:10–2:30 | Kết thúc phiên → Xác nhận xóa & Làm mới. Kiểm tra bệnh nhân trở về nhập mã. | Kết thúc phiên xóa dữ liệu tiếp nhận khỏi kho phiên của ứng dụng. |
+| 2:30–3:00 | Dùng phiên riêng đã chuẩn bị, chọn một nhánh an toàn dưới đây. | Nêu cấu hình và trạng thái thật của nhánh đang minh họa. |
 
----
+Ca Đau cần thêm vị trí, mức đau và thời điểm bắt đầu. Cảnh báo critical yêu cầu điều dưỡng kiểm tra và xác nhận đã biết trước khi duyệt.
 
-## Câu hỏi giám khảo thường gặp & trả lời chuẩn xác (Q&A)
+## Nhánh minh họa
 
-- **AI có chẩn đoán hoặc kê đơn thuốc không?**
-  *Trả lời:* Tuyệt đối không. AI4Care tuân thủ ranh giới an toàn y tế nghiêm ngặt: hệ thống chỉ trích xuất triệu chứng thô thành Semantic Frame chuẩn hóa. Bộ lọc Post-LLM Validator quét và tự động tiêu hủy bất kỳ văn bản nào chứa từ ngữ chẩn đoán hoặc gợi ý thuốc, kích hoạt mẫu câu fallback an toàn ngay lập tức. Bác sĩ chuyên khoa tại phòng khám là người duy nhất đưa ra quyết định y khoa.
+### Bệnh nhân chưa chắc
 
-- **Mô hình nhận dạng ký hiệu VSL hoạt động như thế nào và có dùng Deep Learning không?**
-  *Trả lời:*
-  - Trong bản trình diễn MVP, hệ thống sử dụng **Động cơ Hình học Không gian 3D & Chuỗi chuyển động 16-frame** chạy trực tiếp trên thiết bị (Edge) với độ trễ cực thấp (<1ms) cho 35 từ vựng/cử chỉ y tế thiết yếu. Hệ thống tích hợp **bộ lọc ổn định cử chỉ $\ge 0.8$ giây** để loại bỏ false positive (vẫy tay, chuyển động ngẫu nhiên).
-  - Về mặt kiến trúc, backend đã tích hợp sẵn module tải trọng số **PyTorch Video Transformer Network (Checkpoint 208MB)** cho server tier. Khi server có cài đặt `torch`, hệ thống có thể chuyển mạch sang mô hình Deep Learning. Tuy nhiên, nhóm không tuyên bố 100% deep learning trong bản demo MVP mà trình bày rõ ràng: hệ thống vận hành bền bỉ với fallback hình học 3D, không phụ thuộc tải mạng hay gói thư viện nặng.
-  - Quan trọng nhất: Camera xử lý 100% offline trên thiết bị (không gửi video/ảnh lên server), và AI không bao giờ tự ý lưu triệu chứng vào hồ sơ — bệnh nhân bắt buộc phải chủ động bấm "Nhận" (✓).
+Ở bước tóm tắt, bấm Không chắc. Hệ thống gửi yêu cầu hỗ trợ mô phỏng và đưa bệnh nhân về triệu chứng. Nút duyệt giữ khóa. Muốn tiếp tục, đóng hộp thoại, rà soát dữ liệu, tạo tóm tắt mới và xác nhận lại. Cảnh báo dị ứng critical cần được điều dưỡng kiểm tra và xác nhận đã biết.
 
-- **LLM lỗi hoặc mất mạng thì hệ thống xử lý thế nào?**
-  *Trả lời:* Hệ thống thiết kế Offline-first và Fail-safe. Khi LLM vượt quá timeout 4 giây hoặc mất kết nối mạng, hệ thống tự động fallback về bộ Template tiếng Việt cố định đã được kiểm duyệt an toàn, đồng thời thông báo rõ ràng cho y tá ("Nguồn: Mẫu cố định dự phòng").
+### Mâu thuẫn dị ứng và mẫu cố định
 
-- **Dữ liệu bệnh nhân được bảo vệ như thế nào?**
-  *Trả lời:* Theo nguyên tắc Privacy-by-design:
-  - Dữ liệu định danh (Họ tên, CCCD, SĐT) không bao giờ gửi tới LLM hay server bên ngoài.
-  - Toàn bộ dữ liệu phiên chỉ lưu trong bộ nhớ RAM tạm thời và bị xóa sạch vĩnh viễn ngay khi điều dưỡng bấm "Kết thúc phiên" (`SESSION_RESET`).
-  - Toàn bộ luồng camera stream được giải phóng và đóng track triệt để khi rời màn hình hoặc đổi chế độ.
+1. Dùng phiên riêng đã ghép. Trong chính tab bệnh nhân, chuyển địa chỉ từ /patient sang /demo. Giữ tab điều dưỡng để quan sát.
+2. Chờ nút mở. Bấm Kích hoạt Mâu thuẫn Dị ứng. Chờ phản hồi điều phối và thẻ TEXT_MENTIONS_DRUG_NOT_DECLARED phía điều dưỡng.
+3. Bấm Bật ép mẫu cố định. Chờ phản hồi bản tóm tắt dùng mẫu cố định, chỉ vào huy hiệu nguồn phía điều dưỡng.
+4. Điều dưỡng kết thúc phiên. Dữ liệu mẫu phục vụ quan sát rule engine.
 
-- **Nếu nhận dạng sai hoặc bệnh nhân không biết ký hiệu chuẩn thì sao?**
-  *Trả lời:* Hệ thống luôn hiển thị 4 thẻ hướng dẫn trực quan (Đau ngực, Sốt cao, Đau bụng, Khó thở) và nút **"Chuyển sang Chạm"** dễ bấm trên mọi màn hình. Ngoài ra, bệnh nhân luôn có nút khẩn cấp **"Gọi phiên dịch / nhân viên y tế"** để kết nối trực tiếp với con người.
+Tab /demo độc lập chưa ghép sẽ khóa thao tác phiên. Mỗi vai trò có một kết nối. Nút ép mẫu đi thẳng vào fallback. Test mock độc hại tại backend kiểm chứng đường Post-LLM Validator.
+
+### Camera tùy chọn
+
+Ký hiệu VSL → Tiếp tục → cử chỉ đã diễn tập → Nhận → Áp dụng. Kiểm tra dữ liệu được áp dụng trước khi khai dị ứng và xác nhận. Nếu gợi ý chưa phù hợp, bấm Chuyển sang Chạm.
+
+## Q&A
+
+- **AI thực hiện phần nào?** MediaPipe lấy landmark tại trình duyệt. Camera V2 gửi chuỗi holistic qua LAN, model học sâu giải mã rồi lọc toàn câu thành nhãn cho bệnh nhân kiểm tra. Buổi thi dùng LLM mock, có validator và mẫu dự phòng.
+- **PyTorch làm gì?** Khi checkpoint tải được, nhánh hiện tại cộng điểm điều chỉnh vào điểm của nhãn luật. Xem /api/vsl/status để biết trạng thái tải.
+- **60 gloss nghĩa là gì?** Có 60 mục ánh xạ chung; V2 chỉ gợi ý tập con allowlist, không cam kết nhận đúng 60 ký hiệu. Đánh giá trên người ký độc lập còn chờ diễn tập.
+- **Chất lượng model đã được đo chưa?** V2 đã tích hợp thử nghiệm; replay 300 NPY tái hiện output 300/300, 256/300 câu khớp reference, WER từ 9,27%. Có hai mẫu sốt nhận nhầm. Chưa có accuracy camera trên người ký mới hoặc thẩm định lâm sàng. Xem kế hoạch 11 và báo cáo V2.
+- **Hiệu quả người dùng ra sao?** Chưa thu lượt thử nội bộ hay người dùng mục tiêu. Bộ protocol/phiếu ở docs/validation đã sẵn sàng, chưa có số liệu giảm thời gian hoặc sai thông tin.
+- **Dữ liệu camera đi đâu?** Ảnh/video xử lý trong trình duyệt. Tọa độ 3D gửi tới backend LAN theo Q-16.
+- **Có phiên dịch viên trực tiếp?** MVP mô phỏng trạng thái yêu cầu hỗ trợ.
+- **Mất Internet thì sao?** Hai thiết bị vẫn cần kết nối LAN tới máy chủ. Trước thi phải thử ngắt đường Internet bên ngoài và chạy lại Chạm + mock.
+- **Độ trễ bao nhiêu?** Dùng số đo click → DOM điều dưỡng làm tham khảo localhost. RTT /health là phép đo HTTP riêng. Cần đo lại trên LAN.
+- **Vai trò y tế?** Thu thập thông tin, phát hiện thiếu/mâu thuẫn và yêu cầu nhân viên kiểm tra. Danh sách cảnh báo seed cần chuyên gia y tế rà soát.
+
+## Câu hỏi điều dưỡng trong B1
+
+Điều dưỡng có thể bấm câu hỏi tiền sử dị ứng tổng quát. Có / Không / Chưa rõ cập nhật phiếu theo question_id, bản nháp bệnh nhân nhận lại cùng dữ liệu. Cần xem tóm tắt mới và bệnh nhân xác nhận lại trước duyệt. Mỗi phiên có một câu hỏi đang chờ. Phiếu sau duyệt khóa chỉnh, cần phiên mới nếu sửa.

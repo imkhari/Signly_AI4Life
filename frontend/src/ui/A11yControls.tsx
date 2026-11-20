@@ -22,7 +22,7 @@ export const A11yControls: React.FC<A11yControlsProps> = ({ onCallHelp, classNam
       <button
         type="button"
         onClick={() => dispatch({ type: 'TOGGLE_LARGE_TEXT' })}
-        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 font-semibold text-sm transition-colors min-h-[48px] cursor-pointer ${
+        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 font-semibold text-sm transition-colors min-h-[64px] min-w-[64px] cursor-pointer ${
           largeText
             ? 'bg-action text-white border-action'
             : 'bg-paper text-ink border-gray-300 hover:bg-canvas'
@@ -38,7 +38,7 @@ export const A11yControls: React.FC<A11yControlsProps> = ({ onCallHelp, classNam
       <button
         type="button"
         onClick={() => dispatch({ type: 'TOGGLE_HIGH_CONTRAST' })}
-        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 font-semibold text-sm transition-colors min-h-[48px] cursor-pointer ${
+        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 font-semibold text-sm transition-colors min-h-[64px] min-w-[64px] cursor-pointer ${
           highContrast
             ? 'bg-ink text-paper border-ink'
             : 'bg-paper text-ink border-gray-300 hover:bg-canvas'
@@ -59,7 +59,7 @@ export const A11yControls: React.FC<A11yControlsProps> = ({ onCallHelp, classNam
         <button
           type="button"
           onClick={onCallHelp}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-action bg-paper text-action hover:bg-action hover:text-white font-bold text-sm transition-colors min-h-[48px] cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-action bg-paper text-action hover:bg-action hover:text-white font-bold text-sm transition-colors min-h-[64px] min-w-[64px] cursor-pointer"
           aria-label={vi.a11y.callInterpreter}
         >
           <HelpCircle className="w-5 h-5 flex-shrink-0" />

@@ -1,0 +1,20 @@
+{
+  "epoch": 72,
+  "norm_version": 2,
+  "input_dim": 822,
+  "d_model": 256,
+  "nhead": 8,
+  "num_encoder_layers": 4,
+  "num_decoder_layers": 3,
+  "dim_feedforward": 1024,
+  "dropout": 0.1,
+  "gloss_vocab_size": 374,
+  "trans_vocab_size": 442,
+  "max_seq_len": 300,
+  "max_decode_len": 30,
+  "source_best_sha256": "12641204dd3ad99d4a874e2aadf770e23e5ace919401e39edb81a66798657774",
+  "config_verification": "inferred shape + exact replay of 300 supplied greedy predictions; original config absent",
+  "ctc_mapping_verified": false,
+  "runtime_checkpoint_sha256": "d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246",
+  "runtime_bytes": 29507674
+}

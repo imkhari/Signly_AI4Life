@@ -32,7 +32,7 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
       <button
         type="button"
         onClick={handleClick}
-        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 font-semibold text-base transition-colors min-h-[48px] cursor-pointer ${
+        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 font-semibold text-base transition-colors min-h-[64px] cursor-pointer ${
           isSpeaking
             ? 'bg-action text-white border-action'
             : 'bg-paper text-action border-action hover:bg-canvas'

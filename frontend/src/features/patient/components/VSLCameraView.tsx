@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  IconAlertTriangle,
   IconBolt,
   IconCamera,
   IconCameraOff,
@@ -9,24 +8,31 @@ import {
   IconHandClick,
   IconHandFinger,
   IconHandLoveYou,
-  IconHeartbeat,
-  IconLungs,
   IconSparkles,
-  IconTemperature,
   IconTrash,
   IconX,
 } from '@tabler/icons-react';
 import { useCamera } from '../../../hooks/useCamera';
-import { mediaPipeDetector } from '../../../services/vsl/MediaPipeHandDetector';
+import { HolisticDetector, HolisticObservation } from '../../../services/vsl/HolisticDetector';
 import { drawHandLandmarks } from '../../../services/vsl/drawHandSkeleton';
-import { HandData, restApi, VSLPredictionResponse } from '../../../services/api/rest';
-import { GestureStabilizer, StabilizationResult } from '../../../services/vsl/GestureStabilizer';
+import { restApi, VSLPredictionResponse } from '../../../services/api/rest';
+import { SentenceCapture, SENTENCE_LIMITS, observedGroups, hasValidShoulders, CameraTrialResult, CaptureFailure } from '../../../services/vsl/SentenceCapture';
 import { RecognizedGloss } from '../../../services/vsl/types';
 import { Button } from '../../../ui/Button';
+import { vi } from '../../../i18n/vi';
+import type { IntakeSuggestion } from '../../../types/vsl';
+import { readIntakeSuggestion, SENTENCE_COMPLAINTS, SENTENCE_REGIONS } from '../sentenceIntake';
 
 interface VSLCameraViewProps {
+  contextStep?: 'symptom' | 'location' | 'severity' | 'intake';
   onApplyGlosses: (glosses: RecognizedGloss[]) => void;
   onSwitchToTouchMode?: () => void;
+  onTrialResult?: (result:CameraTrialResult) => void;
+  captureDisabled?: boolean;
+  onApplyIntakeSuggestion?: (suggestion: IntakeSuggestion) => void;
+  draftKey?: string;
+  connected?: boolean;
+  replacementNotice?: string;
 }
 
 const GLOSS_METADATA: Record<
@@ -104,172 +110,254 @@ const GLOSS_METADATA: Record<
 };
 
 export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
+  contextStep,
   onApplyGlosses,
   onSwitchToTouchMode,
+  onTrialResult,
+  captureDisabled = false,
+  onApplyIntakeSuggestion,
+  draftKey,
+  connected = true,
+  replacementNotice,
 }) => {
   const { status, errorMessage, isActive, start, stop, bindVideoRef } = useCamera();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const captureControlsRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const stabilizerRef = useRef<GestureStabilizer>(
-    new GestureStabilizer({
-      minStabilityDurationMs: 500,
-      minConfidence: 0.7,
-      minStableFrames: 3,
-      cooldownMs: 2000,
-    })
-  );
-
-  const [handCount, setHandCount] = useState<number>(0);
-  const [livePrediction, setLivePrediction] = useState<VSLPredictionResponse | null>(null);
-  const [stabilization, setStabilization] = useState<StabilizationResult>({
-    isStable: false,
-    status: 'idle',
-    statusMessage: 'Đang chờ cử chỉ...',
-    candidate: null,
-    currentGloss: null,
-    progressPercent: 0,
-  });
+  const captureRef = useRef(new SentenceCapture());
+  const [previewAspect,setPreviewAspect] = useState(4/3);
+  const [tracking, setTracking] = useState('');
+  const [readyToSign,setReadyToSign] = useState(false);
+  const recordingStartedRef=useRef(0);
+  const [remainingSeconds,setRemainingSeconds]=useState(6);
+  const [captureFailure,setCaptureFailure]=useState<CaptureFailure|null>(null);
+  const lastObservationRef=useRef<HolisticObservation|null>(null);
+  const [captureState,setCaptureState] = useState<'idle'|'recording'|'processing'>('idle');
+  const [captureMessage,setCaptureMessage] = useState<string>(vi.camera.ready);
+  const [livePrediction,setLivePrediction] = useState<VSLPredictionResponse|null>(null);
   const [candidates, setCandidates] = useState<RecognizedGloss[]>([]);
   const [confirmedGlosses, setConfirmedGlosses] = useState<RecognizedGloss[]>([]);
+  const [intakeSuggestion, setIntakeSuggestion] = useState<IntakeSuggestion | null>(null);
+  const candidateKeyRef = useRef<string | undefined>();
   const [isAiLoading, setIsAiLoading] = useState<boolean>(true);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [detectorAttempt,setDetectorAttempt]=useState(0);
 
-  const lastPredictionTimeRef = useRef<number>(0);
+  const detectorRef = useRef<HolisticDetector | null>(null);
+  const requestRef = useRef<AbortController|null>(null);
+  const captureTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
+  const generationRef = useRef(0);
+  const pendingResultRef = useRef<(CameraTrialResult & {finishedAt:number})|null>(null);
+  const observerRef = useRef(onTrialResult);
+  observerRef.current = onTrialResult;
 
-  // 1. Khởi động MediaPipe Hand Landmarker
-  useEffect(() => {
-    let isMounted = true;
-
-    async function initDetector() {
-      try {
-        setIsAiLoading(true);
-        setAiError(null);
-        await mediaPipeDetector.initialize();
-        if (isMounted) {
-          setIsAiLoading(false);
-        }
-      } catch (err) {
-        if (isMounted) {
-          console.error('[VSLCameraView] Failed to initialize MediaPipe:', err);
-          setAiError('Không thể tải mô hình nhận diện ngón tay. Vui lòng kiểm tra quyền camera.');
-          setIsAiLoading(false);
-        }
-      }
-    }
-
-    const stabilizer = stabilizerRef.current;
-    initDetector();
-
-    return () => {
-      isMounted = false;
-      mediaPipeDetector.stop();
-      stabilizer.reset();
-    };
+  const clearSequence = useCallback(() => {
+    generationRef.current += 1;
+    lastObservationRef.current=null;setReadyToSign(false);setTracking('');
+    requestRef.current?.abort(); requestRef.current=null;
+    if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
+    captureTimerRef.current=null; captureRef.current.cancel(); pendingResultRef.current=null;
   }, []);
 
-  // 2. Khởi động Camera stream
+  const showFailure = useCallback((failure:CaptureFailure) => {
+    if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
+    captureTimerRef.current=null;
+    setCaptureState('idle'); setCaptureFailure(failure); setCaptureMessage(failure.trackingIssue ? vi.camera.trackingIssues[failure.trackingIssue] : vi.camera.reasons[failure.reason]);
+    setLivePrediction(null); setCandidates([]); setIntakeSuggestion(null);
+    observerRef.current?.({reason:failure.reason,frame_count:failure.frame_count,
+      capture_duration_ms:failure.capture_duration_ms,gloss:'UNKNOWN',candidate_latency_ms:null,
+      response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
+  }, []);
+
+  const handleObservation = useCallback(({frame,hands}:HolisticObservation) => {
+    const canvas=canvasRef.current, context=canvas?.getContext('2d');
+    if (canvas && context) drawHandLandmarks(context,hands,canvas.width,canvas.height);
+    lastObservationRef.current={frame,hands};
+    setTracking(observedGroups(frame).join(' · '));
+    setReadyToSign(hands.length>0 && hasValidShoulders(frame) &&
+      performance.now()-frame.timestamp_ms<=SENTENCE_LIMITS.maxGapMs);
+    const failure=captureRef.current.push(frame);
+    if (failure) showFailure(failure);
+  }, [showFailure]);
+
+  const beginSentence = () => {
+    if (!connected || captureDisabled) return;
+    const observation=lastObservationRef.current;
+    if (!observation || performance.now()-observation.frame.timestamp_ms>SENTENCE_LIMITS.maxGapMs ||
+      !observation.hands.length || !hasValidShoulders(observation.frame)) {
+      setReadyToSign(false);setCaptureMessage(vi.camera.waitForTracking);return;
+    }
+    setCaptureFailure(null);
+    clearSequence(); setCandidates([]); setLivePrediction(null); setIntakeSuggestion(null);
+    recordingStartedRef.current=performance.now();setRemainingSeconds(6);
+    captureRef.current.begin(recordingStartedRef.current);
+    setCaptureState('recording'); setCaptureMessage(vi.camera.signNow);
+    captureControlsRef.current?.focus({preventScroll:true});
+    captureTimerRef.current=setTimeout(() => {
+      if (captureRef.current.recording) showFailure(captureRef.current.fail('sequence_limit',performance.now()));
+    },SENTENCE_LIMITS.maxMs);
+  };
+
+  const finishSentence = useCallback(async () => {
+    if (!captureRef.current.recording || requestRef.current) return;
+    if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
+    captureTimerRef.current=null;
+    const finishedAt=performance.now();
+    const captured=captureRef.current.finish(finishedAt);
+    if ('reason' in captured) { showFailure(captured); return; }
+    const controller=new AbortController(), generation=generationRef.current;
+    requestRef.current=controller;
+    setCaptureState('processing'); setCaptureMessage(vi.camera.processing);
+    const timeout=setTimeout(() => controller.abort(),15000);
+    try {
+      const response=await restApi.predictVSLSequence(captured.frames,contextStep,controller.signal);
+      if (generation!==generationRef.current) return;
+      if (controller.signal.aborted) throw new Error('timeout');
+      const meta=GLOSS_METADATA[response.gloss];
+      const suggestion=contextStep==='intake' ? readIntakeSuggestion(response) : null;
+      const valid=contextStep==='intake' ? suggestion!==null : response.success && response.model_source==='vsl_v2_learned_translation' &&
+        Number.isFinite(response.confidence) && response.confidence>=0.7 && response.confidence<=1 &&
+        meta && (contextStep==='location' ? meta.category==='region' : meta.category==='symptom');
+      const reason=valid ? 'accepted' : response.suggested_next_step==='worker_unavailable'
+        ? 'worker_unavailable' : 'unknown';
+      const displayedLabel=suggestion
+        ? [suggestion.chief_complaint_code, ...suggestion.body_regions].join('+')
+        : valid ? response.gloss : 'UNKNOWN';
+      const hint=response.suggested_next_step;
+      const diagnosticCode=contextStep==='intake' && reason==='unknown' &&
+        (hint==='face_not_tracked' || hint==='hand_motion_unclear' || hint==='model_score_low' || hint==='phrase_not_supported')
+        ? hint : undefined;
+      pendingResultRef.current={...captured.summary,gloss:displayedLabel,
+        reason,diagnostic_code:diagnosticCode,candidate_latency_ms:null,
+        response_latency_ms:performance.now()-finishedAt,
+        model_source:response.model_source,finishedAt};
+      setLivePrediction(valid ? response : null);
+      setIntakeSuggestion(suggestion); candidateKeyRef.current=draftKey;
+      setCandidates(valid ? [{gloss:response.gloss,label_vi:response.label_vi || response.gloss,
+        category:meta.category,maps_to:meta.maps_to,confidence:response.confidence,timestamp:Date.now()}] : []);
+      let message:string=vi.camera.reasons[reason];
+      if (contextStep==='intake' && reason==='unknown' && hint &&
+        Object.prototype.hasOwnProperty.call(vi.camera.rejectionHints,hint)) {
+        message=vi.camera.rejectionHints[hint as keyof typeof vi.camera.rejectionHints];
+      }
+      setCaptureMessage(valid ? (contextStep==='intake' ? 'Kiểm tra cả gợi ý. Chỉ bấm Dùng thông tin này khi đúng ý bạn.' : vi.camera.checkSuggestion) : message);
+    } catch {
+      if (generation!==generationRef.current) return;
+      const reason=controller.signal.aborted ? 'inference_timeout' : 'network_error';
+      pendingResultRef.current={...captured.summary,gloss:'UNKNOWN',reason,candidate_latency_ms:null,
+        response_latency_ms:performance.now()-finishedAt,model_source:'vsl_v2_learned_translation',finishedAt};
+      setCandidates([]);setLivePrediction(null);setIntakeSuggestion(null);setCaptureMessage(vi.camera.reasons[reason]);
+    } finally {
+      clearTimeout(timeout);
+      if (requestRef.current===controller) {requestRef.current=null;setCaptureState('idle');}
+    }
+  },[contextStep,draftKey,showFailure]);
+
   useEffect(() => {
-    start();
-    return () => {
-      stop();
+    if (captureState!=='recording') return;
+    const timer=setInterval(() => setRemainingSeconds(Math.max(0,Math.ceil(
+      (SENTENCE_LIMITS.maxMs-(performance.now()-recordingStartedRef.current))/1000))),100);
+    return () => clearInterval(timer);
+  },[captureState]);
+
+
+  useEffect(() => {
+    if (captureState!=='recording') return;
+    const finishWithKeyboard = (event:KeyboardEvent) => {
+      const target=event.target;
+      if (event.code!=='Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey ||
+        event.isComposing || !(target instanceof HTMLElement)) return;
+      if (target.isContentEditable || (target.closest('input,textarea,select,button,a,[role="button"]') &&
+        !target.closest('[data-vsl-begin]'))) return;
+      event.preventDefault();
+      void finishSentence();
     };
-  }, [start, stop]);
+    document.addEventListener('keydown',finishWithKeyboard);
+    return () => document.removeEventListener('keydown',finishWithKeyboard);
+  },[captureState,finishSentence]);
 
-  // Xử lý gửi landmark sang Backend AI_model và áp dụng bộ lọc ổn định
-  const handleDetectHands = useCallback(
-    async (hands: HandData[]) => {
-      const now = performance.now();
-      // Throttle: Gọi API tối đa 1 lần mỗi 180ms để đảm bảo mượt và không nghẽn mạng
-      if (now - lastPredictionTimeRef.current < 180) {
-        return;
+  // Observe the DOM commit, never send reference/participant data to inference.
+  useEffect(() => {
+    const pending=pendingResultRef.current;
+    if (!pending) return;
+    pendingResultRef.current=null;
+    const {finishedAt,...result}=pending;
+    observerRef.current?.({...result,candidate_latency_ms:result.gloss==='UNKNOWN' ? null : performance.now()-finishedAt});
+  },[candidates]);
+
+  useEffect(() => {
+    let active = true;
+    const detector = new HolisticDetector();
+    detectorRef.current = detector;
+    setIsAiLoading(true);
+    setAiError(null);
+    detector.initialize().then(() => {
+      if (active) {
+        setIsAiLoading(false);
+        if (videoRef.current?.srcObject && videoRef.current.readyState>=2) detector.start(videoRef.current);
       }
-      lastPredictionTimeRef.current = now;
-
-      try {
-        const res = await restApi.predictVSL(hands);
-        setLivePrediction(res);
-
-        // Đưa qua bộ lọc ổn định cử chỉ (yêu cầu giữ >= 800ms, confidence >= 70%)
-        const stabResult = stabilizerRef.current.process(res, Date.now());
-        setStabilization(stabResult);
-
-        // Chỉ tạo candidate khi bộ lọc xác nhận cử chỉ đã giữ ổn định đủ lâu
-        if (stabResult.candidate) {
-          const cand = stabResult.candidate;
-          const cleanGloss = cand.gloss.replace('MỨC-', '');
-          const meta = GLOSS_METADATA[cand.gloss] || GLOSS_METADATA[cleanGloss] || {
-            category: cand.gloss.startsWith('MỨC-') ? 'severity' : 'symptom',
-            maps_to: cand.gloss.startsWith('MỨC-')
-              ? {
-                  field: 'pain.severity',
-                  value: parseInt(cleanGloss) || 5,
-                }
-              : undefined,
-          };
-
-          const recognized: RecognizedGloss = {
-            gloss: cand.gloss,
-            label_vi: cand.label_vi,
-            category: meta.category,
-            confidence: cand.confidence,
-            timestamp: Date.now(),
-            maps_to: meta.maps_to,
-          };
-
-          setCandidates((prev) => {
-            // Không thêm trùng từ đang có trong hàng đợi chờ xác nhận
-            if (prev.some((c) => c.gloss === cand.gloss)) {
-              return prev;
-            }
-            return [recognized, ...prev.slice(0, 3)];
-          });
-        }
-      } catch (err) {
-        console.warn('[VSLCameraView] Predict error:', err);
-      }
-    },
-    []
-  );
-
-  // 3. Kết nối luồng Video với MediaPipe & Canvas vẽ khung xương ngón tay
-  const handleVideoLoadedMetadata = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-
-    mediaPipeDetector.start(video);
-
-    const unsub = mediaPipeDetector.onResults((result) => {
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        drawHandLandmarks(ctx, result.landmarks || [], canvas.width, canvas.height);
-      }
-
-      const handsFound = result.landmarks?.length || 0;
-      setHandCount(handsFound);
-
-      if (handsFound > 0 && result.landmarks) {
-        const handsData: HandData[] = result.landmarks.map((lmList, idx) => ({
-          handedness:
-            result.handednesses?.[idx]?.[0]?.categoryName === 'Left' ? 'Left' : 'Right',
-          landmarks: lmList.map((pt) => ({ x: pt.x, y: pt.y, z: pt.z })),
-        }));
-        handleDetectHands(handsData);
-      } else {
-        const idleStab = stabilizerRef.current.process(null, Date.now());
-        setStabilization(idleStab);
-        setLivePrediction(null);
+    }).catch(() => {
+      if (active) {
+        stop();
+        setAiError(vi.camera.unavailable);
+        setIsAiLoading(false);
       }
     });
-
     return () => {
-      unsub();
-      mediaPipeDetector.stop();
+      active = false;
+      detector.close();
+      detectorRef.current = null;
+      clearSequence();
     };
+  }, [clearSequence, stop,detectorAttempt]);
+
+  useEffect(() => {
+    const detector = detectorRef.current;
+    const unsubscribe = detector?.onResults(handleObservation);
+    lastObservationRef.current=null;setCaptureFailure(null);
+    clearSequence();
+    setCandidates([]);
+    setIntakeSuggestion(null);
+    setConfirmedGlosses([]);
+    setLivePrediction(null);
+    setCaptureState('idle'); setCaptureMessage(vi.camera.ready);
+    return () => { unsubscribe?.(); clearSequence(); };
+  }, [handleObservation, clearSequence, contextStep, draftKey, connected,detectorAttempt]);
+
+  useEffect(() => { start(); return stop; }, [start, stop]);
+  useEffect(() => {
+    const clearTracking = () => {
+      lastObservationRef.current=null;
+      setTracking('');setReadyToSign(false);
+      const canvas=canvasRef.current;
+      canvas?.getContext('2d')?.clearRect(0,0,canvas.width,canvas.height);
+    };
+    if (!isActive) {
+      clearTracking();clearSequence();setCaptureState('idle');setLivePrediction(null);setCandidates([]);
+      setConfirmedGlosses([]);setIntakeSuggestion(null);
+      detectorRef.current?.stop?.();
+      return;
+    }
+    if (videoRef.current) detectorRef.current?.start(videoRef.current);
+    const timer=setInterval(() => {
+      const latest=lastObservationRef.current;
+      const now=performance.now();
+      const lastTime=latest?.frame.timestamp_ms ?? recordingStartedRef.current;
+      if (now-lastTime>SENTENCE_LIMITS.maxGapMs) {
+        if (latest) clearTracking();
+        if (captureRef.current.recording) showFailure(captureRef.current.fail('tracking_gap',now,'frames_delayed'));
+      }
+    },100);
+    return () => clearInterval(timer);
+  },[isActive,clearSequence,showFailure]);
+
+  const handleVideoLoadedMetadata = () => {
+    const video=videoRef.current;
+    if (video) {
+      if (video.videoWidth>0 && video.videoHeight>0) setPreviewAspect(video.videoWidth/video.videoHeight);
+      detectorRef.current?.start(video);
+    }
   };
 
   // Gắn stream từ useCamera vào thẻ <video> (Duy trì một MediaStream duy nhất)
@@ -283,11 +371,11 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
 
   // Xử lý chuyển sang chế độ Chạm an toàn: dọn dẹp sạch MediaStream & Detector
   const handleSwitchToTouch = useCallback(() => {
-    mediaPipeDetector.stop();
+    detectorRef.current?.close();
+    clearSequence();
     stop();
-    stabilizerRef.current.reset();
     onSwitchToTouchMode?.();
-  }, [stop, onSwitchToTouchMode]);
+  }, [stop, onSwitchToTouchMode, clearSequence]);
 
   // Xác nhận 1 gloss candidate
   const handleConfirmCandidate = (candidate: RecognizedGloss, index: number) => {
@@ -316,7 +404,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   };
 
   return (
-    <div className="w-full bg-paper rounded-2xl border border-gray-200 p-3 sm:p-4 shadow-xs">
+    <div data-testid="vsl-camera-view" className="w-full bg-paper rounded-2xl border border-gray-200 p-3 sm:p-4 shadow-xs">
       {/* Header trạng thái thu gọn */}
       <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-gray-100">
         <div className="flex items-center gap-2.5">
@@ -324,14 +412,14 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             <IconCamera className="w-4 h-4" stroke={2} />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-black text-ink flex items-center gap-2">
-              Nhận dạng Ký hiệu Ngôn ngữ (VSL Studio)
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-status-success/20 text-status-success flex items-center gap-1">
-                <IconBolt className="w-3 h-3" stroke={2.5} /> Camera Trực tiếp
+            <h3 className="text-xl font-black text-ink flex flex-wrap items-center gap-2">
+              {contextStep==='intake' ? 'Nhận một câu ký hiệu' : 'Gợi ý cử chỉ qua camera'}
+              <span className="text-base font-bold px-2 py-0.5 rounded-full bg-ok-bg text-ok flex items-center gap-1">
+                <IconBolt className="w-3 h-3" stroke={2.5} /> {vi.camera.experimental}
               </span>
             </h3>
-            <p className="text-[11px] text-mute">
-              Đưa tay trước camera: Hệ thống tự động theo dõi ngón tay và nhận diện triệu chứng theo thời gian thực.
+            <p className="text-base text-mute">
+              {vi.camera.instruction}
             </p>
           </div>
         </div>
@@ -340,7 +428,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
           <button
             type="button"
             onClick={handleSwitchToTouch}
-            className="px-3 py-1.5 rounded-xl bg-canvas hover:bg-gray-200 text-ink font-bold text-xs border border-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            className="min-h-[64px] px-3 py-1.5 rounded-xl bg-canvas hover:bg-gray-200 text-ink font-bold text-base border border-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
           >
             <IconHandClick className="w-3.5 h-3.5 text-mute" stroke={2} />
             <span>Chuyển sang Chạm</span>
@@ -348,17 +436,41 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
         )}
       </div>
 
-      {/* Layout 2 cột: BÊN TRÁI LÀ CAMERA TO RỘNG (8/12), BÊN PHẢI LÀ KẾT QUẢ & XÁC NHẬN (4/12) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        {/* CỘT TRÁI (8 / 12 CỘT): MÀN HÌNH CAMERA VÀ KHUNG XƯƠNG NGÓN TAY CỰC TO */}
-        <div className="lg:col-span-8 flex flex-col gap-2">
-          <div className="relative aspect-[16/10] sm:aspect-video lg:h-[480px] w-full rounded-2xl overflow-hidden bg-black shadow-lg border-2 border-gray-800">
+      {!connected && <p role="alert" className="text-lg text-warn mb-4">Đang mất kết nối. Gợi ý cũ đã hủy; chờ kết nối lại trước khi ký.</p>}
+
+      <div ref={captureControlsRef} tabIndex={-1} aria-label="Điều khiển câu ký"
+        style={{top:'var(--patient-header-height, 0px)'}} className="sticky z-20 bg-paper py-2">
+      <div className="flex flex-wrap gap-2 mb-1">
+        <Button data-vsl-begin onClick={beginSentence} disabled={!isActive || isAiLoading || !!aiError ||
+          !readyToSign || captureDisabled || !connected || captureState!=='idle'}>{vi.camera.begin}</Button>
+        <Button onClick={finishSentence} disabled={captureState!=='recording'}>{vi.camera.finish}</Button>
+        {captureState==='recording' && <Button variant="secondary" onClick={() => {
+          showFailure(captureRef.current.fail('cancelled',performance.now()));
+        }}>{vi.common.cancel}</Button>}
+      </div>
+      <p role="status" className="text-lg">{captureMessage}</p>
+      {captureFailure && <p data-testid="vsl-capture-stopped" className="text-xl font-bold text-warn mb-4">
+        {vi.camera.stopped((captureFailure.capture_duration_ms/1000).toFixed(1))}
+      </p>}
+      {captureState==='recording' && <p className="text-base">{vi.camera.keyboardFinish}</p>}
+      {captureState==='recording' && <p role="timer" aria-live="off" className="text-2xl font-bold text-action">
+        {vi.camera.remaining(remainingSeconds)}
+      </p>}
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
+        <div className="min-w-0 xl:col-span-2 flex flex-col gap-2">
+          {isActive && <p data-testid="vsl-tracking" className="text-base text-ink">
+            <strong>Camera đang thấy</strong> {tracking || 'Đang tìm mặt, vai và bàn tay…'}
+          </p>}
+          <div style={{aspectRatio:previewAspect, maxWidth:`calc(65dvh * ${previewAspect})`}}
+            className="relative w-full mx-auto rounded-2xl overflow-hidden bg-black shadow-lg">
             {/* Thẻ Video phát từ webcam */}
             <video
               ref={setVideoRef}
               data-testid="vsl-video-element"
               onLoadedMetadata={handleVideoLoadedMetadata}
-              className="absolute inset-0 w-full h-full object-cover -scale-x-100"
+              className="absolute inset-0 w-full h-full object-fill -scale-x-100"
               playsInline
               muted
             />
@@ -366,48 +478,15 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             {/* Canvas vẽ các khớp và khung xương ngón tay MediaPipe */}
             <canvas
               ref={canvasRef}
-              className="absolute inset-0 w-full h-full object-cover -scale-x-100 pointer-events-none"
+              width={360}
+              height={360}
+              className="absolute inset-0 w-full h-full object-fill -scale-x-100 pointer-events-none"
             />
 
-            {/* HUD trạng thái trực tiếp trên màn hình camera */}
-            <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
-              {/* Badge số bàn tay */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-white text-xs font-bold border border-white/20">
-                <IconHandFinger className={`w-4 h-4 ${handCount > 0 ? 'text-status-success animate-pulse' : 'text-gray-400'}`} stroke={2} />
-                <span>
-                  {handCount === 0
-                    ? 'Đang tìm bàn tay...'
-                    : handCount === 1
-                      ? 'Đã bắt 1 bàn tay'
-                      : 'Đã bắt 2 bàn tay'}
-                </span>
-              </div>
-
-              {/* Badges trạng thái ổn định / cảnh báo cử chỉ */}
-              <div className="flex items-center gap-1.5">
-                {stabilization.status === 'uncertain' && (
-                  <div className="px-2.5 py-1.5 rounded-xl bg-amber-500/80 backdrop-blur-md text-white text-xs font-bold border border-amber-300/40 flex items-center gap-1.5 animate-pulse">
-                    <IconAlertTriangle className="w-3.5 h-3.5 text-amber-200" stroke={2.5} />
-                    <span>Chưa chắc chắn</span>
-                  </div>
-                )}
-                {stabilization.status === 'holding' && (
-                  <div className="px-2.5 py-1.5 rounded-xl bg-brand/80 backdrop-blur-md text-white text-xs font-bold border border-white/20 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                    <span>Giữ yên {stabilization.progressPercent}%</span>
-                  </div>
-                )}
-                <div className="px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-emerald-400 text-xs font-bold border border-white/20 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-status-success animate-pulse" />
-                  <span>Sẵn sàng nhận diện</span>
-                </div>
-              </div>
-            </div>
-
             {/* Banner hiển thị từ đang nhận diện ngay tại chân màn Camera */}
-            {livePrediction && livePrediction.gloss !== 'UNKNOWN' && (
+            {contextStep!=='intake' && livePrediction && livePrediction.gloss !== 'UNKNOWN' && (
               <div className="absolute bottom-3 left-3 right-3 bg-black/85 backdrop-blur-md border border-brand/50 px-3.5 py-2.5 rounded-xl flex flex-col gap-2 text-white animate-fade-in pointer-events-none z-10 shadow-xl">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap gap-2 items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-brand text-white flex items-center justify-center font-bold">
                       <IconHandLoveYou className="w-5 h-5 text-white" stroke={2} />
@@ -417,40 +496,15 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                         <span className="text-base font-black text-brand-light">
                           {livePrediction.label_vi || livePrediction.gloss}
                         </span>
-                        <span className="text-xs font-mono text-gray-300">[{livePrediction.gloss}]</span>
+                        <span className="text-base font-mono text-gray-300">[{livePrediction.gloss}]</span>
                       </div>
-                      <span className="text-xs text-status-success font-bold">
-                        Độ tin cậy: {Math.round(livePrediction.confidence * 100)}% · {livePrediction.latency_ms}ms
+                      <span className="text-base text-status-success font-bold">
+                        Gợi ý nhận diện
                       </span>
                     </div>
                   </div>
 
-                  <span
-                    className={`text-xs px-2.5 py-1 rounded-lg font-bold ${
-                      stabilization.status === 'uncertain'
-                        ? 'bg-amber-500/30 border border-amber-500/50 text-amber-200'
-                        : stabilization.status === 'stable'
-                          ? 'bg-status-success/30 border border-status-success/50 text-status-success'
-                          : 'bg-brand/30 border border-brand/50 text-brand-light'
-                    }`}
-                  >
-                    {stabilization.status === 'uncertain'
-                      ? 'Chưa chắc chắn'
-                      : stabilization.status === 'stable'
-                        ? '✓ Đã nhận diện'
-                        : `Đang giữ (${stabilization.progressPercent}%)`}
-                  </span>
                 </div>
-
-                {/* Thanh tiến trình giữ yên cử chỉ (0.8s hold progress) */}
-                {stabilization.status === 'holding' && (
-                  <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className="bg-brand-light h-full rounded-full transition-all duration-100"
-                      style={{ width: `${stabilization.progressPercent}%` }}
-                    />
-                  </div>
-                )}
               </div>
             )}
 
@@ -458,18 +512,24 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             {((status !== 'active' && !isActive) || aiError) && (
               <div className="absolute inset-0 bg-paper/95 flex flex-col items-center justify-center p-6 text-center z-20">
                 <IconCameraOff className="w-12 h-12 text-mute mb-2" stroke={1.5} />
-                <h4 className="text-sm font-bold text-ink mb-1">
+                <h4 className="text-lg font-bold text-ink mb-1">
                   {aiError || errorMessage || 'Đang chờ cấp quyền truy cập Camera'}
                 </h4>
-                <p className="text-xs text-mute max-w-sm mb-3">
-                  Trình duyệt cần quyền truy cập webcam để nhận dạng cử chỉ ngón tay của bạn.
+                <p className="text-base text-mute max-w-sm mb-3">
+                  {aiError ? 'Bộ nhận diện chưa khởi động được. Bấm thử lại để nạp lại.' :
+                    'Trình duyệt cần quyền truy cập webcam để nhận dạng câu ký hiệu ngắn.'}
                 </p>
                 <button
                   type="button"
-                  onClick={() => start()}
-                  className="px-3.5 py-1.5 rounded-xl bg-action text-white font-bold text-xs shadow-xs hover:bg-action-dark transition-colors cursor-pointer"
+                  onClick={() => {
+                    if (aiError) {
+                      setAiError(null);setIsAiLoading(true);setDetectorAttempt(value=>value+1);
+                    }
+                    void start();
+                  }}
+                  className="min-h-[64px] px-3.5 py-1.5 rounded-xl bg-action text-white font-bold text-base shadow-xs hover:bg-action-dark transition-colors cursor-pointer"
                 >
-                  Bật lại Camera
+                  {aiError ? 'Thử lại nhận diện' : 'Bật lại Camera'}
                 </button>
               </div>
             )}
@@ -478,73 +538,62 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             {isAiLoading && (
               <div className="absolute inset-0 bg-black/75 backdrop-blur-xs flex flex-col items-center justify-center text-white z-20">
                 <div className="w-8 h-8 border-3 border-brand border-t-transparent rounded-full animate-spin mb-2" />
-                <p className="text-xs font-bold">Đang nạp mô hình nhận dạng ngón tay...</p>
-                <p className="text-[10px] text-gray-300 mt-0.5">Xử lý cục bộ trên thiết bị (Offline 100%)</p>
+                <p className="text-base font-bold">{vi.camera.loading}</p>
+                <p className="text-base text-gray-300 mt-0.5">{vi.camera.localModel}</p>
               </div>
             )}
           </div>
 
-          {/* 4 THẺ HƯỚNG DẪN CỬ CHỈ TRỰC QUAN CHO NGƯỜI ĐIẾC (VSL Visual Guides - Offline 100%) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-            <div className="p-2.5 rounded-xl bg-canvas border border-gray-200 hover:border-brand/40 transition-all flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-danger/10 text-danger flex items-center justify-center shrink-0">
-                <IconHeartbeat className="w-5 h-5" stroke={2} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-black text-ink block leading-snug">Đau ngực</span>
-                <span className="text-[10px] text-mute leading-tight block">Áp/nắm tay trước ngực</span>
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-canvas border border-gray-200 hover:border-brand/40 transition-all flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-warning-bg text-warning flex items-center justify-center shrink-0">
-                <IconTemperature className="w-5 h-5" stroke={2} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-black text-ink block leading-snug">Sốt cao</span>
-                <span className="text-[10px] text-mute leading-tight block">Áp lòng tay lên trán</span>
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-canvas border border-gray-200 hover:border-brand/40 transition-all flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center shrink-0">
-                <IconHandLoveYou className="w-5 h-5" stroke={2} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-black text-ink block leading-snug">Đau bụng</span>
-                <span className="text-[10px] text-mute leading-tight block">Ôm/xoa nhẹ vùng bụng</span>
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-canvas border border-gray-200 hover:border-brand/40 transition-all flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center shrink-0">
-                <IconLungs className="w-5 h-5" stroke={2} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-black text-ink block leading-snug">Khó thở</span>
-                <span className="text-[10px] text-mute leading-tight block">Hai tay chéo trước ngực</span>
-              </div>
-            </div>
-          </div>
+          <p className="text-lg text-mute p-3 rounded-xl bg-canvas">
+            {vi.camera.privacy}
+          </p>
+          <p className="text-lg text-mute">{vi.camera.touchHint}</p>
+          {contextStep==='intake' && <p className="text-base text-mute">
+            Thử nghiệm chỉ hỗ trợ một số câu ngắn về đau, ho, sốt và khó thở. Ký một câu, bấm Xong câu rồi kiểm tra cả gợi ý.
+          </p>}
         </div>
 
-        {/* CỘT PHẢI (4 / 12 CỘT): TỪ CHỜ XÁC NHẬN & DANH SÁCH TRIỆU CHỨNG ĐÃ CHỌN */}
-        <div className="lg:col-span-4 flex flex-col justify-between gap-3 lg:h-[480px]">
+        {contextStep==='intake' ? <div className="min-w-0 bg-canvas rounded-xl p-4 space-y-4" aria-label="Gợi ý cả câu">
+          <h4 className="text-xl font-bold">Thông tin camera đề xuất</h4>
+          {intakeSuggestion ? <>
+            <dl className="space-y-3 text-xl">
+              <div><dt className="text-mute">Lý do khám</dt><dd className="font-bold">{SENTENCE_COMPLAINTS[intakeSuggestion.chief_complaint_code].label}</dd></div>
+              <div><dt className="text-mute">Tình trạng đau</dt><dd className="font-bold">{intakeSuggestion.pain_present===true ? 'Có đau' : 'Chưa hỏi'}</dd></div>
+              {intakeSuggestion.pain_present===true && <div><dt className="text-mute">Vị trí đau</dt><dd className="font-bold">{intakeSuggestion.body_regions.map(code => SENTENCE_REGIONS[code]).join(', ') || 'Chưa rõ — cần chọn thêm'}</dd></div>}
+            </dl>
+            <p>Chưa ghi vào phiếu. Mức đau và thời gian cần trả lời thêm bằng Chạm.</p>
+            {replacementNotice && <p role="note" className="text-warn font-semibold">{replacementNotice}</p>}
+            <div className="flex flex-wrap gap-3">
+              <Button disabled={!connected || candidateKeyRef.current!==draftKey || captureState!=='idle'}
+                onClick={() => {
+                  if (!connected || candidateKeyRef.current!==draftKey) return;
+                  const value=intakeSuggestion;
+                  clearSequence();setIntakeSuggestion(null);setCandidates([]);setLivePrediction(null);
+                  onApplyIntakeSuggestion?.(value);
+                }}>Dùng thông tin này</Button>
+              <Button variant="secondary" onClick={handleSwitchToTouch}>Sửa bằng Chạm</Button>
+              <Button variant="secondary" onClick={() => {
+                clearSequence();setIntakeSuggestion(null);setCandidates([]);setLivePrediction(null);
+                setCaptureMessage(vi.camera.ready);
+              }}>Bỏ gợi ý / Ký lại</Button>
+            </div>
+          </> : <p>Chưa có gợi ý. Bấm Bắt đầu ký khi đã nhìn rõ thân trên và bàn tay.</p>}
+        </div> : <div className="min-w-0 flex flex-col justify-between gap-3 ">
           {/* Box 1: Từ AI vừa nhận diện được (Awaiting Confirmation) */}
           <div className="bg-canvas p-3 rounded-xl border border-gray-200 flex flex-col gap-2 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-ink uppercase tracking-wider flex items-center gap-1.5">
+            <div className="flex flex-wrap gap-2 items-center justify-between">
+              <span className="text-base font-extrabold text-ink uppercase tracking-wider flex items-center gap-1.5">
                 <IconSparkles className="w-3.5 h-3.5 text-brand" stroke={2} />
                 Cử chỉ vừa bắt được ({candidates.length})
               </span>
-              <span className="text-[10px] text-mute">Bấm ✔ để nhận</span>
+              <span className="text-base text-mute">Bấm ✔ để nhận</span>
             </div>
 
             {candidates.length === 0 ? (
               <div className="py-6 px-2 rounded-lg border border-dashed border-gray-300 text-center text-mute">
                 <IconHandFinger className="w-7 h-7 mx-auto mb-1 text-mute/50" stroke={1.5} />
-                <p className="text-xs font-semibold">Chưa có cử chỉ nào</p>
-                <p className="text-[10px] text-mute/80 mt-0.5">
+                <p className="text-base font-semibold">Chưa có cử chỉ nào</p>
+                <p className="text-base text-mute/80 mt-0.5">
                   Làm cử chỉ trước ống kính để hệ thống bắt từ vào đây.
                 </p>
               </div>
@@ -557,19 +606,19 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 truncate">
-                        <span className="text-sm font-black text-ink truncate">{cand.label_vi}</span>
-                        <span className="text-[10px] font-mono font-bold text-mute shrink-0">[{cand.gloss}]</span>
+                        <span className="text-lg font-black text-ink truncate">{cand.label_vi}</span>
+                        <span className="text-base font-mono font-bold text-mute shrink-0">[{cand.gloss}]</span>
                       </div>
-                      <span className="text-[11px] font-bold text-status-success block">
-                        Độ tin cậy: {Math.round(cand.confidence * 100)}%
+                      <span className="text-base font-bold text-status-success block">
+                        Kiểm tra trước khi nhận
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
                       <button
                         type="button"
                         onClick={() => handleConfirmCandidate(cand, idx)}
-                        className="px-2.5 py-1.5 rounded-lg bg-status-success text-white hover:bg-status-success/90 font-bold text-xs flex items-center gap-1 cursor-pointer transition-transform active:scale-95 shadow-2xs"
+                        className="min-h-[64px] px-3 py-2 rounded-lg bg-status-success text-white hover:bg-status-success/90 font-bold text-base flex items-center gap-1 cursor-pointer transition-transform active:scale-95 shadow-2xs"
                         title="Xác nhận từ này"
                       >
                         <IconCheck className="w-3.5 h-3.5" stroke={2.5} />
@@ -578,7 +627,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                       <button
                         type="button"
                         onClick={() => handleDismissCandidate(idx)}
-                        className="p-1.5 rounded-lg bg-gray-100 hover:bg-danger-bg hover:text-danger text-mute transition-colors cursor-pointer"
+                        aria-label="Bỏ qua gợi ý"
+                        className="min-h-[64px] min-w-[64px] grid place-items-center rounded-lg bg-gray-100 hover:bg-danger-bg hover:text-danger text-mute transition-colors cursor-pointer"
                         title="Bỏ qua"
                       >
                         <IconX className="w-3.5 h-3.5" stroke={2.5} />
@@ -592,8 +642,8 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
 
           {/* Box 2: Danh sách các triệu chứng đã xác nhận */}
           <div className="bg-canvas p-3 rounded-xl border border-gray-200 flex flex-col gap-2 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-ink uppercase tracking-wider flex items-center gap-1.5">
+            <div className="flex flex-wrap gap-2 items-center justify-between">
+              <span className="text-base font-extrabold text-ink uppercase tracking-wider flex items-center gap-1.5">
                 <IconCircleCheck className="w-3.5 h-3.5 text-status-success" stroke={2.5} />
                 Triệu chứng đã chốt ({confirmedGlosses.length})
               </span>
@@ -601,7 +651,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setConfirmedGlosses([])}
-                  className="text-[10px] text-danger hover:underline font-semibold cursor-pointer"
+                  className="min-h-[64px] px-3 text-base text-danger hover:underline font-semibold cursor-pointer"
                 >
                   Xóa tất cả
                 </button>
@@ -609,7 +659,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             </div>
 
             {confirmedGlosses.length === 0 ? (
-              <p className="text-xs text-mute italic py-3 text-center">
+              <p className="text-base text-mute italic py-3 text-center">
                 Chưa có triệu chứng nào được chốt. Bấm &quot;Nhận&quot; ở trên.
               </p>
             ) : (
@@ -617,13 +667,14 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
                 {confirmedGlosses.map((g, idx) => (
                   <div
                     key={`${g.gloss}-${idx}`}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-paper border border-gray-200 text-ink text-xs font-bold shadow-2xs"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-paper border border-gray-200 text-ink text-base font-bold shadow-2xs"
                   >
                     <span>{g.label_vi}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveConfirmed(idx)}
-                      className="text-mute hover:text-danger transition-colors cursor-pointer"
+                      aria-label={`Xóa ${g.label_vi}`}
+                      className="min-h-[64px] min-w-[64px] grid place-items-center text-mute hover:text-danger transition-colors cursor-pointer"
                       title="Xóa"
                     >
                       <IconTrash className="w-3.5 h-3.5" stroke={2} />
@@ -640,13 +691,13 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
             data-testid="btn-apply-vsl-glosses"
             onClick={handleApply}
             disabled={confirmedGlosses.length === 0}
-            className="w-full !min-h-[48px] !py-2.5 text-sm md:text-base font-extrabold shadow-md cursor-pointer"
+            className="w-full !min-h-[64px] !py-2.5 text-lg md:text-base font-extrabold shadow-md cursor-pointer"
           >
             {confirmedGlosses.length > 0
               ? `Lưu ${confirmedGlosses.length} triệu chứng & Tiếp tục ➔`
               : 'Hãy nhận ít nhất 1 triệu chứng'}
           </Button>
-        </div>
+        </div>}
       </div>
     </div>
   );

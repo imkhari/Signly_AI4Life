@@ -37,6 +37,7 @@ export type SessionAction =
       };
     }
   | { type: 'SET_SOCKET_STATUS'; payload: SessionState['socketStatus'] }
+  | { type: 'PATIENT_JOINED' }
   | {
       type: 'FRAME_UPDATED';
       payload: { frame: SemanticFrame; alerts: Alert[]; completeness: number; step: string };
@@ -92,18 +93,22 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
       sessionStore.setSessionId(sessionId);
       sessionStore.setRole(role);
       sessionStore.setToken(token);
-      if (pairingCode) sessionStore.setPairingCode(pairingCode);
+      sessionStore.setPairingCode(pairingCode ?? '');
+      sessionStore.setLastSeq(0);
 
       return {
-        ...state,
+        ...initialState,
         sessionId,
         role,
         token,
-        pairingCode: pairingCode || state.pairingCode,
-        status: 'paired',
-        frame: { ...state.frame, session_id: sessionId },
+        pairingCode: pairingCode ?? null,
+        status: role === 'nurse' ? 'created' : 'paired',
+        frame: { ...initialEmptyFrame, session_id: sessionId },
+        a11y: state.a11y,
       };
     }
+    case 'PATIENT_JOINED':
+      return state.status === 'created' ? { ...state, status: 'paired' } : state;
     case 'SET_SOCKET_STATUS':
       return { ...state, socketStatus: action.payload };
 
@@ -114,7 +119,8 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
         alerts: action.payload.alerts,
         completeness: action.payload.completeness,
         currentStep: action.payload.step || state.currentStep,
-        status: state.status === 'paired' ? 'collecting' : state.status,
+        summary: state.status === 'nurse_verified' ? state.summary : null,
+        status: state.status === 'nurse_verified' ? state.status : 'collecting',
       };
 
     case 'SUMMARY_READY':
@@ -128,6 +134,7 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
       return {
         ...state,
         status: action.payload.status,
+        summary: action.payload.status === 'collecting' ? null : state.summary,
       };
 
     case 'NURSE_VERIFIED':

@@ -336,3 +336,33 @@ def test_ws_privacy_logging_no_pii(client: TestClient, caplog: pytest.LogCapture
     for record in caplog.records:
         assert "0912345678" not in record.message
         assert "Nguyễn Văn A" not in record.message
+
+
+def test_ws_rejects_confirmation_without_ready_summary(client: TestClient) -> None:
+    session_id, _, _, token_patient = _setup_session(client)
+    with client.websocket_connect(
+        f"/ws/{session_id}?role=patient&token={token_patient}"
+    ) as patient:
+        patient.receive_json()
+        patient.send_json({
+            "event": "PATIENT_CONFIRMED",
+            "payload": {"decision": "confirmed", "confirmed_fields": []},
+        })
+        response = patient.receive_json()
+        assert response["event"] == "ERROR"
+        assert response["payload"]["code"] == "VALIDATION_ERROR"
+
+
+def test_ws_reset_clears_landmark_history(client: TestClient) -> None:
+    from app.api.rest import vsl
+
+    session_id, _, token_nurse, _ = _setup_session(client)
+    assert vsl._engine is not None
+    vsl._engine.motion_buffer.append({'synthetic': True})
+    with client.websocket_connect(
+        f'/ws/{session_id}?role=nurse&token={token_nurse}'
+    ) as nurse:
+        nurse.receive_json()
+        nurse.send_json({'event': 'SESSION_RESET', 'payload': {'reason': 'completed'}})
+        assert nurse.receive_json()['event'] == 'SESSION_RESET'
+    assert len(vsl._engine.motion_buffer) == 0

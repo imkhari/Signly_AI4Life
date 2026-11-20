@@ -13,10 +13,12 @@ export function useCamera() {
   const { state } = useSession();
   const [status, setStatus] = useState<CameraStatus>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const generationRef = useRef(0);
   const streamRef = useRef<MediaStream | null>(null);
   const videoElementRef = useRef<HTMLVideoElement | null>(null);
 
   const stop = useCallback(() => {
+    generationRef.current += 1;
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
         track.stop();
@@ -30,6 +32,8 @@ export function useCamera() {
   }, []);
 
   const start = useCallback(async () => {
+    stop();
+    const generation = generationRef.current;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setStatus('unsupported');
       setErrorMessage('Trình duyệt hoặc thiết bị này không hỗ trợ truy cập camera.');
@@ -49,6 +53,10 @@ export function useCamera() {
         audio: false,
       });
 
+      if (generation !== generationRef.current) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        return;
+      }
       streamRef.current = mediaStream;
       if (videoElementRef.current) {
         videoElementRef.current.srcObject = mediaStream;
@@ -56,6 +64,7 @@ export function useCamera() {
       }
       setStatus('active');
     } catch (err: unknown) {
+      if (generation !== generationRef.current) return;
       const error = err as { name?: string; message?: string };
       if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
         setStatus('denied');
@@ -69,7 +78,7 @@ export function useCamera() {
         );
       }
     }
-  }, []);
+  }, [stop]);
 
   // Gán video element
   const bindVideoRef = useCallback((el: HTMLVideoElement | null) => {

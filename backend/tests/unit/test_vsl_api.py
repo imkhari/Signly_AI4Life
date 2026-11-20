@@ -34,9 +34,29 @@ def test_vsl_status_endpoint(client: TestClient) -> None:
     assert data["supported_gestures_count"] == 60
 
 
+def folded_hand(x: float, y: float) -> list[dict[str, float]]:
+    points = [{"x": x, "y": y, "z": 0.0} for _ in range(21)]
+    points[0]["y"] += 0.025
+    return points
+
+
+def test_vsl_rejects_collapsed_landmarks(client: TestClient) -> None:
+    points = [{"x": 0.5, "y": 0.65, "z": 0.0} for _ in range(21)]
+    response = client.post("/api/vsl/predict", json={"hands": [{"landmarks": points}]})
+    assert response.status_code == 200
+    assert response.json()["gloss"] == "UNKNOWN"
+    assert response.json()["success"] is False
+
+
+def test_vsl_rejects_empty_frame(client: TestClient) -> None:
+    response = client.post("/api/vsl/predict", json={"hands": []})
+    assert response.status_code == 200
+    assert response.json()["gloss"] == "UNKNOWN"
+
+
 def test_vsl_predict_endpoint_chest_pain(client: TestClient) -> None:
     # Mô phỏng nắm tay trước ngực
-    mock_landmarks = [{"x": 0.5, "y": 0.65, "z": 0.0} for _ in range(21)]
+    mock_landmarks = folded_hand(0.5, 0.65)
     payload = {
         "hands": [
             {
@@ -191,7 +211,7 @@ def test_vsl_predict_endpoint_fever_forehead(client: TestClient) -> None:
 
 def test_vsl_predict_endpoint_shoulder_vai(client: TestClient) -> None:
     # Mô phỏng đặt tay lên vai (act_x = 0.20 < 0.28, act_y = 0.45)
-    mock_landmarks = [{"x": 0.20, "y": 0.45, "z": 0.0} for _ in range(21)]
+    mock_landmarks = folded_hand(0.20, 0.45)
     payload = {
         "hands": [{"handedness": "Right", "landmarks": mock_landmarks}],
         "context_step": "general",
@@ -205,7 +225,7 @@ def test_vsl_predict_endpoint_shoulder_vai(client: TestClient) -> None:
 
 def test_vsl_predict_endpoint_tooth_rang(client: TestClient) -> None:
     # Mô phỏng áp tay vào má (act_x = 0.30, act_y = 0.42)
-    mock_landmarks = [{"x": 0.30, "y": 0.42, "z": 0.0} for _ in range(21)]
+    mock_landmarks = folded_hand(0.30, 0.42)
     payload = {
         "hands": [{"handedness": "Right", "landmarks": mock_landmarks}],
         "context_step": "general",
@@ -239,8 +259,8 @@ def test_vsl_predict_endpoint_eye_mat(client: TestClient) -> None:
 
 def test_vsl_predict_endpoint_neck_gay(client: TestClient) -> None:
     # Mô phỏng hai tay ôm sau gáy (act_x = 0.50, act_y = 0.40, distance = 0.20)
-    mock_landmarks_r = [{"x": 0.60, "y": 0.40, "z": 0.0} for _ in range(21)]
-    mock_landmarks_l = [{"x": 0.40, "y": 0.40, "z": 0.0} for _ in range(21)]
+    mock_landmarks_r = folded_hand(0.60, 0.40)
+    mock_landmarks_l = folded_hand(0.40, 0.40)
     payload = {
         "hands": [
             {"handedness": "Right", "landmarks": mock_landmarks_r},
@@ -257,7 +277,7 @@ def test_vsl_predict_endpoint_neck_gay(client: TestClient) -> None:
 
 def test_vsl_predict_endpoint_hip_hong(client: TestClient) -> None:
     # Mô phỏng chống tay lên hông (act_x = 0.18, act_y = 0.70)
-    mock_landmarks = [{"x": 0.18, "y": 0.70, "z": 0.0} for _ in range(21)]
+    mock_landmarks = folded_hand(0.18, 0.70)
     payload = {
         "hands": [{"handedness": "Right", "landmarks": mock_landmarks}],
         "context_step": "general",
@@ -267,3 +287,10 @@ def test_vsl_predict_endpoint_hip_hong(client: TestClient) -> None:
     data = res.json()
     assert data["success"] is True
     assert data["gloss"] == "HÔNG"
+
+
+def test_vsl_rejects_hand_outside_frame(client: TestClient) -> None:
+    points = folded_hand(1.2, 0.6)
+    response = client.post('/api/vsl/predict', json={'hands': [{'landmarks': points}]})
+    assert response.status_code == 200
+    assert response.json()['gloss'] == 'UNKNOWN'

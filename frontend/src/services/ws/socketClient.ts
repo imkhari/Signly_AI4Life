@@ -77,7 +77,7 @@ export class SocketClient {
       const host = window.location.host;
       url = `${protocol}//${host}/ws/${sessionId}?role=${role}&token=${encodeURIComponent(token)}`;
     }
-    if (this.lastSeq > 0) {
+    if (this.lastSeq > 0 || this.config.lastSeq !== undefined) {
       url += `&last_seq=${this.lastSeq}`;
     }
 
@@ -90,15 +90,20 @@ export class SocketClient {
       return;
     }
 
-    this.ws.onopen = () => {
+    const socket = this.ws;
+    socket.onopen = () => {
+      if (this.ws !== socket) return;
       this.reconnectAttempts = 0;
       this.setStatus('connected');
       this.startHeartbeat();
     };
 
-    this.ws.onmessage = this.handleMessage;
+    socket.onmessage = (event) => {
+      if (this.ws === socket) this.handleMessage(event);
+    };
 
-    this.ws.onclose = (event) => {
+    socket.onclose = (event) => {
+      if (this.ws !== socket) return;
       this.stopHeartbeat();
       // Code 4001: Duplicate connection for role -> không tự reconnect đè
       // Code 1000: Bình thường
@@ -178,15 +183,20 @@ export class SocketClient {
     }
   }
 
-  send<T = unknown>(event: EventType | string, payload: T): void {
+  send<T = unknown>(event: EventType | string, payload: T): boolean {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      return;
+      return false;
     }
     const message = {
       event,
       payload,
     };
-    this.ws.send(JSON.stringify(message));
+    try {
+      this.ws.send(JSON.stringify(message));
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   on<T = unknown>(event: EventType | '*' | string, handler: EventHandler<T>): () => void {

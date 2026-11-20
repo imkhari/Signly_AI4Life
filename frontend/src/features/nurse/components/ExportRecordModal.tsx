@@ -1,4 +1,5 @@
-import React from 'react';
+import { complaintLabels } from '../../../i18n/intakeLabels';
+import React, {useEffect,useRef,useState} from 'react';
 import { Printer, ShieldAlert } from 'lucide-react';
 import { Modal } from '../../../ui/Modal';
 import { Button } from '../../../ui/Button';
@@ -12,7 +13,8 @@ interface ExportRecordModalProps {
   intakeCode: string;
   frame: SemanticFrame;
   summary: TriageSummary | null;
-  onConfirmExport: () => void;
+  canExport: boolean;
+  onConfirmExport: () => Promise<boolean>;
 }
 
 export const ExportRecordModal: React.FC<ExportRecordModalProps> = ({
@@ -22,11 +24,35 @@ export const ExportRecordModal: React.FC<ExportRecordModalProps> = ({
   intakeCode,
   frame,
   summary,
+  canExport,
   onConfirmExport,
 }) => {
-  const handlePrint = () => {
-    onConfirmExport();
-    window.print();
+  const eligible=canExport && summary!==null;
+  const [isExporting,setIsExporting]=useState(false);
+  const [exportError,setExportError]=useState(false);
+  const generationRef=useRef(0);
+  const pendingRef=useRef(false);
+  const eligibleRef=useRef(eligible);
+  eligibleRef.current=eligible;
+  useEffect(()=>{
+    const generation=++generationRef.current;pendingRef.current=false;
+    setIsExporting(false);setExportError(false);
+    return ()=>{generationRef.current=generation+1;};
+  },[isOpen]);
+  const handlePrint = async () => {
+    if (!eligibleRef.current || pendingRef.current) return;
+    const generation=generationRef.current;
+    pendingRef.current=true;setIsExporting(true);setExportError(false);
+    try {
+      const accepted=await onConfirmExport();
+      if (generation!==generationRef.current) return;
+      if (accepted && eligibleRef.current) window.print();
+      else setExportError(true);
+    } catch {
+      if (generation===generationRef.current) setExportError(true);
+    } finally {
+      if (generation===generationRef.current) {pendingRef.current=false;setIsExporting(false);}
+    }
   };
 
   const formattedDate = new Date().toLocaleString('vi-VN');
@@ -48,11 +74,15 @@ export const ExportRecordModal: React.FC<ExportRecordModalProps> = ({
         </div>
 
         {/* Printable Record Sheet */}
-        <div
+        {eligible && <div
           id="printable-triage-record"
           className="border border-gray-300 rounded-xl p-6 bg-white text-black space-y-4 print:border-none print:p-0"
         >
           {/* Header */}
+          {frame.extra_symptoms.length > 0 && <div className="p-3 border mb-4">
+            <p className="font-bold">Triệu chứng đi kèm</p>
+            <p>{frame.extra_symptoms.map(code => complaintLabels[code] || code).join(', ')}</p>
+          </div>}
           <div className="border-b-2 border-black pb-3 flex justify-between items-start">
             <div>
               <h2 className="text-xl font-bold uppercase tracking-wide">
@@ -150,16 +180,19 @@ export const ExportRecordModal: React.FC<ExportRecordModalProps> = ({
               <div className="h-12" />
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* Modal Actions */}
+        {!eligible && <p role="status">{vi.web.exportBlocked}</p>}
+        {exportError && <p role="alert">{vi.web.exportFailed}</p>}
         <div className="flex justify-end gap-3 pt-3 border-t border-gray-200">
           <Button variant="secondary" onClick={onClose} className="min-h-[48px] py-2 text-base">
             {vi.nurse.export.closeButton}
           </Button>
-          <Button variant="primary" onClick={handlePrint} className="min-h-[48px] py-2 text-base">
+          <Button variant="primary" onClick={handlePrint} disabled={!eligible || isExporting}
+            className="min-h-[64px] py-2 text-base">
             <Printer className="w-4 h-4" />
-            <span>{vi.nurse.export.printButton}</span>
+            <span>{isExporting ? vi.web.exportWaiting : vi.nurse.export.printButton}</span>
           </Button>
         </div>
       </div>

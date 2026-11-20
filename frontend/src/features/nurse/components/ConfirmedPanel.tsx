@@ -1,3 +1,4 @@
+import { complaintLabels, regionLabels } from '../../../i18n/intakeLabels';
 import React from 'react';
 import { CheckCircle2, Clock, Bot, ShieldCheck } from 'lucide-react';
 import { SemanticFrame, SessionStatus, TriageSummary } from '../../../types';
@@ -25,11 +26,11 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
 
   const regionsText =
     frame.pain.body_regions && frame.pain.body_regions.length > 0
-      ? frame.pain.body_regions.join(', ')
+      ? frame.pain.body_regions.map(code => regionLabels[code] || code).join(', ')
       : 'Chưa chọn vùng';
 
   const onsetText = frame.pain.onset
-    ? `${frame.pain.onset.value} ${frame.pain.onset.unit}`
+    ? `${frame.pain.onset.value} ${vi.intake.units[frame.pain.onset.unit!]}`
     : 'Chưa rõ thời gian';
 
   // Format allergy
@@ -54,7 +55,7 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-200/80 mb-5">
+      <div className="flex flex-wrap gap-3 items-center justify-between pb-4 border-b border-gray-200/80 mb-5">
         <div className="flex items-center gap-2.5">
           {isConfirmed ? (
             <div className="w-8 h-8 rounded-full bg-status-success/15 text-status-success flex items-center justify-center">
@@ -71,12 +72,12 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
                 isConfirmed ? 'text-status-success' : 'text-mute'
               }`}
             >
-              {isConfirmed ? vi.nurse.confirmedSection : vi.nurse.patientEditing}
+              {isConfirmed ? vi.nurse.confirmedSection : status==='created' ? vi.web.waitingPatient : vi.nurse.patientEditing}
             </h2>
             <p className="text-xs text-mute">
               {isConfirmed
                 ? 'Thông tin đã được người bệnh kiểm tra và bấm xác nhận tại Kiosk'
-                : 'Thông tin đang được người bệnh thao tác và chưa xác nhận'}
+                : status==='created' ? vi.web.waitingPatientDetail : 'Thông tin đang được người bệnh thao tác và chưa xác nhận'}
             </p>
           </div>
         </div>
@@ -106,6 +107,10 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
         )}
       </div>
 
+      {frame.extra_symptoms.length > 0 && <div className="p-3 rounded-xl bg-paper border mb-4">
+        <p className="font-bold">{vi.intake.extras}</p>
+        <p>{frame.extra_symptoms.map(code => complaintLabels[code] || code).join(', ')}</p>
+      </div>}
       {/* Symptoms list */}
       <div className="space-y-3.5 flex-1">
         <div className="flex items-start gap-3 p-3 rounded-xl bg-paper/80 border border-gray-200/60">

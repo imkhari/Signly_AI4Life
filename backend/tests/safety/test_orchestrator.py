@@ -88,6 +88,8 @@ async def test_orchestrator_happy_path() -> None:
     client = MockLLMClient(mode="ok")
     result = await orchestrate_summary(frame, client, timeout_s=1.0)
     assert result.nl_source == "llm"
+    assert "Ngực" in result.text_vi
+    assert "CHEST" not in result.text_vi
     assert result.fallback_reason is None
     assert result.validator.passed is True
     assert "Bạn" in result.text_vi
@@ -158,3 +160,54 @@ async def test_orchestrator_never_raises_exception() -> None:
     result = await orchestrate_summary(frame, BrokenClient(), timeout_s=1.0)
     assert result.nl_source == "fallback_template"
     assert result.fallback_reason == "llm_error"
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_removes_identifiers_from_payload() -> None:
+    class RecordingClient(MockLLMClient):
+        user_payload = ""
+
+        async def generate(self, system: str, user: str, *, timeout_s: float = 4.0) -> str:
+            self.user_payload = user
+            return await super().generate(system, user, timeout_s=timeout_s)
+
+    frame = SemanticFrame(
+        session_id="synthetic",
+        chief_complaint=ChiefComplaint(
+            code="FEVER",
+            label_vi="Nguyễn Văn A",
+            free_text="Tôi tên là Nguyễn Văn A, số 0901234567",
+        ),
+        allergy=Allergy(
+            has_allergy=True,
+            items=[
+                AllergyItem(category="other", name="person@example.invalid"),
+                AllergyItem(category="other", name="Nguyễn Thị B"),
+                AllergyItem(category="drug", name="penicillin"),
+            ],
+        ),
+        extra_symptoms=["Liên hệ 012345678901"],
+    )
+    client = RecordingClient()
+    await orchestrate_summary(frame, client)
+    for value in (
+        "Nguyễn Văn A",
+        "Nguyễn Thị B",
+        "0901234567",
+        "012345678901",
+        "person@example.invalid",
+    ):
+        assert value not in client.user_payload
+    assert "penicillin" in client.user_payload
+    assert frame.allergy.items[0].name == "person@example.invalid"
+
+
+def test_validator_rejects_missing_or_negated_additional_symptom() -> None:
+    import json
+
+    from app.ai.validator import validate_summary_output
+
+    frame = SemanticFrame(session_id='synthetic', extra_symptoms=['COUGH'])
+    for text in ['Chưa rõ tình trạng.', 'Bạn không ho.']:
+        report = validate_summary_output(json.dumps({'text_vi': text}), frame)
+        assert any('V6_EXTRA_SYMPTOM' in value for value in report.violations)

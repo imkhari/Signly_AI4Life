@@ -1,0 +1,198 @@
+{
+  "kind": "artifact_and_archived_decoder_replay_audit_not_live",
+  "artifacts": [
+    {
+      "path": "AI_model/checkpoints/vsl_v2.pt",
+      "sha256": "d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246",
+      "expected_sha256": "d9010be34e0362d0f5fe84b522f19db0a74a4d79e16f437fd0d221e19a41e246",
+      "matches": true
+    },
+    {
+      "path": "frontend/public/models/holistic_landmarker.task",
+      "sha256": "e2dab61191e2dcd0a15f943d8e3ed1dce13c82dfa597b9dd39f562975a50c3f8",
+      "expected_sha256": "e2dab61191e2dcd0a15f943d8e3ed1dce13c82dfa597b9dd39f562975a50c3f8",
+      "matches": true
+    }
+  ],
+  "translation_vocabulary_sha256": "f43f686da08fcab6ade5fa5bffec1379e24e7032c5b4ef7709a302e3ff2b5dcb",
+  "translation_vocabulary_valid": true,
+  "runtime_python_exists": true,
+  "runtime_lock_sha256": "688a91dbbafaf3b535be811fec9198f8250f7701fba9e78e0c84c82a57a4aeb0",
+  "ctc_output_enabled": false,
+  "ctc_mapping_verified": false,
+  "replay_sha256": "4c6494ae9bb39336db781033c9f66c54ac214a471ec40d463bb20db0585e31c2",
+  "matches_supplied_outputs": true,
+  "recomputed_word_metrics": {
+    "clips": 300,
+    "exact_matches": 256,
+    "reference_tokens": 2157,
+    "edits": 200,
+    "substitutions": 144,
+    "deletions": 26,
+    "insertions": 30,
+    "wer": 0.0927213722763097,
+    "negative_clips": 0,
+    "hallucinated_negative_clips": 0
+  },
+  "allowlist": [
+    {
+      "phrase": "tôi bị đau đầu",
+      "symptom": "ĐAU",
+      "location": "ĐẦU"
+    },
+    {
+      "phrase": "tôi bị đau bụng",
+      "symptom": "ĐAU",
+      "location": null
+    },
+    {
+      "phrase": "tôi bị đau bụng trên",
+      "symptom": "ĐAU",
+      "location": "BỤNG"
+    },
+    {
+      "phrase": "tôi bị đau bụng dưới",
+      "symptom": "ĐAU",
+      "location": "BỤNG-DƯỚI"
+    },
+    {
+      "phrase": "tôi bị đau ngực",
+      "symptom": "ĐAU",
+      "location": "NGỰC"
+    },
+    {
+      "phrase": "tôi bị đau họng",
+      "symptom": "ĐAU",
+      "location": "HỌNG"
+    },
+    {
+      "phrase": "tôi bị đau lưng",
+      "symptom": "ĐAU",
+      "location": null
+    },
+    {
+      "phrase": "tôi bị đau lưng dưới",
+      "symptom": "ĐAU",
+      "location": "LƯNG"
+    },
+    {
+      "phrase": "tôi bị ho",
+      "symptom": "HO",
+      "location": null
+    },
+    {
+      "phrase": "tôi bị sốt",
+      "symptom": "SỐT",
+      "location": null
+    },
+    {
+      "phrase": "tôi cảm thấy khó thở",
+      "symptom": "KHÓ-THỞ",
+      "location": null
+    },
+    {
+      "phrase": "tôi thấy khó thở lắm",
+      "symptom": "KHÓ-THỞ",
+      "location": null
+    }
+  ],
+  "scope_projection": {
+    "symptom": {
+      "reference_in_exact_allowlist": 8,
+      "outcomes": {
+        "correct": 5,
+        "rejected": 1,
+        "wrong": 2
+      },
+      "records": [
+        {
+          "clip_id": "SENT101_S06_R01_F",
+          "reference": "tôi bị đau đầu .",
+          "expected": "ĐAU",
+          "actual": "ĐAU",
+          "outcome": "correct"
+        },
+        {
+          "clip_id": "SENT102_S06_R01_F",
+          "reference": "tôi bị đau bụng .",
+          "expected": "ĐAU",
+          "actual": "ĐAU",
+          "outcome": "correct"
+        },
+        {
+          "clip_id": "SENT103_S06_R01_F",
+          "reference": "tôi bị đau ngực .",
+          "expected": "ĐAU",
+          "actual": "ĐAU",
+          "outcome": "correct"
+        },
+        {
+          "clip_id": "SENT104_S06_R01_F",
+          "reference": "tôi bị đau lưng .",
+          "expected": "ĐAU",
+          "actual": "UNKNOWN",
+          "outcome": "rejected"
+        },
+        {
+          "clip_id": "SENT105_S06_R01_F",
+          "reference": "tôi bị sốt .",
+          "expected": "SỐT",
+          "actual": "HO",
+          "outcome": "wrong"
+        },
+        {
+          "clip_id": "SENT106_S06_R01_F",
+          "reference": "tôi bị sốt .",
+          "expected": "SỐT",
+          "actual": "ĐAU",
+          "outcome": "wrong"
+        },
+        {
+          "clip_id": "SENT115_S06_R01_F",
+          "reference": "tôi cảm thấy khó thở .",
+          "expected": "KHÓ-THỞ",
+          "actual": "KHÓ-THỞ",
+          "outcome": "correct"
+        },
+        {
+          "clip_id": "SENT172_S06_R01_F",
+          "reference": "tôi thấy khó thở lắm .",
+          "expected": "KHÓ-THỞ",
+          "actual": "KHÓ-THỞ",
+          "outcome": "correct"
+        }
+      ],
+      "projection_from_reference_outside_exact_allowlist": 0
+    },
+    "location": {
+      "reference_in_exact_allowlist": 2,
+      "outcomes": {
+        "correct": 2
+      },
+      "records": [
+        {
+          "clip_id": "SENT101_S06_R01_F",
+          "reference": "tôi bị đau đầu .",
+          "expected": "ĐẦU",
+          "actual": "ĐẦU",
+          "outcome": "correct"
+        },
+        {
+          "clip_id": "SENT103_S06_R01_F",
+          "reference": "tôi bị đau ngực .",
+          "expected": "NGỰC",
+          "actual": "NGỰC",
+          "outcome": "correct"
+        }
+      ],
+      "projection_from_reference_outside_exact_allowlist": 1
+    }
+  },
+  "limitations": [
+    "Archived outputs: no new 300-clip inference or live camera test performed.",
+    "Mapping projection does not include live capture, worker quality gates or UI stability.",
+    "References outside the exact allowlist are not automatically negative/OOD examples.",
+    "65 reference/version mismatches and unknown full training provenance remain.",
+    "Vocabulary JSON hash and checks do not independently establish training provenance."
+  ]
+}

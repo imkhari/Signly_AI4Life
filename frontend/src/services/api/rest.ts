@@ -29,12 +29,18 @@ export interface HandData {
   landmarks: HandLandmarkPoint[];
 }
 
+export interface HolisticFrame {
+  timestamp_ms: number;
+  landmarks: number[];
+}
+
 export interface VSLTopK {
   gloss: string;
   confidence: number;
 }
 
 export interface VSLPredictionResponse {
+  intake_suggestion?: import('../../types/vsl').IntakeSuggestion | null;
   success: boolean;
   gloss: string;
   token?: string | null;
@@ -46,6 +52,7 @@ export interface VSLPredictionResponse {
   total_fingers: number;
   is_transitioning: boolean;
   motion_type: string;
+  // Intake rejection hints: hand_motion_unclear, model_score_low, phrase_not_supported, worker_unavailable.
   suggested_next_step?: string | null;
   top_k: VSLTopK[];
   latency_ms: number;
@@ -123,6 +130,16 @@ export class RestApiClient {
     if (!res.ok) {
       throw new Error(`VSL prediction failed: ${res.statusText}`);
     }
+    return (await res.json()) as VSLPredictionResponse;
+  }
+
+  async predictVSLSequence(frames: HolisticFrame[], contextStep?: string,
+    signal?: AbortSignal): Promise<VSLPredictionResponse> {
+    const res = await fetch(`${this.baseUrl}/vsl/predict`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
+      body: JSON.stringify({ frames, context_step: contextStep }),
+    });
+    if (!res.ok) throw new Error(`VSL inference failed: ${res.status}`);
     return (await res.json()) as VSLPredictionResponse;
   }
 
