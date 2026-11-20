@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Ba lượt ca đau bụng trả Có đau, vùng chưa rõ
+
+Ngày20/11/2026, sau hướng dẫn thử ca đau bụng theo video QIPEDC D0356, người dùng báo3lượt đều hiện Đau/Nhức, Có đau, Chưa rõ — cần chọn thêm. Đây là3kết quả tự báo khớp gợi ý có cấu trúc mong đợi của ánh xạ câu đau bụng chung. Người thử được hướng dẫn xác nhận rồi chọn vùng bụng bằng Chạm.
+
+Không xác nhận được câu decoder cụ thể từ gợi ý này: PHRASES cũng ánh xạ câu đau lưng chung sang cùng PAIN/true/vùng rỗng. Vì vậy ghi là3lượt có gợi ý đau với vùng chưa rõ, chưa tính nhận đúng vị trí bụng hoặc dịch đúng cả câu. Chưa có CSV/mã lượt/timing/profile hay người biết VSL kiểm động tác. Giữ metrics theo CSV hiện có, không suy accuracy hoặc kết luận đạt Q-25.
+
 ## Ba lượt đúng Ngực liên tiếp do người dùng báo
 
 Ngày20/11/2026, sau một lượt dán gợi ý PAIN/true/CHEST, người dùng được hướng dẫn thử thêm2lượt cùng câu. Người dùng trả lời “2 lần và đều ok”. Ghi thêm2lượt đúng theo lời báo, tổng3lượt liên tiếp sau bản sửa khởi tạo Web legacy. Không tính lượt đầu lần nữa hoặc chuyển các lượt khác phiên bản vào nhóm này.
