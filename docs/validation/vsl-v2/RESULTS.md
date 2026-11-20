@@ -1,5 +1,9 @@
 # Kết quả camera V2
 
+## Ba lượt tay nghỉ không có gợi ý theo lời người dùng
+
+Ngày20/11/2026, sau hướng dẫn giữ tay nghỉ trong khung khoảng3giây rồi kết thúc câu, người dùng báo “3 lượt tay nghỉ đều k có triệu chứng”. Ghi3lượt diễn tập tay nghỉ không thấy gợi ý. Chưa nhận nguyên thông báo từ chối, CSV, frame_count, timing hoặc profile của trang. Chưa xác định guard đã từ chối trước decoder hay có đủ đầu vào hợp lệ để tính NEG_REST theo protocol. Giữ metrics.json theo CSV đã có, không cộng với11lượt âm baseline cũ. Bước diễn tập kế tiếp là cử động thông thường không khai triệu chứng.
+
 ## Ba lượt ca đau bụng trả Có đau, vùng chưa rõ
 
 Ngày20/11/2026, sau hướng dẫn thử ca đau bụng theo video QIPEDC D0356, người dùng báo3lượt đều hiện Đau/Nhức, Có đau, Chưa rõ — cần chọn thêm. Đây là3kết quả tự báo khớp gợi ý có cấu trúc mong đợi của ánh xạ câu đau bụng chung. Người thử được hướng dẫn xác nhận rồi chọn vùng bụng bằng Chạm.
