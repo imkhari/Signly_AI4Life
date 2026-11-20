@@ -72,12 +72,12 @@ export const ConfirmedPanel: React.FC<ConfirmedPanelProps> = ({ status, frame, s
                 isConfirmed ? 'text-status-success' : 'text-mute'
               }`}
             >
-              {isConfirmed ? vi.nurse.confirmedSection : vi.nurse.patientEditing}
+              {isConfirmed ? vi.nurse.confirmedSection : status==='created' ? vi.web.waitingPatient : vi.nurse.patientEditing}
             </h2>
             <p className="text-xs text-mute">
               {isConfirmed
                 ? 'Thông tin đã được người bệnh kiểm tra và bấm xác nhận tại Kiosk'
-                : 'Thông tin đang được người bệnh thao tác và chưa xác nhận'}
+                : status==='created' ? vi.web.waitingPatientDetail : 'Thông tin đang được người bệnh thao tác và chưa xác nhận'}
             </p>
           </div>
         </div>

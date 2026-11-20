@@ -1,4 +1,5 @@
-from contextlib import asynccontextmanager
+import asyncio
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,14 +10,24 @@ from app.api.rest.ontology import router as ontology_router
 from app.api.rest.sessions import router as sessions_router
 from app.api.rest.vsl import clear_vsl_motion_buffer
 from app.api.rest.vsl import router as vsl_router
+from app.api.ws.hub import manager
 from app.api.ws.hub import router as ws_router
+from app.application.abandoned_sessions import AbandonedSessions, run_abandoned_cleanup
 from app.config import settings
+from app.infrastructure.session_store_memory import session_store
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield
-    clear_vsl_motion_buffer()
+    cleaner = AbandonedSessions(session_store, manager, settings.SESSION_IDLE_MINUTES * 60)
+    task = asyncio.create_task(run_abandoned_cleanup(cleaner))
+    try:
+        yield
+    finally:
+        task.cancel()
+        with suppress(asyncio.CancelledError):
+            await task
+        clear_vsl_motion_buffer()
 
 
 app = FastAPI(

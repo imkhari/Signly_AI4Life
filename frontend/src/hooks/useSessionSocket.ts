@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSession } from '../state/SessionContext';
 import { socketClient } from '../services/ws/socketClient';
+import { requestRecordExport } from '../services/ws/requestExport';
 import {
   ErrorPayload,
   InputUpdatedServerPayload,
@@ -31,6 +32,9 @@ export function useSessionSocket() {
 
     setSocketError(null);
     const unsubError = socketClient.on<ErrorPayload>('ERROR', setSocketError);
+    const unsubJoined = socketClient.on<{role:string}>('SESSION_JOINED',payload=>{
+      if (payload.role==='patient') dispatch({type:'PATIENT_JOINED'});
+    });
 
     const unsubInput = socketClient.on<InputUpdatedServerPayload>(
       'INPUT_UPDATED',
@@ -97,6 +101,7 @@ export function useSessionSocket() {
     return () => {
       unsubStatus();
       unsubError();
+      unsubJoined();
       unsubInput();
       unsubSummary();
       unsubQuestion();
@@ -186,21 +191,19 @@ export function useSessionSocket() {
 
   const exportRecord = useCallback(
     (format: 'pdf' | 'print' | 'json' = 'print') => {
-      socketClient.send('RECORD_EXPORTED', {
-        format,
-        include: ['queue_number', 'intake_code', 'confirmed_symptoms', 'alerts'],
-        target: 'doctor',
-      });
+      return requestRecordExport(socketClient,format);
     },
     []
   );
 
   const resetSession = useCallback((reason: string = 'completed') => {
-    socketClient.send('SESSION_RESET', {
+    const sent=socketClient.send('SESSION_RESET', {
       reason,
       wipe: true,
     });
-  }, []);
+    if (reason==='timeout') dispatch({type:'RESET_SESSION'});
+    return sent;
+  }, [dispatch]);
 
   return {
     socketStatus: state.socketStatus,

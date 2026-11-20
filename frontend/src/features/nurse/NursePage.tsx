@@ -57,10 +57,9 @@ export const NursePage: React.FC = () => {
           },
         });
       })
-      .catch((err) => {
-        console.error('Failed to create session:', err);
+      .catch(() => {
         setSessionError(
-          'Không thể kết nối máy chủ điều phối Backend (:8000). Vui lòng khởi động backend bằng lệnh: make demo hoặc make dev'
+          vi.web.sessionFailed
         );
       })
       .finally(() => {
@@ -100,6 +99,7 @@ export const NursePage: React.FC = () => {
   );
 
   const isVerified = state.status === 'nurse_verified';
+  const canExport = isVerified && state.summary !== null && socketStatus === 'connected';
   const canVerify = !questionPending && isPatientConfirmed && unacknowledgedCritical.length === 0 && !isVerified && socketStatus === 'connected';
 
   // Xử lý xác nhận alert (Acknowledge)
@@ -133,7 +133,7 @@ export const NursePage: React.FC = () => {
 
   // Xử lý xuất hồ sơ
   const handleConfirmExport = () => {
-    exportRecord('print');
+    return canExport ? exportRecord('print') : Promise.resolve(false);
   };
 
   // Xử lý kết thúc và làm mới phiên
@@ -157,7 +157,7 @@ export const NursePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col">
+    <div className="nurse-shell min-h-screen bg-canvas flex flex-col">
       {/* Top Header */}
       <NurseHeader
         queueNumber={queueNumber}
@@ -169,10 +169,14 @@ export const NursePage: React.FC = () => {
         audioAlertEnabled={audioAlertEnabled}
         onToggleAudioAlert={() => setAudioAlertEnabled((prev) => !prev)}
         onRequestInterpreter={handleRequestInterpreter}
-        onOpenExport={() => setIsExportOpen(true)}
+        onOpenExport={() => {if(canExport)setIsExportOpen(true);}}
         onOpenReset={() => setIsResetOpen(true)}
-        onCreateNewSession={handleCreateSession}
+        onCreateNewSession={() => {
+          if (state.sessionId) setIsResetOpen(true);
+          else handleCreateSession();
+        }}
         isLoadingSession={isLoadingSession}
+        canExport={canExport}
       />
 
       {/* Main Board */}
@@ -221,7 +225,9 @@ export const NursePage: React.FC = () => {
             </div>
             <Button
               variant="secondary"
-              onClick={() => setIsExportOpen(true)}
+              disabled={!canExport}
+              title={!canExport ? vi.web.exportBlocked : undefined}
+              onClick={() => {if(canExport)setIsExportOpen(true);}}
               className="min-h-[44px] py-1.5 px-3 text-sm bg-paper text-ink border-status-success/40"
             >
               {vi.nurse.exportAction}
@@ -310,6 +316,7 @@ export const NursePage: React.FC = () => {
         intakeCode={intakeCode}
         frame={state.frame}
         summary={state.summary}
+        canExport={canExport}
         onConfirmExport={handleConfirmExport}
       />
 

@@ -71,7 +71,7 @@ export const Modal: React.FC<ModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-mute hover:bg-canvas hover:text-ink transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
+            className="p-2 rounded-xl text-mute hover:bg-canvas hover:text-ink transition-colors min-h-[64px] min-w-[64px] flex items-center justify-center cursor-pointer"
             aria-label={vi.presentation.closeDialog}
           >
             <X className="w-6 h-6" />

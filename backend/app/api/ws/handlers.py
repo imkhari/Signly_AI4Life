@@ -382,6 +382,16 @@ async def handle_ws_message(
             await hub.send_to_role(session.session_id, role, err)
             return
 
+        if session.status not in ("nurse_verified", "exported") or session.summary is None:
+            err = make_error_envelope(
+                session.session_id,
+                session.current_seq,
+                "VALIDATION_ERROR",
+                "Chỉ xuất phiếu sau khi bệnh nhân xác nhận và điều dưỡng duyệt.",
+            )
+            await hub.send_to_role(session.session_id, role, err)
+            return
+
         if session.status == "nurse_verified":
             try:
                 session.state_machine.on_record_exported()

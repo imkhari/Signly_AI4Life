@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -31,6 +31,7 @@ interface NurseHeaderProps {
   onOpenReset: () => void;
   onCreateNewSession?: () => void;
   isLoadingSession?: boolean;
+  canExport?: boolean;
 }
 
 export const NurseHeader: React.FC<NurseHeaderProps> = ({
@@ -47,14 +48,39 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
   onOpenReset,
   onCreateNewSession,
   isLoadingSession,
+  canExport = false,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
+  const [copying, setCopying] = useState(false);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
+  const codeRef = useRef(pairingCode);
+  const mountedRef = useRef(true);
+  codeRef.current = pairingCode;
+  useEffect(() => {
+    setCopied(false);setCopyFailed(false);setCopying(false);
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+  }, [pairingCode]);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {mountedRef.current=false;if(copiedTimer.current)clearTimeout(copiedTimer.current);};
+  }, []);
 
-  const handleCopy = () => {
-    if (pairingCode) {
-      navigator.clipboard.writeText(pairingCode);
+  const handleCopy = async () => {
+    if (!pairingCode || copying) return;
+    const code = pairingCode;
+    setCopied(false);setCopyFailed(false);setCopying(true);
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(code);
+      if (!mountedRef.current || codeRef.current !== code) return;
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copiedTimer.current) clearTimeout(copiedTimer.current);
+      copiedTimer.current=setTimeout(()=>setCopied(false),2000);
+    } catch {
+      if (mountedRef.current && codeRef.current === code) setCopyFailed(true);
+    } finally {
+      if (mountedRef.current && codeRef.current === code) setCopying(false);
     }
   };
 
@@ -77,13 +103,13 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
   };
 
   return (
-    <header className="bg-paper border-b border-gray-200 px-6 py-4 shadow-sm">
+    <header className="bg-paper border-b border-gray-200 px-4 sm:px-6 py-4 shadow-sm">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
         {/* Left: Brand + Navigation + STT / Intake code */}
         <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <Link
             to="/"
-            className="p-2 rounded-xl text-mute hover:text-ink hover:bg-canvas transition-colors"
+            className="min-h-[64px] min-w-[64px] flex items-center justify-center p-2 rounded-xl text-mute hover:text-ink hover:bg-canvas transition-colors"
             aria-label="Về trang chủ"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -93,7 +119,7 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
             <span className="text-xs font-semibold text-mute uppercase tracking-wider block">
               {vi.nurse.dashboardTitle}
             </span>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-1.5 bg-canvas px-3 py-1 rounded-lg border border-gray-200">
                 <span className="text-xs font-bold text-mute">STT:</span>
                 <input
@@ -102,7 +128,7 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
                   max="999"
                   value={queueNumber}
                   onChange={(e) => onQueueNumberChange(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-12 text-center font-bold text-ink bg-transparent focus:outline-none"
+                  className="min-h-[64px] w-16 text-center font-bold text-ink bg-transparent focus:outline-none"
                   aria-label="Số thứ tự"
                 />
               </div>
@@ -115,7 +141,7 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
           </div>
 
           {/* Pairing Code for patient kiosk */}
-          <div className="bg-brand-light/50 border border-brand/30 px-3.5 py-1.5 rounded-xl flex items-center gap-3 shadow-xs">
+          <div className="bg-brand-light/50 border border-brand/30 px-3.5 py-1.5 rounded-xl flex flex-wrap items-center gap-3 shadow-xs">
             <div>
               <span className="text-[10px] uppercase font-bold text-brand-dark block tracking-wider">
                 {vi.nurse.pairingCodeLabel}
@@ -133,7 +159,8 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="p-1.5 rounded-lg bg-white/90 hover:bg-white text-brand-dark transition-colors border border-brand/20 cursor-pointer shadow-xs"
+                  disabled={copying}
+                  className="min-h-[64px] min-w-[64px] flex items-center justify-center p-1.5 rounded-lg bg-white/90 hover:bg-white text-brand-dark transition-colors border border-brand/20 cursor-pointer shadow-xs"
                   title="Sao chép mã ghép nối"
                   aria-label="Sao chép mã ghép nối"
                 >
@@ -146,7 +173,7 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
                   type="button"
                   onClick={onCreateNewSession}
                   disabled={isLoadingSession}
-                  className="p-1.5 rounded-lg bg-white/90 hover:bg-white text-brand-dark transition-colors border border-brand/20 cursor-pointer shadow-xs disabled:opacity-50"
+                  className="min-h-[64px] min-w-[64px] flex items-center justify-center p-1.5 rounded-lg bg-white/90 hover:bg-white text-brand-dark transition-colors border border-brand/20 cursor-pointer shadow-xs disabled:opacity-50"
                   title="Tạo mã ghép nối mới"
                   aria-label="Tạo mã ghép nối mới"
                 >
@@ -154,6 +181,9 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
                 </button>
               )}
             </div>
+            {(copied || copyFailed) && <p role="status" className="w-full text-sm text-ink">
+              {copied ? vi.web.copySuccess : vi.web.copyFailed}
+            </p>}
           </div>
         </div>
 
@@ -177,7 +207,7 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
           <button
             type="button"
             onClick={onToggleAudioAlert}
-            className={`p-2 rounded-xl border transition-colors ${
+            className={`min-h-[64px] min-w-[64px] flex items-center justify-center p-2 rounded-xl border transition-colors ${
               audioAlertEnabled
                 ? 'bg-status-warning/10 text-status-warning border-status-warning/30 hover:bg-status-warning/20'
                 : 'bg-canvas text-mute border-gray-200 hover:text-ink'
@@ -192,33 +222,35 @@ export const NurseHeader: React.FC<NurseHeaderProps> = ({
           <Button
             variant="secondary"
             onClick={onRequestInterpreter}
-            className="min-h-[44px] py-1.5 px-3 text-sm"
+            className="min-h-[64px] py-1.5 px-3 text-sm"
             aria-label="Gọi phiên dịch VRI"
           >
             <PhoneCall className="w-4 h-4 text-brand" />
-            <span className="hidden md:inline">{vi.nurse.callInterpreter}</span>
+            <span>{vi.nurse.callInterpreter}</span>
           </Button>
 
           {/* Export record */}
           <Button
             variant="secondary"
             onClick={onOpenExport}
-            className="min-h-[44px] py-1.5 px-3 text-sm"
+            disabled={!canExport}
+            title={!canExport ? vi.web.exportBlocked : undefined}
+            className="min-h-[64px] py-1.5 px-3 text-sm"
             aria-label="Xuất hồ sơ bàn giao"
           >
             <FileText className="w-4 h-4 text-ink" />
-            <span className="hidden md:inline">{vi.nurse.exportAction}</span>
+            <span>{vi.nurse.exportAction}</span>
           </Button>
 
           {/* Reset session */}
           <Button
             variant="ghost"
             onClick={onOpenReset}
-            className="min-h-[44px] py-1.5 px-3 text-sm text-status-danger hover:bg-status-danger/10 hover:text-status-danger"
+            className="min-h-[64px] py-1.5 px-3 text-sm text-status-danger hover:bg-status-danger/10 hover:text-status-danger"
             aria-label="Kết thúc phiên"
           >
             <RotateCcw className="w-4 h-4" />
-            <span className="hidden lg:inline">{vi.nurse.resetAction}</span>
+            <span>{vi.nurse.resetAction}</span>
           </Button>
 
           <A11yControls />

@@ -89,7 +89,7 @@ describe('NursePage integration', () => {
     });
   });
 
-  it('opens export record modal on export button click', async () => {
+  it('blocks exporting a draft before nurse verification', async () => {
     render(
       <MemoryRouter>
         <SessionProvider>
@@ -103,8 +103,8 @@ describe('NursePage integration', () => {
     });
 
     fireEvent.click(screen.getByLabelText('Xuất hồ sơ bàn giao'));
-    expect(screen.getByText('Xuất hồ sơ tiếp nhận ban đầu')).toBeInTheDocument();
-    expect(screen.getByText('Phiếu Tiếp Nhận Ban Đầu')).toBeInTheDocument();
+    expect(screen.getByLabelText('Xuất hồ sơ bàn giao')).toBeDisabled();
+    expect(screen.queryByText('Phiếu Tiếp Nhận Ban Đầu')).not.toBeInTheDocument();
   });
 
   it('opens session reset modal on reset button click', async () => {
@@ -211,5 +211,13 @@ describe('NursePage integration', () => {
         acknowledged_alerts: ['CRITICAL_CHEST_PAIN'],
       })
     );
+  });
+  it('shows a plain-language server error and retries creating a session',async ()=>{
+    vi.mocked(restApi.createSession).mockRejectedValueOnce(new Error('backend technical detail'));
+    render(<MemoryRouter><SessionProvider><NursePage/></SessionProvider></MemoryRouter>);
+    await screen.findByText('Chưa tạo được phiên. Kiểm tra kết nối máy chủ.');
+    expect(screen.queryByText(/make demo|Backend \(:8000\)|technical detail/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Thử lại ngay'}));
+    await waitFor(()=>expect(screen.getByTestId('nurse-pairing-code')).toHaveTextContent('ABC888'));
   });
 });

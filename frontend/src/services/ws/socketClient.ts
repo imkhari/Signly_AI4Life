@@ -191,8 +191,12 @@ export class SocketClient {
       event,
       payload,
     };
-    this.ws.send(JSON.stringify(message));
-    return true;
+    try {
+      this.ws.send(JSON.stringify(message));
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   on<T = unknown>(event: EventType | '*' | string, handler: EventHandler<T>): () => void {

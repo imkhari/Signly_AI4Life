@@ -12,7 +12,7 @@ async function prepareCamera(page: Page) {
     export class HolisticDetector {
       callbacks=new Set();timer=null;async initialize(){}
       onResults(fn){this.callbacks.add(fn);return ()=>this.callbacks.delete(fn);}
-      start(){this.timer=setInterval(()=>{
+      start(){if(this.timer!==null)return;this.timer=setInterval(()=>{
         const landmarks=Array(411).fill(.5);landmarks[27]=.4;landmarks[30]=.6;
         window.syntheticFrames=(window.syntheticFrames||0)+1;
         for(const fn of this.callbacks)fn({frame:{timestamp_ms:performance.now(),landmarks},

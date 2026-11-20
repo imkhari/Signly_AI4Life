@@ -19,49 +19,57 @@ export function useIdleReset({
   const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const warningVisibleRef = useRef(false);
+  const onTimeoutRef = useRef(onTimeout);
+  onTimeoutRef.current = onTimeout;
 
   const clearAllTimers = useCallback(() => {
     if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
     if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
     if (timeoutTimerRef.current) clearTimeout(timeoutTimerRef.current);
+    warningTimerRef.current = countdownIntervalRef.current = timeoutTimerRef.current = null;
   }, []);
 
   const resetIdleTimer = useCallback(() => {
     if (!enabled) return;
     clearAllTimers();
+    warningVisibleRef.current = false;
     setShowWarning(false);
-    setSecondsRemaining(Math.round(warningDurationMs / 1000));
+    const timeoutMs = Math.max(0, idleTimeoutMs);
+    const warningMs = Math.min(Math.max(0, warningDurationMs), timeoutMs);
+    const deadline = Date.now() + timeoutMs;
+    setSecondsRemaining(Math.ceil(warningMs / 1000));
 
     // Thời gian cho tới khi bật cảnh báo
-    const timeUntilWarning = Math.max(idleTimeoutMs - warningDurationMs, 0);
+    const timeUntilWarning = timeoutMs - warningMs;
 
     warningTimerRef.current = setTimeout(() => {
+      warningVisibleRef.current = true;
       setShowWarning(true);
-      setSecondsRemaining(Math.round(warningDurationMs / 1000));
-
-      countdownIntervalRef.current = setInterval(() => {
-        setSecondsRemaining((prev) => {
-          if (prev <= 1) {
-            if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      timeoutTimerRef.current = setTimeout(() => {
-        clearAllTimers();
-        onTimeout();
-      }, warningDurationMs);
+      const updateCountdown = () => setSecondsRemaining(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
+      updateCountdown();
+      countdownIntervalRef.current = setInterval(updateCountdown, 1000);
     }, timeUntilWarning);
-  }, [enabled, idleTimeoutMs, warningDurationMs, onTimeout, clearAllTimers]);
+    timeoutTimerRef.current = setTimeout(() => {
+      clearAllTimers();
+      warningVisibleRef.current = false;
+      setShowWarning(false);
+      setSecondsRemaining(0);
+      onTimeoutRef.current();
+    }, timeoutMs);
+  }, [enabled, idleTimeoutMs, warningDurationMs, clearAllTimers]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      clearAllTimers();
+      warningVisibleRef.current = false;
+      setShowWarning(false);
+      return;
+    }
 
     const activityEvents = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
     const handleActivity = () => {
-      if (!showWarning) {
+      if (!warningVisibleRef.current) {
         resetIdleTimer();
       }
     };
@@ -73,7 +81,7 @@ export function useIdleReset({
       clearAllTimers();
       activityEvents.forEach((ev) => window.removeEventListener(ev, handleActivity));
     };
-  }, [enabled, showWarning, resetIdleTimer, clearAllTimers]);
+  }, [enabled, resetIdleTimer, clearAllTimers]);
 
   const dismissWarning = useCallback(() => {
     resetIdleTimer();

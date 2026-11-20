@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { normalizeTextForTTS } from '../services/tts/ttsNormalizer';
 import { useOptionalSession } from '../state/SessionContext';
 
+// SpeechSynthesis is shared by every button in the tab; cancel only its active owner.
+let activeSpeech: {owner:symbol; stop:()=>void} | null = null;
+
 export function useTTS() {
   const session = useOptionalSession();
   const sessionId = session?.state.sessionId;
@@ -11,6 +14,8 @@ export function useTTS() {
   const [hasViVoice, setHasViVoice] = useState(false);
   const viVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
+  const generationRef = useRef(0);
+  const ownerRef = useRef(Symbol('tts'));
 
   // Phát hiện hỗ trợ Web Speech API và tìm giọng tiếng Việt (vi-VN)
   useEffect(() => {
@@ -36,14 +41,16 @@ export function useTTS() {
     };
 
     updateVoices();
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = updateVoices;
-    }
+    const synthesis = window.speechSynthesis;
+    synthesis.addEventListener?.('voiceschanged', updateVoices);
+    return () => synthesis.removeEventListener?.('voiceschanged', updateVoices);
   }, []);
 
   const stop = useCallback(() => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    generationRef.current += 1;
+    if (activeSpeech?.owner === ownerRef.current) {
+      activeSpeech = null;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     }
     if (fallbackTimerRef.current !== null) {
       window.clearTimeout(fallbackTimerRef.current);
@@ -60,9 +67,23 @@ export function useTTS() {
         return;
       }
 
+      activeSpeech?.stop();
       stop();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      activeSpeech = {owner:ownerRef.current, stop};
+      const generation = generationRef.current;
       setSubtitle(text);
       setIsSpeaking(true);
+
+      const finish = () => {
+        if (generation !== generationRef.current) return;
+        generationRef.current += 1;
+        if (activeSpeech?.owner === ownerRef.current) activeSpeech = null;
+        fallbackTimerRef.current = null;
+        setIsSpeaking(false);
+        setSubtitle(null);
+        onEnd?.();
+      };
 
       const normalized = normalizeTextForTTS(text);
 
@@ -72,11 +93,7 @@ export function useTTS() {
       // Chỉ hiển thị phụ đề trực quan (A11y/Deaf accessibility) thay vì phát giọng ngoại quốc sai âm điệu
       if (!isSupported || !viVoiceRef.current || !hasUtterance) {
         const readingDuration = Math.max(2000, Math.min(6000, text.length * 70));
-        fallbackTimerRef.current = window.setTimeout(() => {
-          setIsSpeaking(false);
-          setSubtitle(null);
-          onEnd?.();
-        }, readingDuration);
+        fallbackTimerRef.current = window.setTimeout(finish, readingDuration);
         return;
       }
 
@@ -85,17 +102,8 @@ export function useTTS() {
       utterance.lang = 'vi-VN';
       utterance.rate = 0.95; // Tốc độ vừa phải cho tiếp nhận y tế
 
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        setSubtitle(null);
-        onEnd?.();
-      };
-
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-        setSubtitle(null);
-        onEnd?.();
-      };
+      utterance.onend = finish;
+      utterance.onerror = finish;
 
       window.speechSynthesis.speak(utterance);
     },

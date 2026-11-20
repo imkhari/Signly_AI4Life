@@ -12,7 +12,7 @@ async function syntheticCamera(page:import('@playwright/test').Page) {
       callbacks=new Set();timer=null;
       async initialize() {}
       onResults(fn){this.callbacks.add(fn);return ()=>this.callbacks.delete(fn);}
-      start(){this.timer=setInterval(()=>{
+      start(){if(this.timer!==null)return;this.timer=setInterval(()=>{
         const points=Array(411).fill(.5);points[27]=.4;points[30]=.6;
         points.fill(0,348);
         if(window.testMissingShoulders) points.fill(0,27,33);

@@ -108,3 +108,7 @@ html.high-contrast * { transition: none !important; box-shadow: none !important;
   .patient-shell button,
   .patient-shell header a { min-width: 64px; min-height: 64px; }
 }
+
+.patient-shell header a { min-width: 64px; min-height: 64px; }
+
+.nurse-shell button, .nurse-shell input[type="number"], .nurse-shell header a { min-height: 64px; }

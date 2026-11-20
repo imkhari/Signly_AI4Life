@@ -19,6 +19,12 @@ export default defineConfig({
   },
   webServer: [
     {
+      command: 'VITE_HTTPS=true npm run dev -- --host 127.0.0.1 --port 15443 --strictPort',
+      env: { SIGNLY_BACKEND_ORIGIN: backendOrigin },
+      url: 'https://127.0.0.1:15443',
+      ignoreHTTPSErrors: true,
+    },
+    {
       command: 'ENV=demo LLM_PROVIDER=mock .venv/bin/uvicorn tests.e2e_toxic_app:app --host 127.0.0.1 --port 18081 --no-access-log --log-level warning',
       cwd: '../backend',
       url: 'http://127.0.0.1:18081/api/health',

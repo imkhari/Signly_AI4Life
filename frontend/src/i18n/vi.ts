@@ -1,4 +1,14 @@
 export const vi = {
+  web: {
+    copySuccess: 'Đã sao chép mã ghép nối.',
+    copyFailed: 'Chưa sao chép được. Nhập mã đang hiển thị ở màn bệnh nhân.',
+    sessionFailed: 'Chưa tạo được phiên. Kiểm tra kết nối máy chủ.',
+    waitingPatient: 'Chờ màn bệnh nhân kết nối',
+    waitingPatientDetail: 'Nhập mã ghép nối ở màn bệnh nhân để bắt đầu.',
+    exportBlocked: 'Chỉ xuất phiếu sau khi điều dưỡng duyệt và kết nối hoạt động.',
+    exportWaiting: 'Đang chờ xác nhận xuất phiếu…',
+    exportFailed: 'Chưa xuất được phiếu. Kiểm tra kết nối rồi thử lại.',
+  },
   presentation: {
     homeGuide: 'Bắt đầu với hai màn hình', unpaired: 'Chưa ghép nối',
     nurseGuide: 'Mở màn điều dưỡng để lấy mã ghép nối.',

@@ -100,3 +100,34 @@ async def test_extra_symptom_survives_summary_and_nurse_handoff() -> None:
     assert s.summary is not None
     assert 'Ho' in s.summary.nl_text_vi
     assert any('Ho' in item.detail for item in s.summary.nurse_view.confirmed)
+
+
+@pytest.mark.asyncio
+async def test_export_requires_nurse_verification_and_keeps_state_on_failure() -> None:
+    s, hub = session(), RecordingHub()
+    payload = {'format': 'print', 'include': ['confirmed_symptoms'], 'target': 'doctor'}
+    for stage in ('paired', 'summary_ready', 'patient_confirmed'):
+        if stage == 'summary_ready':
+            await summary(s, hub)
+        if stage == 'patient_confirmed':
+            await send(s, hub, 'patient', 'PATIENT_CONFIRMED', {'decision': 'confirmed'})
+        previous_state = s.status
+        await send(s, hub, 'nurse', 'RECORD_EXPORTED', payload)
+        assert hub.events[-1]['event'] == 'ERROR'
+        assert hub.events[-1]['payload']['code'] == 'VALIDATION_ERROR'
+        assert s.status == previous_state
+        assert not any(e['event'] == 'RECORD_EXPORTED' for e in hub.events)
+    await send(s, hub, 'nurse', 'NURSE_VERIFIED', {'queue_number': 1})
+    assert s.status == 'nurse_verified'
+    for _ in range(2):
+        await send(s, hub, 'nurse', 'RECORD_EXPORTED', payload)
+        assert hub.events[-1]['event'] == 'RECORD_EXPORTED'
+        assert s.status == 'exported'
+
+
+@pytest.mark.asyncio
+async def test_export_does_not_bypass_role_guard() -> None:
+    s, hub = session(), RecordingHub()
+    await send(s, hub, 'patient', 'RECORD_EXPORTED', {'format': 'print'})
+    assert hub.events[-1]['event'] == 'ERROR'
+    assert hub.events[-1]['payload']['code'] == 'FORBIDDEN_ROLE'

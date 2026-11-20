@@ -126,6 +126,9 @@ class InMemorySessionStore:
         if session and session.pairing_code in self._pairing_map:
             del self._pairing_map[session.pairing_code]
 
+    def session_ids(self) -> set[str]:
+        return set(self._sessions)
+
     async def cleanup_idle_sessions(self, max_idle_seconds: float = 600.0) -> list[str]:
         expired_ids: list[str] = []
         for s_id, session in list(self._sessions.items()):

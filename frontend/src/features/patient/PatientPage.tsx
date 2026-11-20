@@ -34,6 +34,7 @@ export const PatientPage: React.FC = () => {
     return ()=>observer.disconnect();
   },[]);
   const { state } = useSession();
+  const hasPatientSession=Boolean(state.sessionId && state.role==='patient');
   const {
     socketStatus,
     socketError,
@@ -64,6 +65,7 @@ export const PatientPage: React.FC = () => {
 
   // Lắng nghe câu hỏi bổ sung từ y tá
   useEffect(() => {
+    if (!hasPatientSession) return;
     const unsub = socketClient.on<NurseQuestionPayload>('NURSE_QUESTION', (payload) => {
       setNurseQuestion(payload);
     });
@@ -76,14 +78,14 @@ export const PatientPage: React.FC = () => {
       }
     });
     return () => { unsub(); unsubAnswer(); };
-  }, [receiveFrame, step, requestSummary, goToStep]);
+  }, [hasPatientSession, receiveFrame, step, requestSummary, goToStep]);
 
   // Idle reset: tự động kết thúc sau 10 phút, cảnh báo trước 60 giây
   const { showWarning: showIdleWarning, secondsRemaining, dismissWarning } = useIdleReset({
     idleTimeoutMs: 600000,
     warningDurationMs: 60000,
     onTimeout: () => resetSession('timeout'),
-    enabled: Boolean(state.sessionId),
+    enabled: hasPatientSession,
   });
 
   // Khi chuyển sang Bước 4 (Xác nhận), tự động gọi backend tóm tắt LLM
@@ -94,8 +96,8 @@ export const PatientPage: React.FC = () => {
   }, [step, requestSummary, flushInput, socketStatus]);
 
   useEffect(() => {
-    if (!state.sessionId) resetWizard();
-  }, [state.sessionId, resetWizard]);
+    if (!hasPatientSession) resetWizard();
+  }, [hasPatientSession, resetWizard]);
 
   useEffect(() => {
     if (step === 4 && (state.status === 'patient_confirmed' || state.status === 'nurse_verified')) {
@@ -111,7 +113,7 @@ export const PatientPage: React.FC = () => {
   ];
 
   const handleCallInterpreter = (urgent: boolean = false) => {
-    requestInterpreter(urgent ? 'emergency_flag' : 'patient_request', urgent ? 'urgent' : 'normal');
+    if (hasPatientSession) requestInterpreter(urgent ? 'emergency_flag' : 'patient_request', urgent ? 'urgent' : 'normal');
     setIsInterpreterModalOpen(true);
   };
 
@@ -145,7 +147,7 @@ export const PatientPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <>{state.sessionId ? <ConnectionBadge status={socketStatus} /> : <span className="text-sm font-semibold text-mute">{vi.presentation.unpaired}</span>}</>
+          <>{hasPatientSession ? <ConnectionBadge status={socketStatus} /> : <span className="text-sm font-semibold text-mute">{vi.presentation.unpaired}</span>}</>
           <A11yControls onCallHelp={() => handleCallInterpreter(false)} />
         </div>
       </header>
@@ -158,7 +160,7 @@ export const PatientPage: React.FC = () => {
             : 'max-w-5xl p-4 md:p-8'
         }`}
       >
-        {!state.sessionId ? (
+        {!hasPatientSession ? (
           <PairingScreen onPaired={() => goToStep(1)} />
         ) : (
           <div className={`w-full ${step === 2 && draft.selectedMode === 'vsl_gloss' ? 'space-y-3' : 'space-y-8'}`}>

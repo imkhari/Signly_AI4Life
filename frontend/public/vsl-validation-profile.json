@@ -1,5 +1,5 @@
 {
-  "profile_id": "9e377812550b530d32d8ab035eb3d6237ff830275bd2371df6a90543e8e2f32e",
+  "profile_id": "e3a1cabc86db563a3ad9c782076cf3e8407e6fa8ff174f9ee4935eef65a09902",
   "sources": {
     "AI_model/vsl_v2/engine.py": "5fdbe53272d04e9c2798708a668c56ff77b090099b54ead0867a2eac72af93ce",
     "AI_model/vsl_v2/trials.py": "a2c551e12e87760cc4459848b9e426d709a1ff62245e2c5cef8d7b109d2d91aa",
@@ -11,7 +11,7 @@
     "frontend/src/types/vsl.ts": "72cba8ff1ea727fe414ade84e3ffd4d088ae8ab8daad573b4e6badacf75d6e33",
     "frontend/src/features/patient/sentenceIntake.ts": "4c64a84b3a18ac92970836bbe81ccada3e86ade9e365a77e52510573b43fd13c",
     "frontend/src/features/patient/components/SymptomsStep.tsx": "5ec36629bfb3d241953cf3e5bb3531aa8cc87d42a7d89bd12c999dc8e88a5988",
-    "frontend/src/features/patient/PatientPage.tsx": "f46579168bceff650032f8170c154149c1730879d235ad0425498fa26f25aabd",
+    "frontend/src/features/patient/PatientPage.tsx": "1c66e36965dd29d09aa7f80fa7984f7bbd63e000daa364ee84d60bf633e7e312",
     "frontend/src/services/vsl/HolisticDetector.ts": "dd86be0327789a22c719019c0f1fb18b44ad7258f7d3315ac840e6d62d61ed14",
     "frontend/src/services/vsl/LegacyHolistic.ts": "eb0b0c98793aca67411ff51444e3161112ba8a1317bf0d9f2f20089492c907a5",
     "frontend/src/services/vsl/SentenceCapture.ts": "8f7e90c552510d44af4710509f33ccd72c57670c2c6de55ee57fd4732ecba507",
