@@ -4,7 +4,8 @@ export const SENTENCE_LIMITS = { maxMs:6000, maxFrames:180, minFrames:24, minSpa
 export type CaptureReason = 'accepted' | 'unknown' | 'missing_shoulders' | 'tracking_gap' |
   'sequence_limit' | 'insufficient_frames' | 'invalid_landmarks' | 'network_error' | 'worker_unavailable' | 'inference_timeout' | 'cancelled';
 export interface CaptureSummary { frame_count:number; capture_duration_ms:number }
-export interface CaptureFailure extends CaptureSummary { reason:CaptureReason }
+export type TrackingIssue = 'hands_missing' | 'frames_delayed' | 'timestamps_invalid';
+export interface CaptureFailure extends CaptureSummary { reason:CaptureReason; trackingIssue?:TrackingIssue }
 export interface CameraTrialResult extends CaptureSummary {
   gloss:string; reason:CaptureReason; candidate_latency_ms:number|null; response_latency_ms:number|null;
   model_source:string;
@@ -46,8 +47,8 @@ export class SentenceCapture {
     return {frame_count:this.frames.length,capture_duration_ms:this.started===null ? 0 : Math.max(0,now-this.started)};
   }
   cancel():void { this.frames=[]; this.started=null; }
-  fail(reason:CaptureReason,now:number):CaptureFailure {
-    const result={...this.summary(now),reason}; this.cancel(); return result;
+  fail(reason:CaptureReason,now:number,trackingIssue?:TrackingIssue):CaptureFailure {
+    const result={...this.summary(now),reason,...(trackingIssue ? {trackingIssue} : {})}; this.cancel(); return result;
   }
   push(frame:HolisticFrame):CaptureFailure|null {
     if (this.started===null || frame.timestamp_ms<this.started) return null;
@@ -56,11 +57,12 @@ export class SentenceCapture {
       frame.landmarks.some(v => !Number.isFinite(v) || Math.abs(v)>10)) return this.fail('invalid_landmarks',now);
     if (now-this.started>SENTENCE_LIMITS.maxMs || this.frames.length>=SENTENCE_LIMITS.maxFrames)
       return this.fail('sequence_limit',now);
-    if ((previous && now<=previous.timestamp_ms) ||
-      now-(previous?.timestamp_ms ?? this.started)>SENTENCE_LIMITS.maxGapMs)
-      return this.fail('tracking_gap',now);
+    if (previous && now<=previous.timestamp_ms)
+      return this.fail('tracking_gap',now,'timestamps_invalid');
+    if (now-(previous?.timestamp_ms ?? this.started)>SENTENCE_LIMITS.maxGapMs)
+      return this.fail('tracking_gap',now,'frames_delayed');
     if (!hasValidShoulders(frame)) return this.fail('missing_shoulders',now);
-    if (!frame.landmarks.slice(285).some(v => v!==0)) return this.fail('tracking_gap',now);
+    if (!frame.landmarks.slice(285).some(v => v!==0)) return this.fail('tracking_gap',now,'hands_missing');
     this.frames.push(frame);
     return null;
   }
@@ -69,7 +71,7 @@ export class SentenceCapture {
     if (this.started===null || !last || this.frames.length<SENTENCE_LIMITS.minFrames ||
       last.timestamp_ms-first.timestamp_ms<SENTENCE_LIMITS.minSpanMs) return this.fail('insufficient_frames',now);
     if (now-this.started>SENTENCE_LIMITS.maxMs) return this.fail('sequence_limit',now);
-    if (now-last.timestamp_ms>SENTENCE_LIMITS.maxGapMs) return this.fail('tracking_gap',now);
+    if (now-last.timestamp_ms>SENTENCE_LIMITS.maxGapMs) return this.fail('tracking_gap',now,'frames_delayed');
     const result={frames:this.frames,summary:this.summary(now)};
     this.cancel(); return result;
   }

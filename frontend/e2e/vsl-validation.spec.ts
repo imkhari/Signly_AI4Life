@@ -103,6 +103,7 @@ test('tracking rejection stays at the camera and CSV has a manual copy path',asy
   await begin.click();const y=await page.evaluate(() => scrollY);
   await page.evaluate(() => {Object.assign(window,{testMissingHands:true});});
   const stopped=page.getByTestId('vsl-capture-stopped');
+  await expect(page.getByText(/Camera vừa mất dấu cả hai bàn tay/)).toBeVisible();
   await expect(stopped).toBeInViewport();await expect(stopped).toContainText('chưa gửi nhận diện');
   expect(Math.abs(await page.evaluate(() => scrollY)-y)).toBeLessThan(100);
   expect(requests).toBe(0);

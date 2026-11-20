@@ -168,4 +168,20 @@ it('does not begin a new sentence using stale tracking readiness',async () => {
     expect(restApi.predictVSLSequence).not.toHaveBeenCalled();
   });
 
+  it('finishes once with Space while recording and ignores text inputs', async () => {
+    const record=vi.fn();
+    render(<VSLCameraView contextStep="intake" onApplyGlosses={vi.fn()} onTrialResult={record} />,
+      {wrapper:SessionProvider});
+    await emit(0,0);fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));await emit(1,30);
+    const input=document.createElement('input');document.body.appendChild(input);
+    fireEvent.keyDown(input,{code:'Space'});
+    expect(restApi.predictVSLSequence).not.toHaveBeenCalled();
+    input.remove();
+    await act(async () => {fireEvent.keyDown(document.body,{code:'Space'});});
+    expect(restApi.predictVSLSequence).toHaveBeenCalledOnce();
+    fireEvent.keyDown(document.body,{code:'Space'});
+    expect(restApi.predictVSLSequence).toHaveBeenCalledOnce();
+    expect(record).toHaveBeenCalledOnce();
+  });
+
 });

@@ -50,6 +50,12 @@ export const vi = {
     results: 'Kết quả các lượt',export: 'Tải kết quả CSV',
   },
   camera: {
+    keyboardFinish: 'Ký xong, nhấn phím cách hoặc bấm Xong câu.',
+    trackingIssues: {
+      hands_missing: 'Camera vừa mất dấu cả hai bàn tay. Lùi ra để tay nằm trọn trong hình.',
+      frames_delayed: 'Camera đang trả hình chậm hoặc bị ngắt. Đóng ứng dụng nặng rồi thử lại.',
+      timestamps_invalid: 'Nhịp hình camera bị lỗi. Tắt rồi mở lại camera để thử lại.',
+    },
     waitForTracking: 'Chờ hình theo dõi mới. Giữ rõ thân trên và hai tay trước khi bắt đầu.',
     stopped: (seconds: string) => `Lượt đã dừng sau ${seconds} giây; chưa gửi nhận diện.`,
     instruction: 'Giữ rõ mặt và hai tay. Bấm Bắt đầu ký rồi ký một câu.',

@@ -1,5 +1,13 @@
 # Kết quả camera V2
 
+## Chẩn lỗi thao tác ngày 20/11/2026
+
+Profile hiện tại `d90c3a1d29f800c41df2357bee6dbfb77ca0f9d6b0fab89d216a55bcdca6d32a` có 0 lượt CSV. UI phân biệt mất cả hai bàn tay với khung hình trễ và timestamp lỗi. Phím cách kết thúc câu đang thu, tiêu điểm chuyển tới vùng điều khiển để tránh kích hoạt nút cũ sau Ký lại. Không có thay đổi checkpoint hoặc ngưỡng capture.
+
+make check qua 178 backend + 101 frontend. 8 runtime, build và 8 E2E camera qua. E2E dùng camera/response mô phỏng và kiểm cả lần ký lại bằng phím cách, bỏ gợi ý, Nhận và duyệt hai phía, mất tracking, lật gương và CSV. Mẫu công khai SENT103 đã được chạy lại qua worker thật tại localhost và tiếp tục trả PAIN/true/CHEST. Đây là replay cùng mẫu đã dùng trước đây. Phần bàn tay của hình động và lời hướng dẫn tự dựng chưa được người biết VSL xác minh, chỉ dùng để tập kỹ thuật.
+
+Đang chờ người thử thực hiện lại trên webcam và gửi thông báo. CANDIDATE, mức B giữ theo kết quả đã có.
+
 ## Cập nhật khung xem camera
 
 Profile eb2d8c37 có 0 lượt CSV. Ở profile 371d8f14, màn bệnh nhân đã hiển thị một lần gián đoạn theo dõi sau 3,2 giây trước khi gửi nhận diện. Chỉ quan sát được thông báo, không có bản xuất hoặc phép đo chất lượng câu ký. Baseline CSV cũ giữ nguyên. Khung xem đã được tăng kích thước để người thử canh tay. Quyết định sân khấu vẫn ở mức B.

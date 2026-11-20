@@ -123,6 +123,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const { status, errorMessage, isActive, start, stop, bindVideoRef } = useCamera();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const captureControlsRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const captureRef = useRef(new SentenceCapture());
   const [previewAspect,setPreviewAspect] = useState(4/3);
@@ -161,9 +162,10 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
   const showFailure = useCallback((failure:CaptureFailure) => {
     if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
     captureTimerRef.current=null;
-    setCaptureState('idle'); setCaptureFailure(failure); setCaptureMessage(vi.camera.reasons[failure.reason]);
+    setCaptureState('idle'); setCaptureFailure(failure); setCaptureMessage(failure.trackingIssue ? vi.camera.trackingIssues[failure.trackingIssue] : vi.camera.reasons[failure.reason]);
     setLivePrediction(null); setCandidates([]); setIntakeSuggestion(null);
-    observerRef.current?.({...failure,gloss:'UNKNOWN',candidate_latency_ms:null,
+    observerRef.current?.({reason:failure.reason,frame_count:failure.frame_count,
+      capture_duration_ms:failure.capture_duration_ms,gloss:'UNKNOWN',candidate_latency_ms:null,
       response_latency_ms:null,model_source:'vsl_v2_learned_translation'});
   }, []);
 
@@ -190,12 +192,13 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
     recordingStartedRef.current=performance.now();setRemainingSeconds(6);
     captureRef.current.begin(recordingStartedRef.current);
     setCaptureState('recording'); setCaptureMessage(vi.camera.signNow);
+    captureControlsRef.current?.focus({preventScroll:true});
     captureTimerRef.current=setTimeout(() => {
       if (captureRef.current.recording) showFailure(captureRef.current.fail('sequence_limit',performance.now()));
     },SENTENCE_LIMITS.maxMs);
   };
 
-  const finishSentence = async () => {
+  const finishSentence = useCallback(async () => {
     if (!captureRef.current.recording || requestRef.current) return;
     if (captureTimerRef.current!==null) clearTimeout(captureTimerRef.current);
     captureTimerRef.current=null;
@@ -239,7 +242,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       clearTimeout(timeout);
       if (requestRef.current===controller) {requestRef.current=null;setCaptureState('idle');}
     }
-  };
+  },[contextStep,draftKey,showFailure]);
 
   useEffect(() => {
     if (captureState!=='recording') return;
@@ -247,6 +250,22 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       (SENTENCE_LIMITS.maxMs-(performance.now()-recordingStartedRef.current))/1000))),100);
     return () => clearInterval(timer);
   },[captureState]);
+
+
+  useEffect(() => {
+    if (captureState!=='recording') return;
+    const finishWithKeyboard = (event:KeyboardEvent) => {
+      const target=event.target;
+      if (event.code!=='Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey ||
+        event.isComposing || !(target instanceof HTMLElement)) return;
+      if (target.isContentEditable || (target.closest('input,textarea,select,button,a,[role="button"]') &&
+        !target.closest('[data-vsl-begin]'))) return;
+      event.preventDefault();
+      void finishSentence();
+    };
+    document.addEventListener('keydown',finishWithKeyboard);
+    return () => document.removeEventListener('keydown',finishWithKeyboard);
+  },[captureState,finishSentence]);
 
   // Observe the DOM commit, never send reference/participant data to inference.
   useEffect(() => {
@@ -313,7 +332,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       const lastTime=latest?.frame.timestamp_ms ?? recordingStartedRef.current;
       if (now-lastTime>SENTENCE_LIMITS.maxGapMs) {
         if (latest) clearTracking();
-        if (captureRef.current.recording) showFailure(captureRef.current.fail('tracking_gap',now));
+        if (captureRef.current.recording) showFailure(captureRef.current.fail('tracking_gap',now,'frames_delayed'));
       }
     },100);
     return () => clearInterval(timer);
@@ -405,9 +424,10 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
 
       {!connected && <p role="alert" className="text-lg text-warn mb-4">Đang mất kết nối. Gợi ý cũ đã hủy; chờ kết nối lại trước khi ký.</p>}
 
-      <div style={{top:'var(--patient-header-height, 0px)'}} className="sticky z-20 bg-paper py-2">
+      <div ref={captureControlsRef} tabIndex={-1} aria-label="Điều khiển câu ký"
+        style={{top:'var(--patient-header-height, 0px)'}} className="sticky z-20 bg-paper py-2">
       <div className="flex flex-wrap gap-2 mb-1">
-        <Button onClick={beginSentence} disabled={!isActive || isAiLoading || !!aiError ||
+        <Button data-vsl-begin onClick={beginSentence} disabled={!isActive || isAiLoading || !!aiError ||
           !readyToSign || captureDisabled || !connected || captureState!=='idle'}>{vi.camera.begin}</Button>
         <Button onClick={finishSentence} disabled={captureState!=='recording'}>{vi.camera.finish}</Button>
         {captureState==='recording' && <Button variant="secondary" onClick={() => {
@@ -418,6 +438,7 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       {captureFailure && <p data-testid="vsl-capture-stopped" className="text-xl font-bold text-warn mb-4">
         {vi.camera.stopped((captureFailure.capture_duration_ms/1000).toFixed(1))}
       </p>}
+      {captureState==='recording' && <p className="text-base">{vi.camera.keyboardFinish}</p>}
       {captureState==='recording' && <p role="timer" aria-live="off" className="text-2xl font-bold text-action">
         {vi.camera.remaining(remainingSeconds)}
       </p>}

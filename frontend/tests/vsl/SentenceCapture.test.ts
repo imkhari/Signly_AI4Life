@@ -44,4 +44,15 @@ describe('single sentence bounds',() => {
     capture.begin(2000);for(let i=0;i<30;i++) capture.push(frame(2000+i*40));
     expect(capture.finish(4000)).toMatchObject({reason:'tracking_gap'});
   });
+  it('reports lost hands separately from delayed frames while keeping the same rejection rule',() => {
+    const capture=new SentenceCapture();capture.begin(0);capture.push(frame(0));
+    const missing=frame(40);missing.landmarks.fill(0,285);
+    expect(capture.push(missing)).toMatchObject({reason:'tracking_gap',trackingIssue:'hands_missing'});
+    capture.begin(1000);capture.push(frame(1000));
+    expect(capture.push(frame(1600))).toMatchObject({reason:'tracking_gap',trackingIssue:'frames_delayed'});
+    capture.begin(2000);capture.push(frame(2000));
+    expect(capture.push(frame(2000))).toMatchObject({reason:'tracking_gap',trackingIssue:'timestamps_invalid'});
+    expect(capture.recording).toBe(false);
+  });
+
 });

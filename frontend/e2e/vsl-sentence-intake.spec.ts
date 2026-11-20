@@ -51,7 +51,7 @@ async function capture(page: Page) {
   expect(finish!.y).toBeGreaterThanOrEqual(header!.y+header!.height);
   const before=await page.evaluate(()=>Number(Reflect.get(window,'syntheticFrames')));
   await expect.poll(()=>page.evaluate(()=>Number(Reflect.get(window,'syntheticFrames')))).toBeGreaterThan(before+28);
-  await page.getByRole('button',{name:'Xong câu',exact:true}).click();
+  await page.keyboard.press('Space');
 }
 
 const chest={success:true,gloss:'ĐAU',confidence:.95,model_source:'vsl_v2_learned_translation',

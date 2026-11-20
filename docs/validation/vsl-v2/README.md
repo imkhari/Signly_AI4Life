@@ -78,3 +78,9 @@ Bấm Tải kết quả CSV để hiện thêm ô Nội dung CSV để sao chép
 Các bản xuất khác trang/lần mở được giữ thành nhóm nguồn riêng. Nếu mãTtrùng giữa hai nhóm, kiểm CSV từng nhóm trước rồi tổng hợp theo(batch_id,trial_id), ghi hash nguồn; không sửa mã gốc hoặc ghép CSV để bỏ qua kiểm tra trùng. Snapshot tích lũy mới của cùng nhóm thay bản cũ, không cộng lặp. Baseline4e4ebb có provenance của rest-batch-01, motion-batch-01 và outside-batch-01; CSV nguồn nằm local Git ignore.
 
 Lỗi worker, mạng hoặc đầu vào không đủ điều kiện ghi `unmeasurable`. Riêng lượt cố ý làm mất tracking được chấm đúng khi thấy lý do mất vai hoặc tracking bị gián đoạn. UNKNOWN với reason unknown cho biết pipeline không trả gợi ý, có thể guard đã từ chối trước decoder.
+
+## Chẩn lỗi mất theo dõi và phím kết thúc câu
+
+Ngày 20/11/2026, thêm hướng dẫn cụ thể khi mất cả hai bàn tay, khi khung hình tới trễ và khi timestamp không tăng. Những chi tiết này chỉ nằm ở thông báo UI trong RAM. CSV tiếp tục dùng reason tracking_gap theo định dạng cũ. Điều kiện từ chối giữ theo Q-24. Số frame, thời gian thu và thời gian phản hồi tiếp tục được xuất bằng các cột đã có.
+
+Sau Bắt đầu ký, tiêu điểm chuyển tới vùng điều khiển mà không cuộn trang. Nhấn phím cách để Xong câu, hoặc dùng nút Xong câu. Phím tắt chỉ hoạt động trong lượt đang thu, bỏ qua phím lặp và ô nhập/nút thao tác khác. Nhờ người cùng nhóm nhấn phím cách khi xong giúp người ký giữ tay trong khung. Thử nội bộ chưa có VSL reference được người biết VSL xác minh vẫn ghi mức learning.
