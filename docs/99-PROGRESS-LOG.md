@@ -3,7 +3,7 @@
 > AI agent: đọc file này đầu mỗi phiên, **thêm mục mới ở đầu bảng** khi kết thúc phiên. Không xóa lịch sử.
 
 ## Trạng thái hiện tại
-- Giai đoạn đang làm: **P9 — B0+B1 đã triển khai; C đã hoàn tất M0/M1 và kỹ thuật M2, M3 có11ca âm baseline4e4ebb; luồng câu Q-27 mới đã triển khai, có ảnh gợi ý Đau+Ngực do người dùng thử,0lượt CSV mới; M5 CANDIDATE; D có bộ thử nội bộ, E đã kiểm phần mềm localhost và chuẩn bị bàn giao**
+- Giai đoạn đang làm: **P9 — B0+B1 đã triển khai; C đã hoàn tất M0/M1 và kỹ thuật M2, M3 có11ca âm baseline4e4ebb; luồng câu Q-27 mới đã triển khai, người dùng báo3lượt đúng Đau+Ngực liên tiếp sau sửa,0lượt CSV mới; M5 CANDIDATE; D có bộ thử nội bộ, E đã kiểm phần mềm localhost và chuẩn bị bàn giao**
 - Phase đã DONE: **P0 (Kickoff & phỏng vấn)**, **P1 (Bootstrap monorepo)**, **P2 (Backend domain & Parser)**, **P3 (AI Orchestration & Safety Guardrails)**, **P4 (Realtime WebSocket & Session REST)**, **P5 (Frontend Foundation)**, **P6 (Patient UI)**, **P7 (Nurse UI & Dashboard)**, **P8 (Camera VSL Mock & TTS)**, **P9 (Integration, Demo Script & Hardening)**
 - UI/slide: **Bộ slide học thuật mới tại `artifacts/ai4life/`: 16 slide chính + 5 phụ lục ẩn, demo cuối ở slide 16; có notes, nguồn và kịch bản 3/7 phút.**
 - Còn chờ: **Ba lượt trên hai thiết bị HTTPS LAN, ngắt Internet bên ngoài, camera/người ký thật, video dự phòng.**
@@ -11,6 +11,7 @@
 ## Nhật ký
 | Ngày | Người/Agent | Phase | Việc đã làm | Việc tiếp theo | Ghi chú / vấn đề |
 |---|---|---|---|---|---|
+| 2026-11-20 | Codex | P9 —3lượt Ngực đúng liên tiếp | Người dùng báo thêm2lượt đều ok theo hướng dẫn lặp cùng câu sau bản sửa. Tổng3lượt đúng liên tiếp tự báo, gồm1lượt đã dán gợi ý trước đó. | Tiếp tục diễn tập cùng thiết bị và đo có CSV theo protocol trước khi chốt chất lượng. | Không cộng lặp hoặc tăng metrics chưa có CSV/timing/profile. Chưa xác minh VSL, CANDIDATE. |
 | 2026-11-20 | Codex | P9 — người dùng báo đúng Ngực sau sửa | Sau sửa khởi tạo, người dùng xác nhận nhận diện hoạt động và dán gợi ý Đau/Nhức, Có đau, Ngực. Ghi một kết quả diễn tập đúng theo câu đích đang thử. | Thử thêm2lượt cùng câu và giữ cả sai/từ chối; khi đo chính thức dùng trang validation. | Chưa có CSV/timing/profile hoặc xác minh VSL, không tăng metrics hay công bố accuracy. |
 | 2026-11-20 | Codex | P9 — sửa khởi tạo và thử lại | Ảnh người dùng lỗi nhận diện dù có hình. Console IAB báo WASM Module.arguments/Assertion. Tuần tự hóa init, hủy lượt khởi tạo cũ; nút thử lại tạo detector và callback mới. make check186backend+112frontend,build,9E2E qua. IAB thực xử lý canvas trống ra411tọa độ, không báo lỗi ở phép thử. | Tải lại tab bệnh nhân để xóa WASM lỗi cũ rồi thử1lượt. | Profile 7537ba3f có0CSV. Phép thử trong IAB không mở webcam; chất lượng ký thật còn chờ. |
 | 2026-11-20 | Codex | P9 — tích hợp Web legacy Q-32 | Duyệt Q-32, adapter Web legacy local assets, một send bất đồng bộ, bỏ kết quả cũ và đóng graph sau send. Hash asset/giấy phép đầy đủ. make check186backend+109frontend,11runtime,build,8E2E qua. Công cụ cùng ảnh chạy chính camera production tiếp tục nhận PAIN trên mẫu công khai đau bụng. | Tải lại tab bệnh nhân, thử1lượt webcam và gửi kết quả; chưa xác minh nguồn ký trọn câu. | Profile 0663da03 có0CSV. Chưa đóng băng chất lượng và chưa train lại V2. |

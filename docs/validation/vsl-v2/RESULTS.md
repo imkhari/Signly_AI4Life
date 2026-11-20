@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Ba lượt đúng Ngực liên tiếp do người dùng báo
+
+Ngày20/11/2026, sau một lượt dán gợi ý PAIN/true/CHEST, người dùng được hướng dẫn thử thêm2lượt cùng câu. Người dùng trả lời “2 lần và đều ok”. Ghi thêm2lượt đúng theo lời báo, tổng3lượt liên tiếp sau bản sửa khởi tạo Web legacy. Không tính lượt đầu lần nữa hoặc chuyển các lượt khác phiên bản vào nhóm này.
+
+Ba lượt này là diễn tập nội bộ tự báo, cùng câu và người thử theo ngữ cảnh. Chưa có CSV, mã lượt, profile trên trang, timing hoặc người biết VSL xác minh. metrics.json giữ theo nguồn CSV hiện có. Kết quả hỗ trợ tiếp tục diễn tập đau ngực trong cùng điều kiện; trạng thái CANDIDATE và tiêu chí Q-25 chưa được xác nhận đạt. Các lượt UNKNOWN/nhầm Đầu trước sửa tiếp tục được giữ trong lịch sử.
+
 ## Người dùng báo gợi ý đúng Ngực sau sửa khởi tạo
 
 Ngày20/11/2026, sau khi sửa khởi tạo và khởi chạy lại app, người dùng nói đã nhận diện được. Khi được hỏi kết quả cụ thể, người dùng dán đầy đủ gợi ý Đau/Nhức, Có đau và vị trí Ngực cho ca đang thử “Tôi bị đau ngực”. Đây là một kết quả đúng theo câu đích trong diễn tập do người dùng báo, sau tích hợp Web legacy.
