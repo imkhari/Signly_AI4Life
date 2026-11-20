@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Đã tái hiện khác biệt extractor trên video công khai
+
+Ngày20/11/2026, theo Q-30/Q-31, chạy cùng110ảnh RGB của video QIPEDC D0356 “đau bụng” qua Holistic Python0.10.21, Tasks Web hiện có và Holistic Web legacy. Cùng V2/worker/mapper, Python và Web legacy trả PAIN/true, chưa rõ vùng. Tasks Web trả UNKNOWN/phrase_not_supported. ChênhXYZ thân trung bình so với Python lần lượt0,07995 và0,00535.
+
+Báo cáo và cách tái lập tại EXTRACTOR-COMPARISON.md và AI_model/vsl_v2/reports/extractor-comparison-qipedc-D0356.json. Bộ trích xuất Web hiện tại vẫn dùng trong camera production. Chỉ refactor phương thức detectFrame để công cụ đo dùng chính resize/task/mapping của app. Các lượt webcam trước vẫn giữ nguyên bằng chứng, không suy ra nguyên nhân riêng cho từng lượt từ một mẫu mới này. Các câu đích chưa có video tham chiếu được kiểm tra.
+
 ## Lượt lặp hiển thị vị trí Đầu
 
 Ngày20/11/2026, sau khi được đề nghị lặp câu “Tôi bị đau ngực”, người dùng dán gợi ý Đau/Nhức, Có đau, vị trí Đầu. Theo câu đích của đợt thử đang tiếp diễn, đây là gợi ý sai vị trí. Câu đích được suy từ ngữ cảnh hướng dẫn lặp, chưa được xác nhận lại riêng trong tin nhắn kết quả. Giữ lời báo này cùng ảnh Ngực đúng trước đó. Hướng dẫn bỏ gợi ý, giữ các lượt tiếp theo kể cả sai hoặc từ chối.

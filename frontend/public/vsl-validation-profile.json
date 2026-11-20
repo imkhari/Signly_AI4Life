@@ -1,5 +1,5 @@
 {
-  "profile_id": "480d15a6d436cbe61bcf9673f7a62c7234cfbff12c10ffb3d528007615f90912",
+  "profile_id": "782aa493245235f50b1a79c9638cfda9ebda9c90630e309963fa3e3a7869a150",
   "sources": {
     "AI_model/vsl_v2/engine.py": "5fdbe53272d04e9c2798708a668c56ff77b090099b54ead0867a2eac72af93ce",
     "AI_model/vsl_v2/trials.py": "1ec8fb01ba10d148d67abf5dbbec17380115fb51a7ac321f347f2b246950c7a2",
@@ -12,7 +12,7 @@
     "frontend/src/features/patient/sentenceIntake.ts": "4c64a84b3a18ac92970836bbe81ccada3e86ade9e365a77e52510573b43fd13c",
     "frontend/src/features/patient/components/SymptomsStep.tsx": "5ec36629bfb3d241953cf3e5bb3531aa8cc87d42a7d89bd12c999dc8e88a5988",
     "frontend/src/features/patient/PatientPage.tsx": "f46579168bceff650032f8170c154149c1730879d235ad0425498fa26f25aabd",
-    "frontend/src/services/vsl/HolisticDetector.ts": "21e745e12adaa40cc123f49b8660f5523e7f0c893f5366669af59e88f1fa9b36",
+    "frontend/src/services/vsl/HolisticDetector.ts": "3e2a66e3fee90c64b4937fe6b45af87115c33c85f3f26a5acd4bab2bf6f40021",
     "frontend/src/services/vsl/SentenceCapture.ts": "adf56959823770d3519335e61d8347dd7da98d56f21588955a554b2d152cc8f4",
     "frontend/src/features/patient/components/VSLCameraView.tsx": "78cd3120ce87e7881ebe0fb22fa54804a575828b9425a238a62a3f6d6dc00dcf",
     "frontend/src/services/vsl/validationProtocol.json": "1645f0cd743950e93b43a2c55e585a4124388f2794a271961dd52891cc9f5ecd",

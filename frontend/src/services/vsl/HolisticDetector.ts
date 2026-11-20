@@ -48,6 +48,19 @@ export class HolisticDetector {
     this.loop();
   }
 
+  // Deterministic public-video audit uses the same task, resize and coordinate mapping.
+  detectFrame(source: CanvasImageSource, timestamp: number): HolisticObservation {
+    if (this.closed || !this.task) throw new Error('Holistic detector is not ready');
+    const context=this.canvas.getContext('2d');
+    if (!context) throw new Error('Canvas unavailable');
+    try {
+      context.drawImage(source,0,0,360,360);
+      return toObservation(this.task.detectForVideo(this.canvas,timestamp),timestamp);
+    } finally {
+      context.clearRect(0,0,360,360);
+    }
+  }
+
   start(video: HTMLVideoElement): void {
     if (this.closed) return;
     this.video = video; this.loop();
@@ -77,14 +90,11 @@ export class HolisticDetector {
         const side = Math.min(video.videoWidth, video.videoHeight);
         if (context && side > 0) {
           // Pinned extractor resizes the full frame; do not center-crop or mirror input.
-          context.drawImage(video, 0,0,360,360);
           try {
-            const now = performance.now();
-            const result = this.task.detectForVideo(this.canvas, now);
-            const observation = toObservation(result, now);
+            const observation = this.detectFrame(video,performance.now());
             this.callbacks.forEach(callback => callback(observation));
           } catch { /* Missing observations never become a label. */ }
-          finally { context.clearRect(0,0,360,360); }
+
         }
       }
       this.raf = requestAnimationFrame(tick);

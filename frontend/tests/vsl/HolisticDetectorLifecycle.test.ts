@@ -16,13 +16,16 @@ describe('holistic input and lifecycle',() => {
     vi.stubGlobal('requestAnimationFrame',vi.fn((callback:FrameRequestCallback) => {queue.push(callback);return queue.length;}));
     vi.stubGlobal('cancelAnimationFrame',vi.fn());
     mocks.task.detectForVideo.mockReturnValue({poseLandmarks:[],faceLandmarks:[],leftHandLandmarks:[],rightHandLandmarks:[]});
-    const detector=new HolisticDetector();await detector.initialize();
+    const detector=new HolisticDetector();
+    expect(()=>detector.detectFrame(document.createElement('canvas'),0)).toThrow('not ready');
+    await detector.initialize();
     const listener=vi.fn();detector.onResults(listener);
     const video={readyState:2,paused:false,currentTime:1,videoWidth:640,videoHeight:480} as HTMLVideoElement;
     detector.start(video);queue.shift()!(0);
     expect(context.drawImage).toHaveBeenCalledWith(video,0,0,360,360);
     expect(listener.mock.calls[0][0].frame.landmarks).toHaveLength(411);
     detector.close();expect(mocks.task.close).toHaveBeenCalledOnce();
+    expect(()=>detector.detectFrame(document.createElement('canvas'),2)).toThrow('not ready');
     const calls=vi.mocked(requestAnimationFrame).mock.calls.length;
     detector.start(video);expect(requestAnimationFrame).toHaveBeenCalledTimes(calls);
     vi.unstubAllGlobals();
