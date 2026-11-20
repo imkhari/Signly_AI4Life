@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Lượt lặp hiển thị vị trí Đầu
+
+Ngày20/11/2026, sau khi được đề nghị lặp câu “Tôi bị đau ngực”, người dùng dán gợi ý Đau/Nhức, Có đau, vị trí Đầu. Theo câu đích của đợt thử đang tiếp diễn, đây là gợi ý sai vị trí. Câu đích được suy từ ngữ cảnh hướng dẫn lặp, chưa được xác nhận lại riêng trong tin nhắn kết quả. Giữ lời báo này cùng ảnh Ngực đúng trước đó. Hướng dẫn bỏ gợi ý, giữ các lượt tiếp theo kể cả sai hoặc từ chối.
+
+Thông báo gợi ý cho biết đã có đầu ra được hệ thống chấp nhận, nhưng chưa phân biệt được nguyên nhân từ cách ký, tracking hoặc model. Chưa có video VSL được xác minh, CSV, timing hoặc fingerprint của lượt. Chưa tính tỷ lệ đúng trên các tin nhắn rời rạc. Chất lượng nhận vị trí qua webcam còn chưa ổn định trong diễn tập; trạng thái CANDIDATE.
+
 ## Ảnh gợi ý đau ngực do người dùng gửi
 
 Ngày20/11/2026, sau khi thử ca “Tôi bị đau ngực”, người dùng gửi ảnh màn bệnh nhân hiển thị Đau/Nhức, Có đau và vị trí Ngực. Ảnh cũng thể hiện gợi ý đang chờ Dùng thông tin này, mức đau/thời gian cần nhập bằng Chạm. Đây là bằng chứng UI đã hiển thị đủ gợi ý cho ca đang diễn tập.
