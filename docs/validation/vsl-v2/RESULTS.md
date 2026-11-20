@@ -1,5 +1,9 @@
 # Kết quả camera V2
 
+## Ba lượt chỉnh áo không có gợi ý theo lời người dùng
+
+Ngày20/11/2026, sau hướng dẫn chỉnh áo/cử động thông thường trong khung khoảng3giây, người dùng báo “3 lượt chỉnh áo đều không có gợi ý triệu chứng”. Ghi thêm3lượt diễn tập không thấy gợi ý; tổng6lượt âm tự báo sau bản sửa gồm3tay nghỉ và3chỉnh áo. Chưa có CSV, reason, số frame/timing hoặc profile của trang nên chưa xác nhận đủ điều kiện NEG_MOTION theo protocol. Không cộng vào metrics hoặc11lượt baseline cũ. Chưa kết luận camera không có false positive ở người/điều kiện khác.
+
 ## Ba lượt tay nghỉ không có gợi ý theo lời người dùng
 
 Ngày20/11/2026, sau hướng dẫn giữ tay nghỉ trong khung khoảng3giây rồi kết thúc câu, người dùng báo “3 lượt tay nghỉ đều k có triệu chứng”. Ghi3lượt diễn tập tay nghỉ không thấy gợi ý. Chưa nhận nguyên thông báo từ chối, CSV, frame_count, timing hoặc profile của trang. Chưa xác định guard đã từ chối trước decoder hay có đủ đầu vào hợp lệ để tính NEG_REST theo protocol. Giữ metrics.json theo CSV đã có, không cộng với11lượt âm baseline cũ. Bước diễn tập kế tiếp là cử động thông thường không khai triệu chứng.
