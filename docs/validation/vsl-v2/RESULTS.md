@@ -1,5 +1,11 @@
 # Kết quả camera V2
 
+## Người dùng báo gợi ý đúng Ngực sau sửa khởi tạo
+
+Ngày20/11/2026, sau khi sửa khởi tạo và khởi chạy lại app, người dùng nói đã nhận diện được. Khi được hỏi kết quả cụ thể, người dùng dán đầy đủ gợi ý Đau/Nhức, Có đau và vị trí Ngực cho ca đang thử “Tôi bị đau ngực”. Đây là một kết quả đúng theo câu đích trong diễn tập do người dùng báo, sau tích hợp Web legacy.
+
+Chưa có CSV, trial_id, timing, profile của trang đang mở hoặc xác minh động tác VSL. Không cộng lượt này vào metrics.json, không suy tỷ lệ đúng hoặc bỏ qua các lượt từ chối/nhầm Đầu trước đây. Cần giữ kết quả các lượt lặp tiếp theo, kể cả sai và từ chối. CANDIDATE; chưa kết luận ổn định chỉ từ lượt đúng này.
+
 ## Lỗi khởi tạo trong trình duyệt của ứng dụng
 
 Ngày20/11/2026, người dùng gửi ảnh có webcam phía sau lớp lỗi “Không thể mở nhận diện”. Đọc console tab bệnh nhân thấy WebAssembly báo Module.arguments và Assertion failed. Nút Bật lại Camera khi đó chỉ gọi start của webcam, nên không khởi tạo lại detector đã lỗi.
