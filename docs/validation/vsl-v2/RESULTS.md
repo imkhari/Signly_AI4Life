@@ -1,5 +1,13 @@
 # Kết quả camera V2
 
+## Lời báo sau khi thử lại
+
+Ngày 20/11/2026, sau hướng dẫn thử câu đau ngực và kết thúc bằng phím cách, người dùng chọn “Chưa nhận rõ”. Đây là lời báo trên màn bệnh nhân. Không có CSV, số frame, timing, fingerprint của trang đang mở hoặc xác nhận VSL. Không tạo thêm dòng TRIALS.csv hoặc cộng vào metrics.
+
+Theo đường mã UI, thông báo này xuất hiện sau khi nhận phản hồi HTTP mà không có gợi ý được frontend chấp nhận. Nó có thể xảy ra khi guard chuyển động từ chối, điểm model dưới ngưỡng, câu giải mã ngoài allowlist hoặc phản hồi gợi ý bị frontend từ chối. Chưa có đủ dữ liệu để xác định nguyên nhân của lượt vừa báo. Thông báo này khác lỗi capture dừng ở 3,2 giây trước đây.
+
+Đề xuất chờ duyệt: bổ sung mã lý do vào trường suggested_next_step đã có của intake. Ba trường hợp cần phân biệt là chuyển động chưa rõ, điểm model dưới ngưỡng và đầu ra ngoài allowlist. Chỉ trả mã kiểm soát, không đưa câu decoder tự do ra UI. Giữ checkpoint, ngưỡng, danh mục câu và bước Nhận/Sửa. Thay đổi semantics phản hồi cần chốt theo AGENTS.md §5.
+
 ## Chẩn lỗi thao tác ngày 20/11/2026
 
 Profile hiện tại `d90c3a1d29f800c41df2357bee6dbfb77ca0f9d6b0fab89d216a55bcdca6d32a` có 0 lượt CSV. UI phân biệt mất cả hai bàn tay với khung hình trễ và timestamp lỗi. Phím cách kết thúc câu đang thu, tiêu điểm chuyển tới vùng điều khiển để tránh kích hoạt nút cũ sau Ký lại. Không có thay đổi checkpoint hoặc ngưỡng capture.
