@@ -1,11 +1,11 @@
 {
-  "profile_id": "d90c3a1d29f800c41df2357bee6dbfb77ca0f9d6b0fab89d216a55bcdca6d32a",
+  "profile_id": "480d15a6d436cbe61bcf9673f7a62c7234cfbff12c10ffb3d528007615f90912",
   "sources": {
     "AI_model/vsl_v2/engine.py": "5fdbe53272d04e9c2798708a668c56ff77b090099b54ead0867a2eac72af93ce",
     "AI_model/vsl_v2/trials.py": "1ec8fb01ba10d148d67abf5dbbec17380115fb51a7ac321f347f2b246950c7a2",
     "frontend/src/features/validation/VSLValidationPage.tsx": "92151041255512b738f180820e0d2253426b4afaf26776012d109ef60e2f271c",
     "AI_model/vsl_v2/worker.py": "bde5312a8b5135508b6d74c85485b18fe0ef8f51468ea7b7ec6bb4f8ba63f245",
-    "backend/app/ai/vsl_v2.py": "d30cca558f72b9a7852e34da2be21f9bc24d3137fb93afc249140058f55604c7",
+    "backend/app/ai/vsl_v2.py": "e51f1cece0f29327502072ecffd014f25d3d4c9ea4b4c6b6e1432365f4330125",
     "backend/app/api/rest/vsl.py": "833fb403e5fcf9ab7c4b7c88523d8572cde4b3485bc32a4ffe828c55778af62a",
     "backend/app/domain/vsl.py": "9fb5c49a9a725d07ca7c991d9d6a6354d869c15fa5c61940ff825244d3afa4e5",
     "frontend/src/types/vsl.ts": "72cba8ff1ea727fe414ade84e3ffd4d088ae8ab8daad573b4e6badacf75d6e33",
@@ -14,7 +14,7 @@
     "frontend/src/features/patient/PatientPage.tsx": "f46579168bceff650032f8170c154149c1730879d235ad0425498fa26f25aabd",
     "frontend/src/services/vsl/HolisticDetector.ts": "21e745e12adaa40cc123f49b8660f5523e7f0c893f5366669af59e88f1fa9b36",
     "frontend/src/services/vsl/SentenceCapture.ts": "adf56959823770d3519335e61d8347dd7da98d56f21588955a554b2d152cc8f4",
-    "frontend/src/features/patient/components/VSLCameraView.tsx": "d5c1fc55b41809fa092634bdef4c3d5b027dc9add2d9bad4a0207076be863b76",
+    "frontend/src/features/patient/components/VSLCameraView.tsx": "78cd3120ce87e7881ebe0fb22fa54804a575828b9425a238a62a3f6d6dc00dcf",
     "frontend/src/services/vsl/validationProtocol.json": "1645f0cd743950e93b43a2c55e585a4124388f2794a271961dd52891cc9f5ecd",
     "AI_model/vsl_v2/model-manifest.json": "fa0cfe022050e24f7332689d9d8a4a43ac11c42dbb34691bd09a73a0d395e14f",
     "AI_model/runtime/requirements-lock.txt": "688a91dbbafaf3b535be811fec9198f8250f7701fba9e78e0c84c82a57a4aeb0",

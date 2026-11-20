@@ -84,3 +84,7 @@ Lỗi worker, mạng hoặc đầu vào không đủ điều kiện ghi `unmeasu
 Ngày 20/11/2026, thêm hướng dẫn cụ thể khi mất cả hai bàn tay, khi khung hình tới trễ và khi timestamp không tăng. Những chi tiết này chỉ nằm ở thông báo UI trong RAM. CSV tiếp tục dùng reason tracking_gap theo định dạng cũ. Điều kiện từ chối giữ theo Q-24. Số frame, thời gian thu và thời gian phản hồi tiếp tục được xuất bằng các cột đã có.
 
 Sau Bắt đầu ký, tiêu điểm chuyển tới vùng điều khiển mà không cuộn trang. Nhấn phím cách để Xong câu, hoặc dùng nút Xong câu. Phím tắt chỉ hoạt động trong lượt đang thu, bỏ qua phím lặp và ô nhập/nút thao tác khác. Nhờ người cùng nhóm nhấn phím cách khi xong giúp người ký giữ tay trong khung. Thử nội bộ chưa có VSL reference được người biết VSL xác minh vẫn ghi mức learning.
+
+## Đọc thông báo sau suy luận — Q-29
+
+Chuyển động tay chưa đủ rõ nghĩa là guard đã từ chối trước decoder. Điểm nhận diện chưa đạt ngưỡng nghĩa là model đã chạy nhưng điểm token dưới0,7. Đầu ra nhận diện chưa khớp câu được hỗ trợ nghĩa là câu model tạo ra chưa khớp allowlist. Dòng cuối chưa xác định người ký thực hiện đúng hay sai. Khi cần chẩn lỗi, ghi nguyên dòng hướng dẫn sau lượt thử. CSV vẫn ghi UNKNOWN/unknown để tương thích định dạng hiện có; hướng dẫn cụ thể chỉ nằm trong UI. Kết quả của phiên trước khi sửa API giữ theo snapshot profile cũ.

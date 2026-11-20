@@ -133,3 +133,5 @@ Câu ho/sốt/khó thở không chứa phủ định đau: pain_present=null, kh
 Sau gợi ý: vị trí/tình trạng đau nếu thiếu → mức đau khi có đau → thời gian → triệu chứng đi kèm → dị ứng → toàn phiếu → điều dưỡng. Có Chưa rõ; dữ liệu thiếu tiếp tục do parser đánh dấu uncertain/missing, không tự hoàn thành.
 
 Q-28 bổ sung ý nghĩa `worker_unavailable` của trường hướng dẫn trong phản hồi camera intake. Lỗi này không tạo gợi ý, không ghi Semantic Frame và không đưa dữ liệu vào LLM.
+
+Q-29 mở rộng tập mã kiểm soát của suggested_next_step trong phản hồi camera intake: hand_motion_unclear, model_score_low và phrase_not_supported. Các trường gợi ý ngữ nghĩa vẫn để null khi bị từ chối. CSV thử nội bộ tiếp tục dùng reason unknown, chỉ hiển thị lời hướng dẫn cụ thể trong RAM của UI.

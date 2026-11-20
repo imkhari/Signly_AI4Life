@@ -100,7 +100,7 @@ test('synthetic full sentence writes pain and chest together, then completes bot
 test('synthetic sentence can be discarded at 720px and an incomplete bundle never becomes a complaint',async ({context})=>{
   const {patient,nurse}=await pair(context);await patient.setViewportSize({width:720,height:900});
   let full=true;
-  await patient.route('**/api/vsl/predict',route=>route.fulfill({json:full ? chest : {...chest,intake_suggestion:null}}));
+  await patient.route('**/api/vsl/predict',route=>route.fulfill({json:full ? chest : {...chest,intake_suggestion:null,suggested_next_step:'model_score_low'}}));
   await capture(patient);
   await expect(patient.getByRole('button',{name:'Dùng thông tin này'})).toBeEnabled();
   expect(await patient.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -110,7 +110,7 @@ test('synthetic sentence can be discarded at 720px and an incomplete bundle neve
   await expect(patient.getByRole('button',{name:'Dùng thông tin này'})).toHaveCount(0);
   await expect(nurse.getByText('Ngực',{exact:true})).toHaveCount(0);
   full=false;await capture(patient);
-  await expect(patient.getByText(/Chưa nhận rõ/)).toBeVisible();
+  await expect(patient.getByText(/Điểm nhận diện chưa đạt ngưỡng/)).toBeVisible();
   await expect(patient.getByRole('button',{name:'Dùng thông tin này'})).toHaveCount(0);
   await patient.getByRole('button',{name:'Chuyển sang Chạm',exact:true}).click();
   await expect(patient.getByRole('button',{name:'Đau / Nhức',exact:true})).toBeVisible();

@@ -50,6 +50,11 @@ export const vi = {
     results: 'Kết quả các lượt',export: 'Tải kết quả CSV',
   },
   camera: {
+    rejectionHints: {
+      hand_motion_unclear: 'Chuyển động tay chưa đủ rõ để xử lý. Giữ tay trong hình và thử lại cả câu.',
+      model_score_low: 'Điểm nhận diện chưa đạt ngưỡng. Bạn có thể ký lại hoặc chuyển sang Chạm.',
+      phrase_not_supported: 'Đầu ra nhận diện chưa khớp câu được hỗ trợ. Bạn có thể ký lại hoặc dùng Chạm.',
+    },
     keyboardFinish: 'Ký xong, nhấn phím cách hoặc bấm Xong câu.',
     trackingIssues: {
       hands_missing: 'Camera vừa mất dấu cả hai bàn tay. Lùi ra để tay nằm trọn trong hình.',

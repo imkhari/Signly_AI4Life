@@ -247,3 +247,14 @@ Danh sách vùng tối đa1. PAIN bắt buộc true; các lý do còn lại bắ
 Trước khi bấm Dùng thông tin này không gửi INPUT_UPDATED cho gợi ý. Khi bấm, một patch chứa đủ chief_complaint + pain; không đổi schema_version1.0, event hay cơ chế duyệt. Giữ dị ứng và triệu chứng không liên quan; loại lý do chính mới khỏi extra_symptoms. Nếu lý do/đau/vùng đổi, severity và onset cũ về null. Có thông báo thay thế trước khi nhận; giữ giá trị cũ nếu cùng thông tin. Kết quả đang chờ/đang hiện bị hủy khi draft/frame thay đổi, ngắt kết nối, đổi context, reset/unmount; không tự nhận lại khi kết nối phục hồi.
 
 Theo Q-28, khi worker bận, không khả dụng hoặc không hoàn tất xử lý, request V2 ở context `intake` trả `success=false`, `gloss="UNKNOWN"`, `intake_suggestion=null` và `suggested_next_step="worker_unavailable"`. Người dùng có thể thử lại hoặc chuyển sang Chạm. Khi pipeline xử lý thành công nhưng không đưa ra gợi ý, trường này để null. Guard chuyển động có thể từ chối trước decoder.
+
+Theo Q-29, phản hồi intake với success=false và gloss=UNKNOWN có thể dùng suggested_next_step như sau. Các mã được chọn theo thứ tự xử lý. Các context cũ giữ phản hồi hiện có.
+
+| Giá trị | Điều kiện | Hướng dẫn |
+|---|---|---|
+| hand_motion_unclear | Worker trả reason no_clear_hand_motion, guard từ chối trước decoder | Giữ tay rõ trong hình và thử lại cả câu |
+| model_score_low | Điểm token trung bình hữu hạn trong [0;0,7), sau khi qua guard | Ký lại hoặc Chạm |
+| phrase_not_supported | Điểm qua ngưỡng nhưng toàn câu giải mã không có trong allowlist | Ký lại hoặc Chạm |
+| worker_unavailable | Q-28, worker không trả kết quả xử lý | Thử lại hoặc Chạm |
+
+Các nhánh khác tiếp tục dùng UNKNOWN chung. Mã hướng dẫn không chứa câu decoder, landmark hoặc giải thích tự do. Điểm model chưa được hiệu chỉnh xác suất. phrase_not_supported mô tả đầu ra của model, chưa xác định người dùng ký sai hoặc có ý nằm ngoài phạm vi.

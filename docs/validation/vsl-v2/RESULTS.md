@@ -1,12 +1,20 @@
 # Kết quả camera V2
 
+## Q-29 — lý do từ chối đã triển khai
+
+Profile `480d15a6d436cbe61bcf9673f7a62c7234cfbff12c10ffb3d528007615f90912` có 0 lượt CSV. Theo duyệt của chủ dự án, API intake trả mã cố định khi guard chuyển động từ chối, điểm model hữu hạn dưới0,7 hoặc câu giải mã không khớp allowlist. UI hiển thị lời nhắc tương ứng, giữ UNKNOWN và gợi ý null. Phản hồi lạ tiếp tục dùng thông báo chung.
+
+make check qua186backend+105frontend,8runtime,build và5E2E nhận cả câu/trang thử qua. Backend localhost8000 đã nạp bản mới, frontend5173 đang phục vụ profile mới. Replay mẫu SENT103 qua worker thật trả PAIN/true/CHEST. Lặp frame đầu của chính mẫu này thành chuỗi tĩnh tổng hợp trả UNKNOWN/hand_motion_unclear. Hai probe là replay/tổng hợp, không ghi vào số liệu webcam. Phiên RAM thử nghiệm trước khi restart cần ghép lại.
+
+Lời báo Chưa nhận rõ trước cập nhật vẫn giữ ở mục dưới, chưa xác định được nguyên nhân cụ thể. Chờ một lượt mới với lý do đã triển khai. Trạng thái CANDIDATE.
+
 ## Lời báo sau khi thử lại
 
 Ngày 20/11/2026, sau hướng dẫn thử câu đau ngực và kết thúc bằng phím cách, người dùng chọn “Chưa nhận rõ”. Đây là lời báo trên màn bệnh nhân. Không có CSV, số frame, timing, fingerprint của trang đang mở hoặc xác nhận VSL. Không tạo thêm dòng TRIALS.csv hoặc cộng vào metrics.
 
 Theo đường mã UI, thông báo này xuất hiện sau khi nhận phản hồi HTTP mà không có gợi ý được frontend chấp nhận. Nó có thể xảy ra khi guard chuyển động từ chối, điểm model dưới ngưỡng, câu giải mã ngoài allowlist hoặc phản hồi gợi ý bị frontend từ chối. Chưa có đủ dữ liệu để xác định nguyên nhân của lượt vừa báo. Thông báo này khác lỗi capture dừng ở 3,2 giây trước đây.
 
-Đề xuất chờ duyệt: bổ sung mã lý do vào trường suggested_next_step đã có của intake. Ba trường hợp cần phân biệt là chuyển động chưa rõ, điểm model dưới ngưỡng và đầu ra ngoài allowlist. Chỉ trả mã kiểm soát, không đưa câu decoder tự do ra UI. Giữ checkpoint, ngưỡng, danh mục câu và bước Nhận/Sửa. Thay đổi semantics phản hồi cần chốt theo AGENTS.md §5.
+Đề xuất tại thời điểm ghi nhận, sau đó được duyệt Q-29 và triển khai ở mục trên: bổ sung mã lý do vào trường suggested_next_step đã có của intake. Ba trường hợp cần phân biệt là chuyển động chưa rõ, điểm model dưới ngưỡng và đầu ra ngoài allowlist. Chỉ trả mã kiểm soát, không đưa câu decoder tự do ra UI. Giữ checkpoint, ngưỡng, danh mục câu và bước Nhận/Sửa. Thay đổi semantics phản hồi cần chốt theo AGENTS.md §5.
 
 ## Chẩn lỗi thao tác ngày 20/11/2026
 

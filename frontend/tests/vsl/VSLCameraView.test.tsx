@@ -184,4 +184,24 @@ it('does not begin a new sentence using stale tracking readiness',async () => {
     expect(record).toHaveBeenCalledOnce();
   });
 
+  it.each([
+    ['hand_motion_unclear','Chuyển động tay chưa đủ rõ'],
+    ['model_score_low','Điểm nhận diện chưa đạt ngưỡng'],
+    ['phrase_not_supported','Đầu ra nhận diện chưa khớp câu được hỗ trợ'],
+    ['arbitrary decoder text','Chưa nhận rõ'],
+  ])('shows only controlled rejection guidance for %s',async (hint,text) => {
+    vi.mocked(restApi.predictVSLSequence).mockResolvedValue({...prediction,success:false,
+      gloss:'UNKNOWN',suggested_next_step:hint});
+    const apply=vi.fn(), record=vi.fn();
+    render(<VSLCameraView contextStep="intake" onApplyGlosses={apply}
+      onApplyIntakeSuggestion={apply} onTrialResult={record} />, {wrapper:SessionProvider});
+    await emit(0,0);fireEvent.click(screen.getByRole('button',{name:'Bắt đầu ký'}));await emit(1,30);
+    await act(async () => {fireEvent.click(screen.getByRole('button',{name:'Xong câu'}));});
+    expect(screen.getByRole('status')).toHaveTextContent(text);
+    expect(screen.queryByRole('button',{name:'Dùng thông tin này'})).not.toBeInTheDocument();
+    expect(apply).not.toHaveBeenCalled();
+    expect(record).toHaveBeenCalledWith(expect.objectContaining({gloss:'UNKNOWN',
+      reason:'unknown',candidate_latency_ms:null}));
+  });
+
 });

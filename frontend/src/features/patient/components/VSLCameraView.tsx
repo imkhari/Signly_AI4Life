@@ -231,7 +231,13 @@ export const VSLCameraView: React.FC<VSLCameraViewProps> = ({
       setIntakeSuggestion(suggestion); candidateKeyRef.current=draftKey;
       setCandidates(valid ? [{gloss:response.gloss,label_vi:response.label_vi || response.gloss,
         category:meta.category,maps_to:meta.maps_to,confidence:response.confidence,timestamp:Date.now()}] : []);
-      setCaptureMessage(valid ? (contextStep==='intake' ? 'Kiểm tra cả gợi ý. Chỉ bấm Dùng thông tin này khi đúng ý bạn.' : vi.camera.checkSuggestion) : vi.camera.reasons[reason]);
+      let message:string=vi.camera.reasons[reason];
+      const hint=response.suggested_next_step;
+      if (contextStep==='intake' && reason==='unknown' && hint &&
+        Object.prototype.hasOwnProperty.call(vi.camera.rejectionHints,hint)) {
+        message=vi.camera.rejectionHints[hint as keyof typeof vi.camera.rejectionHints];
+      }
+      setCaptureMessage(valid ? (contextStep==='intake' ? 'Kiểm tra cả gợi ý. Chỉ bấm Dùng thông tin này khi đúng ý bạn.' : vi.camera.checkSuggestion) : message);
     } catch {
       if (generation!==generationRef.current) return;
       const reason=controller.signal.aborted ? 'inference_timeout' : 'network_error';

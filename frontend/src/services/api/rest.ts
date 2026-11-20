@@ -52,6 +52,7 @@ export interface VSLPredictionResponse {
   total_fingers: number;
   is_transitioning: boolean;
   motion_type: string;
+  // Intake rejection hints: hand_motion_unclear, model_score_low, phrase_not_supported, worker_unavailable.
   suggested_next_step?: string | null;
   top_k: VSLTopK[];
   latency_ms: number;

@@ -54,6 +54,9 @@ def map_candidate(result: dict[str, Any], context: str | None) -> dict[str, Any]
         "confidence": 0.0,
         "model_source": "vsl_v2_learned_translation",
     }
+    if context == "intake" and result.get("reason") == "no_clear_hand_motion":
+        unknown["suggested_next_step"] = "hand_motion_unclear"
+        return unknown
     if not isinstance(result.get("translation"), str):
         return unknown
     try:
@@ -61,11 +64,15 @@ def map_candidate(result: dict[str, Any], context: str | None) -> dict[str, Any]
     except (TypeError, ValueError):
         return unknown
     if not math.isfinite(score) or not 0.7 <= score <= 1:
+        if context == "intake" and math.isfinite(score) and 0 <= score < 0.7:
+            unknown["suggested_next_step"] = "model_score_low"
         return unknown
     phrase = unicodedata.normalize("NFC", result["translation"]).lower().strip()
     phrase = re.sub(r"\s+", " ", phrase)
     phrase = re.sub(r"\s*[.!?]+$", "", phrase)
     if phrase not in PHRASES:
+        if context == "intake":
+            unknown["suggested_next_step"] = "phrase_not_supported"
         return unknown
     symptom, region = PHRASES[phrase]
     if context == "location":

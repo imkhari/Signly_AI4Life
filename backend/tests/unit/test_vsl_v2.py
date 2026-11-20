@@ -82,7 +82,9 @@ def test_sentence_response_contract_and_legacy_context(monkeypatch) -> None:
         }).status_code == 422
 
 
-@pytest.mark.parametrize("result, hint", [({}, "worker_unavailable"), (decoded(""), None)])
+@pytest.mark.parametrize(
+    "result, hint", [({}, "worker_unavailable"), (decoded(""), "phrase_not_supported")]
+)
 def test_intake_distinguishes_missing_worker_result_from_abstention(monkeypatch, result, hint):
     monkeypatch.setattr(v2_runtime, "infer", AsyncMock(return_value=result))
     with TestClient(app) as client:
@@ -91,6 +93,36 @@ def test_intake_distinguishes_missing_worker_result_from_abstention(monkeypatch,
         }).json()
     assert body["suggested_next_step"] == hint
     assert body["gloss"] == "UNKNOWN" and body["intake_suggestion"] is None
+
+
+
+@pytest.mark.parametrize(
+    "decoded_result,hint",
+    [
+        ({"translation": "", "mean_token_probability": 0,
+          "reason": "no_clear_hand_motion"}, "hand_motion_unclear"),
+        (decoded("tôi bị đau ngực", 0.69), "model_score_low"),
+        (decoded("tôi bị đau ngực và ho"), "phrase_not_supported"),
+    ],
+)
+def test_intake_rejection_hints_do_not_expose_decoder_or_create_suggestion(
+    monkeypatch, decoded_result, hint
+):
+    monkeypatch.setattr(v2_runtime, "infer", AsyncMock(return_value=decoded_result))
+    with TestClient(app) as client:
+        body = client.post("/api/vsl/predict", json={
+            "frames": frames(), "context_step": "intake",
+        }).json()
+    assert body["success"] is False and body["gloss"] == "UNKNOWN"
+    assert body["intake_suggestion"] is None and body["suggested_next_step"] == hint
+    assert "translation" not in body and "mean_token_probability" not in body
+    assert "suggested_next_step" not in map_candidate(decoded_result, "symptom")
+
+
+@pytest.mark.parametrize("score", [float("nan"), float("inf"), -0.1, 1.1, "bad"])
+def test_invalid_scores_never_produce_misleading_low_score_hint(score):
+    body = map_candidate(decoded("tôi bị đau ngực", score), "intake")
+    assert body["gloss"] == "UNKNOWN" and "suggested_next_step" not in body
 
 
 def test_structured_suggestion_cannot_deny_pain_or_attach_unrelated_location() -> None:
